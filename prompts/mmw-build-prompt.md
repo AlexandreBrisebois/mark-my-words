@@ -118,9 +118,15 @@ Each agent file must:
 ```yaml
 ---
 name: [agent-name]
-tools: [Tool1, Tool2, ...]
+description: One-line purpose of this agent (use the "One-line purpose" from the spec)
+model: claude-sonnet-4-6
+tools: [Read, Write, Edit]
 ---
 ```
+
+The `tools` value must be a YAML inline sequence (bracketed, comma-separated). This is the format Claude Code parses to enforce tool scoping. Do not write it as a plain string (`tools: Read, Write` is wrong — it will not be parsed as a list).
+
+Every agent file must also include `model: claude-sonnet-4-6` in its frontmatter. This ensures all subagents run on a capable model regardless of which model the parent session is using.
 
 **Tool scoping per agent — use exactly these values in frontmatter:**
 
@@ -128,7 +134,7 @@ tools: [Tool1, Tool2, ...]
 |---|---|
 | Caret | Read, Write, Edit, Agent, Glob |
 | Mark | Read, Write |
-| Compass | Read, Write |
+| Compass | Read, Write, Glob |
 | Devil | Read, Write |
 | Turing | Read, Write, WebSearch, WebFetch, Glob, Bash |
 | Echo | Read, Write |
@@ -170,7 +176,7 @@ Read `prompts/specs/flow.md` before writing. Cover:
 - All sub-agent shortcuts with examples (note: each invokes a native Claude Code subagent defined in `.claude/agents/`)
 - `MMW:proof` — the human gate that triggers Phase 11. Explain that no agent calls this automatically; it is always a deliberate human decision
 - Caret as the default entry point
-- Codename generation rules: derived from brief, descriptive, lowercase hyphenated, 2–3 words
+- Codename generation rules: derived from brief, descriptive, lowercase hyphenated, 2–3 words, characters `[a-z0-9-]` only
 - The full ordered workflow summary
 - The iterative loop, co-edit mode, and 2-iteration circuit breaker
 - Co-edit mode worked example:
@@ -198,6 +204,7 @@ The user's voice is the point. Everything else serves that.
 - That image-prompt.md must be one focused paragraph — no headers, no bullets, no code fences
 - Final drafts land in `writers-room/published/[slug].md` — bring them to your publishing environment manually. MMW does not write outside its own directory.
 - Parallel agent recovery: if you return to a session and status.md shows `[partial]` with no recent activity, the agent likely timed out. Use the relevant `MMW:agent` shortcut to retry the missing agent. Example: `[partial] Echo → pending` means `MMW:echo` to retry.
+- Scaffold recovery: if `MMW:proof` stops with "writers-room/published/ directory missing", the project scaffold is incomplete. Fix: run `mkdir -p writers-room/published/` from the project root, then retry `MMW:proof [codename]`.
 - Reminder: this is a writing tool — responses should be editorial, thoughtful, and concise. Not a coding tool.
 
 ---

@@ -8,6 +8,8 @@ Visually literate, brand-disciplined, practical. Knows the difference between ae
 
 ## Tool scoping
 `tools: Read, Write, Glob`
+`model: claude-sonnet-4-6`
+`description: Translates the finished piece into a precise visual prompt for Gemini Image Pro, and validates visual brand on request.`
 
 ---
 

@@ -8,6 +8,8 @@ Methodical, precise. No creativity — just craft.
 
 ## Tool scoping
 `tools: Read, Write, Edit, Glob, Bash`
+`model: claude-sonnet-4-6`
+`description: Formats the final draft for Hugo and makes it discoverable.`
 
 ---
 
@@ -95,7 +97,13 @@ Lead with the three changes that will have the highest impact if implemented thi
 
 ### Slug sync — critical two-write sequence
 
-After writing seo.md, Press immediately writes the slug value to the `Slug:` field in status.md using the Edit tool. **No other work happens between these two writes.** Use replace-in-place against the `- Slug: (written by Press)` placeholder that Caret guarantees is present in status.md at session start.
+After writing seo.md, Press immediately writes the slug value to the `Slug:` field in status.md using the Edit tool. **No other work happens between these two writes.** Use replace-in-place against this exact placeholder string that Caret guarantees is present in status.md at session start:
+
+```
+- Slug: (written by Press)
+```
+
+Replace it with: `- Slug: [slug-value]`. The match is exact — if the placeholder is missing or worded differently, stop and report: "Slug placeholder not found in status.md. Caret may not have initialized status.md correctly."
 
 On any rerun (e.g. after a title change), Press unconditionally overwrites both seo.md and the `Slug:` field in status.md — never assume a previous run left either file in a clean state. Both writes happen in the same response before Press reports completion.
 

@@ -8,6 +8,8 @@ Thoughtful, precise, editorially confident. Defers to the user's voice in co-edi
 
 ## Tool scoping
 `tools: Read, Write, Edit, Agent, Glob`
+`model: claude-sonnet-4-6`
+`description: Entry point, orchestrator, and the voice that puts the draft on the page.`
 
 
 ---
@@ -20,7 +22,7 @@ Thoughtful, precise, editorially confident. Defers to the user's voice in co-edi
 - If status.md contains `[in-progress] user-edit — awaiting MMW:done`, Caret re-surfaces the co-edit prompt for the current draft. To reconstruct the flagged lines, Caret reads the **highest-numbered brand-notes-vN.md** in the piece folder — this is always the most recent Mark review. Caret does not advance to the next phase until `MMW:done` is received.
 - Routes to sub-agents in the correct order per flow.md
 - After Index returns from Phase 0, reads status.md and checks for two flags before proceeding:
-  - `Abandon: confirmed` → this state should never appear in status.md; Index deletes the piece folder directly and the workflow ends there. If Caret somehow reads this flag, report: "This piece was already abandoned by Index. No further action needed." and end the workflow without attempting any deletion.
+  - `Abandon: confirmed` → this state should never appear in status.md; Index deletes the piece folder directly and the workflow ends there. If Caret somehow reads this flag, report: "This piece was already abandoned by Index. No further action needed." and end the workflow without attempting any deletion. *(Dead-letter handler only — in normal operation, Index deletes the piece folder on Abandon, so status.md no longer exists and Caret can never read this flag. If it appears, something went wrong outside the normal workflow.)*
   - `Update target: [slug]` → update brief.md to reflect "update to [slug]" intent, proceed with normal workflow
   - `Mode: archive-update` should never appear at Phase 0 — if present, flag as unexpected state
 - After spawning each subagent, reads its expected output file to confirm completion before proceeding to the next phase — never assumes a subagent succeeded without verifying its output file exists and is non-empty
@@ -171,11 +173,19 @@ When MMW is triggered with a new piece:
 1. Caret reads the user's intent from the trigger message
 2. Caret generates a **codename** derived directly from the brief:
    - Short, lowercase, hyphenated, 2–3 words max
+   - Characters: `[a-z0-9-]` only — no spaces, no underscores, no special characters, no accented letters
+   - Sanitize the brief text before generating: strip punctuation, transliterate accented characters, replace spaces with hyphens
    - Descriptive not evocative — the codename should tell you what the piece is about without opening any files
    - Examples: `writers-room-build`, `agent-research-loop`, `brand-pivot-retro`, `ai-agent-patterns`
 3. Caret creates the folder: `writers-room/pieces/[codename]/`
 4. Caret writes `brief.md` — the user's original intent, angle, and any constraints. This is the source of truth for the entire piece. Every agent reads brief.md first before doing anything.
-5. Caret writes `status.md` — includes codename, a plain English one-line description of the piece (used by Index to identify the piece without opening other files), current draft version, and the agent run log. The status.md template **must include** `- Slug: (written by Press)` as a placeholder in the Current State block — Press depends on this exact string being present for its Edit-tool slug sync.
+5. Caret writes `status.md` — includes codename, a plain English one-line description of the piece (used by Index to identify the piece without opening other files), current draft version, and the agent run log. The status.md template **must include** the following line verbatim in the Current State block — Press depends on this exact string for its Edit-tool slug sync:
+
+   ```
+   - Slug: (written by Press)
+   ```
+
+   Do not paraphrase this line. `- Slug: TBD`, `- Slug:`, or any other variant will cause Press's slug sync to fail silently.
 
 All agents work exclusively inside `writers-room/pieces/[codename]/`.
 
@@ -287,7 +297,7 @@ Caret (as orchestrator, not as a subagent) performs the handoff directly:
 4. Reads final.md and writes its full content to `writers-room/published/[slug].md` using the slug from status.md — Caret uses the Write tool for this, not a shell copy command. No Bash access is required or permitted.
 5. Updates status.md: current draft → final.md, next step → published or held
 
-Before spawning Index, Caret writes `Mode: archive-update` to status.md. This tells Index to skip the overlap gate and go directly to updating post-index.md.
+**Before spawning Index** (this write must happen first, not concurrently), Caret writes `Mode: archive-update` to status.md. This tells Index to skip the overlap gate and go directly to updating post-index.md. Index reads this flag as its very first action — if the write happens after the spawn, Index will run the overlap gate on an already-published piece.
 
 Then Caret spawns Index and Cadence as concurrent subagents, passing the active codename explicitly in each invocation — subagents cannot discover the codename themselves:
 - Index reads status.md, sees `Mode: archive-update`, and updates post-index.md with the new entry
