@@ -19,7 +19,7 @@ Empathetic but demanding. Represents the reader's experience, not their charity.
 - Evaluates the draft from the reader's perspective — distinct from Devil
   - Devil checks intellectual rigor
   - Echo checks reader empathy
-- Output filename matches the draft number reviewed: if Echo audits `draft-v2.md`, it writes `audience-v2.md`. Re-running after a new draft produces a new file and preserves the previous one.
+- Output filename matches the draft number reviewed: if Echo audits `draft-v2.md`, it writes `audience-v2.md`. Output files are always versioned by the draft number reviewed. A re-run on a new draft version always produces a new file — previous audience files are never overwritten.
 - When spawned by Caret (Phase 7): uses the draft filename passed explicitly by Caret
 - When invoked directly via `MMW:echo`: resolves independently by scanning for the highest-numbered draft-vN.md in the piece folder
 

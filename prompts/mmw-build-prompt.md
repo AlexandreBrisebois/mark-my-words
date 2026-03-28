@@ -7,6 +7,20 @@
 > the writers-room/ project to track your progress through each phase.
 > Do not attempt to complete the entire build in one turn.
 >
+> **task.md format** — use this structure exactly so a resumed session can parse it:
+> ```
+> ## Build Progress
+> - [ ] Step A — Scaffold
+> - [ ] Step B — Agent files
+> - [ ] Step C — ARCHITECTURE.md
+> - [ ] Step D — CLAUDE.md
+> - [ ] Step E — Brand guidelines
+> - [ ] Step F — Seed files
+> - [ ] Validation
+> ```
+> Mark each step `[x]` when complete. On resume, read task.md first and
+> continue from the first unchecked item.
+>
 > **AGENTIC BEST PRACTICES**:
 > 1. **Context Refresh**: At the start of every step, re-read the
 >    relevant spec file. Do not rely on earlier memory.
@@ -84,6 +98,8 @@ Create `task.md` first. Then create this full directory structure:
     └── prism.md
 ```
 
+After creating `pieces/` and `published/`, write an empty `.gitkeep` file in each so Git tracks them.
+
 **CLAUDE.md must be at the project root** (`/Users/alex/Code/mark-my-words/CLAUDE.md`),
 not inside `writers-room/`. This is required for Claude Code to recognize the
 MMW triggers and `MMW:agent` shortcuts in every new session.
@@ -91,6 +107,10 @@ MMW triggers and `MMW:agent` shortcuts in every new session.
 **Agent files must be in `.claude/agents/`** relative to the project root.
 This is the directory Claude Code scans to register native subagents. Files
 in `writers-room/agents/` will not be auto-discovered.
+
+> **Note**: Seed files for `index/`, `cadence/`, and `research/` are defined in
+> Step F. Do not mark Step A complete until Step F is also done — agents depend
+> on these files existing before any workflow runs.
 
 ---
 
@@ -107,7 +127,6 @@ Each agent file must:
 - List all responsibilities explicitly
 - Define inputs (exact filenames) and outputs (exact filenames)
 - Specify handoff targets
-- Preserve all logic from the corresponding Copilot prompt file listed in the migration table
 - Apply brand pivot throughout using these exact substitutions:
   - `srvrlss.dev` → `alexandrebrisebois.github.io`
   - `multi-cloud engineer` / `serverless` → `AI agent builder` / `AI Enthusiast`
@@ -124,7 +143,7 @@ tools: [Read, Write, Edit]
 ---
 ```
 
-The `tools` value must be a YAML inline sequence (bracketed, comma-separated). This is the format Claude Code parses to enforce tool scoping. Do not write it as a plain string (`tools: Read, Write` is wrong — it will not be parsed as a list).
+The `tools` value must be a YAML inline sequence (bracketed, comma-separated). This is the format Claude Code parses to enforce tool scoping. Do not write it as a plain string (`tools: Read, Write` is wrong — it will not be parsed as a list). After writing each agent file, read back the `tools:` line and confirm it opens with `[` and closes with `]`. If it is a plain string, rewrite the file before moving to the next agent.
 
 Every agent file must also include `model: claude-sonnet-4-6` in its frontmatter. This ensures all subagents run on a capable model regardless of which model the parent session is using.
 
@@ -146,6 +165,21 @@ Every agent file must also include `model: claude-sonnet-4-6` in its frontmatter
 Tool scoping is enforced by Claude Code via the frontmatter — not by prose
 instructions inside the file body. Do not rely on written instructions alone
 to restrict tool access.
+
+> **Tool names are case-sensitive** and must match Claude Code's registered names
+> exactly: `Read`, `Write`, `Edit`, `Agent`, `Glob`, `Bash`, `WebSearch`, `WebFetch`.
+> A mistyped tool name will silently fail to scope access — no error is raised.
+
+> **Build Caret last.** Caret's spec cross-references behavior defined in the
+> Index, Press, and co-edit specs. Build all other agents first so the
+> cross-referenced logic is fresh when you write caret.md.
+
+> **Parallel spawning requires same-response Agent calls.** When Caret spawns a
+> parallel pair (Devil║Echo, Press║Prism, Index║Cadence), both Agent tool calls
+> must be issued in the same response turn. Sequential calls are functionally
+> correct but will not run concurrently.
+
+**Cross-check before moving to Step C**: Read back the status.md initialization block in `.claude/agents/caret.md` and the Edit-tool replace target in `.claude/agents/press.md`. Confirm both reference the exact string `- Slug: (written by Press)` — character for character, including parentheses and capitalization. If they differ, fix whichever is wrong before continuing.
 
 ---
 
@@ -174,7 +208,8 @@ Read `prompts/specs/flow.md` before writing. Cover:
 - What Mark My Words is — one paragraph
 - Both trigger aliases: MMW and Mark My Words
 - All sub-agent shortcuts with examples (note: each invokes a native Claude Code subagent defined in `.claude/agents/`)
-- `MMW:proof` — the human gate that triggers Phase 11. Explain that no agent calls this automatically; it is always a deliberate human decision
+- `MMW:proof` — the human gate that triggers Phase 11. Explain that no agent calls this automatically; it is always a deliberate human decision. State explicitly that `MMW:proof` is handled inline by Caret — there is no `.claude/agents/proof.md`. When the user types `MMW:proof [codename]`, Caret reads the piece folder and executes the Phase 11 pre-flight directly.
+- State explicitly that `MMW:bearings` is handled inline by Caret — there is no `.claude/agents/bearings.md`. When the user types `MMW:bearings [codename]`, Caret reads status.md and reports the current state of the piece before proposing a next step.
 - Caret as the default entry point
 - Codename generation rules: derived from brief, descriptive, lowercase hyphenated, 2–3 words, characters `[a-z0-9-]` only
 - The full ordered workflow summary
@@ -256,6 +291,13 @@ Turing reads `research/notes.md` at the start of every research pass.
 ## Validation
 
 When the build is complete, verify the following success criteria can be traced through the built artifacts. Do not run a live session — just confirm all required files exist and that the agent files contain the logic needed to execute each step.
+
+**Pre-flight file check** (verify all of these exist and are non-empty before tracing the workflow):
+- `writers-room/brand/guidelines.md` — contains the banned words list
+- `writers-room/index/post-index.md` — contains the markdown table header
+- `writers-room/cadence/calendar.md` — contains the markdown table header
+- `writers-room/research/notes.md` — contains the markdown table header
+- All 10 agent files in `.claude/agents/` — each has valid YAML frontmatter with `tools:` as a bracketed list
 
 1. User types: `MMW write a post about building this writer's room`
 2. Caret generates codename `writers-room-build`, creates folder, writes brief.md and status.md with plain English description

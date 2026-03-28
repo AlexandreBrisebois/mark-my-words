@@ -1161,6 +1161,90 @@ Seven source files, each migrated to its target agent spec:
 | `seo-blog-audit.prompt.md` | Index | Full Phase 1–7 portfolio audit detail: inventory, cannibalization, topical gaps, internal linking, freshness, three-lens synthesis, three-horizon action plan + constraints |
 | `visual-brand-validator-dual-mode.prompt.md` | Prism | Full Quick Audit and Strategic Audit output structures, input format, response requirements, audience framing |
 
+---
+
+## Session 12 — Writer Control: Iteration Without Limits (add to the story)
+
+The system had been built. The workflow was running. Then a writer asked
+a question the spec had never considered: *what if I'm not done?*
+
+The Caret/Mark creative loop had a hard limit: two iterations, then a
+circuit breaker. The logic was sound. Two rounds of feedback is usually
+enough. But "usually" is not a design principle. A writer mid-piece,
+chasing something that isn't there yet, doesn't want a system that
+decides for them when they've iterated enough.
+
+The circuit breaker came out. The user-driven exit went in.
+
+### What changed in Phase 5
+
+The 2-iteration cap and the circuit breaker section were removed
+entirely. In their place: a single exit mechanism. After every Mark
+review — including PASS — the loop pauses and asks:
+
+```
+[C] Co-edit
+[R] Revise
+[N] Move to critique — send this draft to Devil and Echo for review
+```
+
+All three options are available regardless of Mark's verdict. PASS no
+longer auto-exits. The writer chooses when they're done. One iteration,
+ten iterations — the system doesn't decide.
+
+The `Loop iterations: N of 2` field was dropped from `status.md`. There
+is nothing to count.
+
+### What changed in Phase 8.5
+
+The brand re-alignment check had the same problem in a different form.
+After Mark reviewed a revised draft, the only paths were: fix it once,
+or skip it. No way back to the creative loop. A writer who made
+substantial revisions in Phase 8 — real revisions, the kind that change
+the piece — had no mechanism to do another full pass with Mark before
+publishing.
+
+Two changes.
+
+First: `[R] Quick fix` became `[A] Apply`. Same behavior — Caret applies
+Mark's feedback directly. Clearer name.
+
+Second: after Caret applies changes (via co-edit or Apply), and after a
+PASS verdict, the system now asks:
+
+```
+[L] Back to creative mode — keep working with Mark before publishing
+[P] Proceed to publish
+```
+
+`[L]` re-enters Phase 5 on the latest draft. The writer gets the full
+loop — as many iterations as they want — before the piece goes to press.
+
+### Why it matters (for the story)
+
+The circuit breaker was designed as a safeguard. It prevented the system
+from running forever. What it also prevented was a writer from finishing.
+
+The right safeguard is not a hard limit. It's a pause and a question.
+The system should know when to stop running on its own. The writer should
+decide when the work is done.
+
+Phase 5 now pauses after every Mark review and asks. The writer answers.
+That's the whole mechanism.
+
+The system serves the writer's voice. That principle showed up in co-edit
+mode, where the user owns the keyboard and Caret waits. It shows up here
+too — in the decision not to cap iteration, and in the option to return
+to creative mode from anywhere in the post-draft workflow.
+
+### Additional angle for Compass
+
+- **The iteration angle**: A system that decides when you've iterated
+  enough is a system that doesn't trust the writer. The right design is
+  a pause and a question — not a limit and a circuit breaker.
+
+---
+
 Brand pivot applied throughout: `srvrlss.dev` → `alexandrebrisebois.github.io`,
 `Technical Outcome Leader` → `builder-in-public`, `multi-cloud engineer` →
 `AI agent builder`. The audience stayed the same. The framing changed.

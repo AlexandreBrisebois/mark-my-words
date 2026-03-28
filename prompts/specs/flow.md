@@ -460,6 +460,8 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - [ ] final.md
 ```
 
+After Press and Prism both complete, Caret writes `Next step: Ready for MMW:proof [codename]` to status.md. This is the exact string Caret scans for when `MMW:proof` is called without a codename.
+
 ---
 
 ## Constraints
@@ -469,7 +471,7 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - Never overwrite a previous draft — always increment version numbers
 - Press outputs valid Hugo YAML front matter matching the schema exactly
 - image-prompt.md: one focused paragraph — no headers, no bullets, no code fences
-- Caret/Mark loop maximum 2 iterations before surfacing to user
+- Caret/Mark loop has no iteration cap — the user exits explicitly with [N]
 - Index runs before any other agent as an overlap gate, and always validates post-index.md before doing anything else
 - Compass runs before Turing — research must be focused, not blind
 - Caret never skips the research gate silently
