@@ -69,6 +69,12 @@ Phase 8 — User revision window
            [Caret reads both critique-vN.md and audience-vN.md]
            [co-edit available]
    ↓
+Phase 8.5 — Mark: brand re-alignment check  [conditional]
+             [fires only if draft changed in Phase 8]
+             [single pass — no loop restart]
+             Mark reads latest draft → writes brand-notes-final.md
+             PASS → proceed | REVISE → one fix pass | HOLD → surface to user
+   ↓
 Phase 9+10 — Press ║ Prism  [run in parallel]
              Press: SEO and Hugo front matter → seo.md
              Prism: image prompt              → image-prompt.md
@@ -304,6 +310,58 @@ If no changes: Press reads the existing latest draft — no new version is creat
 
 ---
 
+## Phase 8.5 — Mark: Brand Re-Alignment Check [conditional]
+
+### When it fires
+
+After Phase 8 completes, Caret compares the draft filename passed to Devil/Echo at Phase 6+7 against the highest-numbered draft in the piece folder. If a new draft version was produced during Phase 8, Phase 8.5 fires. If no new draft exists (the user chose to proceed as-is), Phase 8.5 is skipped entirely. Caret logs the outcome in status.md:
+
+- Skipped: `[skip] Phase 8.5 — no draft change in Phase 8`
+- Fired: Caret spawns Mark as a subagent, passing the latest draft filename explicitly
+
+### What Mark reads
+
+- latest draft-vN.md (passed explicitly by Caret)
+- brief.md
+
+Mark does not read critique-vN.md or audience-vN.md. The scope is brand alignment only — what may have drifted since Phase 5.
+
+### What Mark writes
+
+`brand-notes-final.md` — same PASS/REVISE/HOLD format as Phase 5 brand-notes-vN.md, focused on drift since Phase 5. Mark does not relitigate issues already resolved in the Phase 5 loop.
+
+### Verdict handling
+
+**PASS** — Caret logs the result to status.md and proceeds to Phase 9+10 immediately. No user prompt.
+
+**HOLD** — same as Phase 5 HOLD handling. Caret surfaces:
+> "Mark has issued a HOLD on the final draft. The issue is structural — revising won't resolve it. [Specific issue from brand-notes-final.md]. How would you like to proceed? [B] Revisit the brief / [C] Co-edit / [S] Proceed to Press anyway"
+
+**REVISE** — Caret presents the issues and offers one fix pass. No loop:
+
+```
+Mark flagged issues in brand-notes-final.md:
+  1. [specific issue]
+  2. [specific issue]
+
+  [C] Co-edit — Caret surfaces the specific lines, you edit directly
+  [R] Quick fix — Caret revises based on brand-notes-final.md, no further Mark review
+  [S] Proceed anyway — go to Press with the current draft
+```
+
+If [C] or [R]: Caret produces a new versioned draft and proceeds to Phase 9+10. There is no second Mark pass. This is a single correction opportunity, not a loop restart.
+
+If [S]: Caret logs `[user override] brand re-alignment: skipped by user` in status.md and proceeds.
+
+### What does NOT happen here
+
+- No second Mark review after a [C] or [R] fix
+- No recursion into Phase 5 loop logic
+- No re-running of Devil or Echo
+- Co-edit follows the same rules as Co-edit Mode — user voice is never overridden
+
+---
+
 ## Phase 9+10 — Press + Prism [parallel]
 
 Before spawning, Caret resolves the current latest draft filename once (highest-numbered draft-vN.md in the piece folder) and passes it explicitly to both subagents in the invocation. Agents must use the filename Caret passes — they do not scan for the latest draft themselves.
@@ -342,6 +400,7 @@ writers-room/pieces/[codename]/
 ├── draft-v3.md           ← after second loop or user edits
 ├── brand-notes-v1.md     ← Mark's review of draft-v1
 ├── brand-notes-v2.md     ← Mark's review of draft-v2
+├── brand-notes-final.md  ← Mark's re-alignment check (Phase 8.5, conditional)
 ├── critique-v2.md        ← Devil's audit — version matches draft reviewed
 ├── audience-v2.md        ← Echo's review — version matches draft reviewed
 ├── seo.md                ← Press Hugo front matter + SEO notes (slug also written to status.md)
@@ -397,6 +456,10 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - [ ] Awaiting user direction (circuit breaker reached)
 - [ ] Devil → critique-v1.md
 - [ ] Echo → audience-v1.md
+- [ ] [skip] Phase 8.5 — no draft change in Phase 8
+  (or: [x] Mark → brand-notes-final.md (PASS))
+  (or: [x] Mark → brand-notes-final.md (REVISE) → Caret produced draft-vN.md)
+  (or: [x] Mark → brand-notes-final.md (REVISE) → user proceeded as-is)
 - [ ] Press → seo.md
 - [ ] Prism → image-prompt.md
 - [ ] final.md
