@@ -26,6 +26,7 @@ All three launch Caret as the default entry point.
 | `MMW:mark` | brand check |
 | `MMW:cadence` | editorial calendar |
 | `MMW:index` | archive and overlap check |
+| `MMW:bearings [codename]` | session orientation — recap current state, propose next step, pause |
 
 ### Workflow gate
 - `MMW:proof [codename]` → human declares draft final, triggers Phase 11 handoff
@@ -70,9 +71,11 @@ Phase 8 — User revision window
    ↓
 Phase 9+10 — Press ║ Prism  [run in parallel]
              Press: SEO and Hugo front matter → seo.md
-             Prism: image prompt              → image-prompt.txt
+             Prism: image prompt              → image-prompt.md
    ↓
 [MMW:proof [codename] — human declares draft final]
+   ↑ Caret proposes this exact command (with codename filled in)
+     after Press + Prism both complete. Does not advance automatically.
    ↓
 Phase 11 — Handoff: final.md → posts/drafts/[slug].md
            Index ║ Cadence  [run in parallel]
@@ -149,8 +152,10 @@ This loop runs until one of three exit conditions is met.
 ### Exit conditions (checked in this order)
 
 1. Mark issues a PASS verdict in brand-notes
-2. The draft satisfies the original intent stated in brief.md — Caret explicitly checks the draft against brief.md and declares intent met
-3. 2 loop iterations have completed — circuit breaker fires
+2. Mark issues a HOLD verdict — loop exits immediately (same priority as PASS). HOLD means the issue is structural, not a revision problem. Caret surfaces this to the user:
+   > "Mark has issued a HOLD. The issue is structural — revising the draft won't resolve it. [Specific issue from brand-notes]. How would you like to proceed? [B] Revisit the brief / [C] Co-edit / [S] Proceed to critique anyway"
+3. The draft satisfies the original intent stated in brief.md — Caret explicitly checks the draft against brief.md and declares intent met
+4. 2 loop iterations have completed — circuit breaker fires
 
 ### Loop pause after every Mark review
 
@@ -278,7 +283,9 @@ Before spawning, Caret resolves the current latest draft filename once (highest-
 
 If invoked directly via `MMW:devil` or `MMW:echo`, they resolve independently by scanning for the highest-numbered draft-vN.md.
 
-Caret spawns Devil and Echo as concurrent subagents. Both receive the same codename and the same explicit draft filename. Neither reads the other's output. Caret waits for both to complete before proceeding to Phase 8.
+Before spawning, Caret writes to status.md: `[partial] Devil → pending, Echo → pending`
+
+Caret spawns Devil and Echo as concurrent subagents. Both receive the same codename and the same explicit draft filename. Neither reads the other's output. As each completes and its output is verified, Caret replaces its `pending` entry with the full completion log entry. Caret waits for both to complete before proceeding to Phase 8. If one fails, the `[partial]` marker persists as a resume signal — on session resume, Caret reads it and knows which agent to re-run.
 
 See `specs/agent-devil.md` and `specs/agent-echo.md` for full audit and review criteria.
 
@@ -303,7 +310,9 @@ Before spawning, Caret resolves the current latest draft filename once (highest-
 
 If invoked directly via `MMW:press` or `MMW:prism`, they resolve independently by scanning for the highest-numbered draft-vN.md.
 
-Caret spawns Press and Prism as concurrent subagents. Both receive the same codename and the same explicit draft filename. Press writes seo.md. Prism writes image-prompt.txt. Neither reads the other's output. Caret waits for both before the MMW:proof gate is valid.
+Before spawning, Caret writes to status.md: `[partial] Press → pending, Prism → pending`
+
+Caret spawns Press and Prism as concurrent subagents. Both receive the same codename and the same explicit draft filename. Press writes seo.md. Prism writes image-prompt.md. Neither reads the other's output. As each completes, Caret replaces its `pending` entry with the full completion log entry. Caret waits for both before the MMW:proof gate is valid. If one fails, the `[partial]` marker persists as a resume signal.
 
 See `specs/agent-press.md` and `specs/agent-prism.md` for full output requirements.
 
@@ -334,7 +343,7 @@ writers-room/pieces/[codename]/
 ├── critique-v2.md        ← Devil's audit — version matches draft reviewed
 ├── audience-v2.md        ← Echo's review — version matches draft reviewed
 ├── seo.md                ← Press Hugo front matter + SEO notes (slug also written to status.md)
-├── image-prompt.txt      ← Prism's plain-text prompt for Gemini Image Pro
+├── image-prompt.md       ← Prism's image prompt for Gemini Image Pro (one focused paragraph)
 └── final.md              ← publish-ready
 ```
 
@@ -371,7 +380,7 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - [ ] Devil → critique-v1.md
 - [ ] Echo → audience-v1.md
 - [ ] Press → seo.md
-- [ ] Prism → image-prompt.txt
+- [ ] Prism → image-prompt.md
 - [ ] final.md
 ```
 
@@ -383,7 +392,7 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - Stateless file-based architecture — agents read from and write to files
 - Never overwrite a previous draft — always increment version numbers
 - Press outputs valid Hugo YAML front matter matching the schema exactly
-- image-prompt.txt: one plain paragraph, zero markdown formatting, consumed directly by GitHub Actions without parsing. After Prism writes image-prompt.txt, verify the file contains none of the characters: `#`, `*`, `` ` ``, `_`, `|`. If any are found, surface a warning before `MMW:proof` is accepted as valid.
+- image-prompt.md: one focused paragraph — no headers, no bullets, no code fences
 - Caret/Mark loop maximum 2 iterations before surfacing to user
 - Index runs before any other agent as an overlap gate, and always validates post-index.md before doing anything else
 - Compass runs before Turing — research must be focused, not blind
@@ -423,9 +432,9 @@ When done, the following session must work end to end:
 22. User revision window — user edits or proceeds
 23. Press ║ Prism run in parallel:
     - Press reads latest draft-vN.md → seo.md with valid Hugo YAML front matter + writes slug to status.md
-    - Prism reads latest draft-vN.md → image-prompt.txt as one plain paragraph, zero markdown
+    - Prism reads latest draft-vN.md → image-prompt.md as one focused paragraph
 24. User types: `MMW:proof writers-room-build`
-25. Pre-flight check passes — draft, seo.md, slug, image-prompt.txt all present
+25. Pre-flight check passes — draft, seo.md, slug, image-prompt.md all present
 26. final.md written and copied to `posts/drafts/writers-room-build.md`
 27. Index ║ Cadence run in parallel:
     - Index updates post-index.md with new entry

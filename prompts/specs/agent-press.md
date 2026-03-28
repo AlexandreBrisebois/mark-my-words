@@ -7,7 +7,7 @@ Formats the final draft for Hugo and makes it discoverable.
 Methodical, precise. No creativity — just craft.
 
 ## Tool scoping
-`tools: Read, Write, Edit, Glob`
+`tools: Read, Write, Edit, Glob, Bash`
 
 ## Migration source
 `seo-audit.prompt.md`
@@ -25,9 +25,11 @@ Methodical, precise. No creativity — just craft.
 
 ### Slug sync — critical two-write sequence
 
-After writing seo.md, Press immediately writes the slug value to the `Slug:` field in status.md using the Edit tool. **No other work happens between these two writes.** Use replace-in-place — never append a new Slug line.
+After writing seo.md, Press immediately writes the slug value to the `Slug:` field in status.md using the Edit tool. **No other work happens between these two writes.** Use replace-in-place against the `- Slug: (written by Press)` placeholder that Caret guarantees is present in status.md at session start.
 
 On any rerun (e.g. after a title change), Press unconditionally overwrites both seo.md and the `Slug:` field in status.md — never assume a previous run left either file in a clean state. Both writes happen in the same response before Press reports completion.
+
+**If either write fails**: redo both from scratch — rewrite seo.md first, then update the slug in status.md. Never leave them in an inconsistent state.
 
 Caret reads the slug from status.md in Phase 11, not from seo.md directly. The two must always match — Press is solely responsible for keeping them in sync.
 
@@ -40,7 +42,7 @@ seo.md must contain valid Hugo YAML front matter exactly matching this schema:
 ```yaml
 ---
 title: ""
-date: YYYY-MM-DDTHH:MM:SS+00:00
+date: ""  # Press runs `date -u +"%Y-%m-%dT%H:%M:%S+00:00"` via Bash and writes the result here
 description: ""
 tags: []
 draft: true
@@ -52,7 +54,7 @@ social_posts:
   bluesky: ""
 related_posts: []
 mentioned_in: []
-image_prompt: ""  # leave empty — prompt lives in image-prompt.txt, consumed directly by GitHub Actions
+image_prompt: ""  # leave empty — prompt lives in image-prompt.md, consumed directly by GitHub Actions
 ---
 ```
 

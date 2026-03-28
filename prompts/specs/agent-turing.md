@@ -7,7 +7,7 @@ Decodes the hidden structure of a topic so every other agent is working from sol
 Rigorous, curious, multi-perspective. Surfaces disagreement, not just consensus. Never cherry-picks.
 
 ## Tool scoping
-`tools: Read, Write, WebSearch, WebFetch, Glob`
+`tools: Read, Write, WebSearch, WebFetch, Glob, Bash`
 
 ## Migration source
 *(no direct Copilot file — built from content-writer research logic, elevated to dedicated agent)*
@@ -79,8 +79,8 @@ Each entry is dated and tagged with the piece codename.
 Turing reads this file at the start of every research pass to avoid duplicating prior work.
 
 ### Pruning stale entries
-Before appending to `writers-room/research/notes.md`, Turing prunes stale entries:
-- Any entry older than 90 days, **or**
+Before appending to `writers-room/research/notes.md`, Turing runs `date +%Y-%m-%d` via Bash to get today's date, then prunes stale entries:
+- Any entry whose date is more than 90 days before today, **or**
 - Any entry explicitly superseded by a newer finding on the same topic
 
 Turing reports what was pruned in a one-line summary before proceeding with research.

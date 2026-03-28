@@ -7,7 +7,7 @@ Knows everything that has been written, prevents repetition, and guards the door
 Methodical, comprehensive, protective of the archive.
 
 ## Tool scoping
-`tools: Read, Write, Glob`
+`tools: Read, Write, Glob, Bash`
 
 ## Migration source
 `seo-blog-audit.prompt.md`
@@ -55,21 +55,64 @@ If no codename was passed (e.g., direct invocation via `MMW:index`): Index repor
 
 If an active codename was passed, Index reads brief.md from that piece folder and checks for topic or angle overlap with previously published posts.
 
-### If overlap is found
-Index surfaces it with three options:
+### If overlap is found — Overlap Report (required before surfacing options)
 
-- **[A] Abandon** — the ground is already covered; start a new piece
-- **[D] Differentiate** — Index suggests a sharper angle that avoids overlap; Caret updates brief.md; workflow continues
-- **[P] Proceed** — user acknowledges overlap and continues anyway; noted in status.md
+Index produces a structured overlap report. All sections are required — do not surface options until the report is complete:
 
-### [A] Abandon cleanup
-If the user selects Abandon, Caret deletes the piece folder (`writers-room/pieces/[codename]/`) and all files written to it, then reports:
+**1. Brief summary**
+One paragraph summarizing what the new piece intends to cover and the specific angle it takes.
+
+**2. Overlap breakdown** (one entry per overlapping post)
+For each post:
+- Title and slug
+- TL;DR of what that post covers (2–3 sentences)
+- Exactly where the overlap is with the new brief — specific shared territory, not just "similar topic"
+
+**3. Update proposition**
+For each overlapping post, a one-sentence rationale for whether the new brief's content would be better served as an update to that post rather than a new piece.
+
+After the report, Index surfaces four options:
+
+```
+[U] Update   — work on an update to an existing post instead of a new piece
+[D] Differentiate — Index suggests a sharper angle; Caret updates brief.md; workflow continues
+[P] Proceed  — user acknowledges overlap and continues as a new piece (noted in status.md)
+[A] Abandon  — delete this piece and start fresh
+```
+
+### [U] Update flow
+User picks which post to update (by slug or number if multiple candidates).
+Index writes to status.md: `Update target: [slug]`
+Caret reads this on return, updates brief.md to reflect "update to [slug]" intent, and the piece proceeds through the normal workflow.
+
+### [D] Differentiate
+Index suggests a sharper angle that avoids overlap. Caret updates brief.md. Workflow continues.
+
+### [P] Proceed
+User acknowledges overlap and continues anyway. Index notes this in status.md. Workflow continues.
+
+### [A] Abandon — requires explicit confirmation
+Index does NOT delete on a single keystroke. Before any deletion can occur, Index prompts:
+
+```
+Are you sure you want to abandon "[codename]"?
+This permanently deletes the piece folder and all files in it.
+Type the codename to confirm, or [C] to cancel.
+```
+
+Only after the user types the exact codename does Index write `Abandon: confirmed` to status.md. Caret then reads this flag on return and deletes the piece folder, reporting:
 > "Piece [codename] abandoned — folder removed. No work was saved."
 
 The workflow ends. The user starts fresh with a new trigger.
 
 ### If no overlap is found
 Workflow continues automatically.
+
+---
+
+## Phase 11 — Archive Update Mode
+
+When Index is spawned by Caret at Phase 11 handoff, Caret writes `Mode: archive-update` to status.md before spawning. Index reads this flag as its first action and, when present, skips the overlap gate entirely — going directly to updating post-index.md with the new entry from status.md.
 
 ---
 

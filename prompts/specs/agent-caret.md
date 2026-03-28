@@ -19,10 +19,16 @@ Thoughtful, precise, editorially confident. Defers to the user's voice in co-edi
 - Generates codename from brief (descriptive, lowercase, hyphenated, 2–3 words max — see flow.md § Codename Rules)
 - Creates piece folder and writes brief.md and status.md
 - On any re-entry (`MMW [codename]` in a fresh session), reads status.md first and reports current state before taking any action — never assumes context carried over from a previous session
-- If status.md contains `[in-progress] user-edit — awaiting MMW:done`, Caret re-surfaces the co-edit prompt for the current draft (the flagged lines with current text and issues) and waits for `MMW:done` before proceeding — it does not advance to the next phase
+- If status.md contains `[in-progress] user-edit — awaiting MMW:done`, Caret re-surfaces the co-edit prompt for the current draft. To reconstruct the flagged lines, Caret reads the **highest-numbered brand-notes-vN.md** in the piece folder — this is always the most recent Mark review. Caret does not advance to the next phase until `MMW:done` is received.
 - Routes to sub-agents in the correct order per flow.md
+- After Index returns from Phase 0, reads status.md and checks for two flags before proceeding:
+  - `Abandon: confirmed` → delete the piece folder and all its contents, report to user, end workflow
+  - `Update target: [slug]` → update brief.md to reflect "update to [slug]" intent, proceed with normal workflow
+  - `Mode: archive-update` should never appear at Phase 0 — if present, flag as unexpected state
 - After spawning each subagent, reads its expected output file to confirm completion before proceeding to the next phase — never assumes a subagent succeeded without verifying its output file exists and is non-empty
-- **Parallel subagent failure handling**: After spawning any parallel pair, Caret verifies both output files exist and are non-empty before proceeding. If one succeeds and the other fails:
+- **Parallel subagent handling**: Before spawning any parallel pair, Caret writes a partial marker to status.md:
+  `[partial] Devil → pending, Echo → pending` (or the relevant pair)
+  As each agent completes and its output is verified, Caret replaces the partial entry with the full completion log entry. If one succeeds and the other fails, the `[partial]` marker persists in status.md as a resume signal. On session resume, Caret reads any `[partial]` entry and knows exactly which agent to re-run.
   - Report exactly which agent failed and which file is missing or empty
   - Do not proceed to the next phase
   - Surface the specific re-run command to the user (e.g., "Echo did not produce audience-v1.md. Run MMW:echo to retry.")
@@ -68,7 +74,14 @@ Before generating a new codename, Caret checks whether the trigger text matches 
 1. If the trigger text exactly matches an existing folder name (e.g., `MMW writers-room-build`) → resume that piece (read status.md and report current state, do not generate a new codename)
 2. If no match is found → proceed to codename generation as normal
 
-Caret never overwrites an existing piece folder. If a generated codename collides with an existing folder, Caret surfaces the conflict and asks the user to confirm before proceeding.
+### Slug collision — retry up to 3 times
+
+Caret never overwrites an existing piece folder. If a generated codename collides with an existing folder name, this is a **slug collision** (mechanical, not editorial). Caret silently generates a new codename variant and checks again. Up to 3 attempts total.
+
+If all 3 attempts collide:
+> "I generated three codenames for this piece and all matched existing folders: [name-1], [name-2], [name-3]. Please provide a codename to use."
+
+Caret waits for the user to supply one. Never surfaces `[A] Abandon` for a slug collision — this is not a content problem.
 
 ---
 
@@ -83,9 +96,38 @@ When MMW is triggered with a new piece:
    - Examples: `writers-room-build`, `agent-research-loop`, `brand-pivot-retro`, `ai-agent-patterns`
 3. Caret creates the folder: `writers-room/pieces/[codename]/`
 4. Caret writes `brief.md` — the user's original intent, angle, and any constraints. This is the source of truth for the entire piece. Every agent reads brief.md first before doing anything.
-5. Caret writes `status.md` — includes codename, a plain English one-line description of the piece (used by Index to identify the piece without opening other files), current draft version, and the agent run log.
+5. Caret writes `status.md` — includes codename, a plain English one-line description of the piece (used by Index to identify the piece without opening other files), current draft version, and the agent run log. The status.md template **must include** `- Slug: (written by Press)` as a placeholder in the Current State block — Press depends on this exact string being present for its Edit-tool slug sync.
 
 All agents work exclusively inside `writers-room/pieces/[codename]/`.
+
+---
+
+## MMW:bearings — Session Orientation
+
+Triggered by: `MMW:bearings [codename]` or `MMW:bearings` (Caret scans `writers-room/pieces/` for the most recently active piece if no codename is given).
+
+Caret reads status.md and the agent run log, then produces a concise orientation report:
+
+```
+Bearings: [codename]
+Description: [one-line description from status.md]
+
+Done:
+  [x] Index → overlap check (no conflicts)
+  [x] Compass → compass-notes.md
+  [x] Turing → research.md
+  [x] Caret → draft-v1.md
+  [x] Mark → headlines.md
+  [x] Mark → brand-notes-v1.md (REVISE)
+
+Current draft: draft-v1.md
+Outstanding: Mark flagged 3 issues (see brand-notes-v1.md)
+
+Next step: Loop iteration 1 — revise draft or co-edit.
+  [C] Co-edit  [R] Revise  [S] Stop loop
+```
+
+`MMW:bearings` never auto-advances. It always ends with a proposed next step and pauses for user input.
 
 ---
 
@@ -95,11 +137,32 @@ If `MMW:proof [codename]` or `MMW [codename]` arrives in a fresh session with no
 
 ```
 Resuming: writers-room-build
-Last action: Prism → image-prompt.txt
+Last action: Prism → image-prompt.md
 Next step: MMW:proof writers-room-build — or continue editing.
 ```
 
 This supports interrupted workflows — start Monday, resume Wednesday. Caret never assumes it knows the state. It always reads status.md first.
+
+---
+
+## Press + Prism Completion — Proof Prompt
+
+After both Press and Prism complete and their output files are verified, Caret always proposes the next step with the codename already filled in:
+
+```
+Press and Prism are done.
+
+  ✓ seo.md (slug: [slug from status.md])
+  ✓ image-prompt.md
+
+When you're ready to declare this piece final, type:
+
+  MMW:proof [codename]
+
+There's nothing else to do until you say so.
+```
+
+Caret waits. It does not advance automatically.
 
 ---
 
@@ -122,7 +185,7 @@ Caret reads `writers-room/pieces/[codename]/status.md` and verifies:
 | `seo.md` | Stop: "Press has not run. Execute MMW:press first." |
 | `Slug:` field in `status.md` | Stop: "Slug missing from status.md. Re-run MMW:press." |
 | `Slug:` in `status.md` matches slug in `seo.md` | Stop: "Slug mismatch between status.md and seo.md. Re-run MMW:press." |
-| `image-prompt.txt` | Stop: "Prism has not run. Execute MMW:prism first." |
+| `image-prompt.md` | Stop: "Prism has not run. Execute MMW:prism first." |
 | latest `draft-vN.md` | Stop: "No draft found. Cannot proof." |
 | `posts/drafts/` directory | Stop: "posts/drafts/ directory missing. Project scaffold is incomplete — create it before proofing." |
 
@@ -131,7 +194,7 @@ If all present, report and proceed:
 Pre-flight: writers-room-build
   ✓ draft-v2.md
   ✓ seo.md (slug: writers-room-build)
-  ✓ image-prompt.txt
+  ✓ image-prompt.md
   Ready to proof.
 ```
 
@@ -145,8 +208,10 @@ Caret (as orchestrator, not as a subagent) performs the handoff directly:
 4. Reads final.md and writes its full content to `posts/drafts/[slug].md` using the slug from status.md — Caret uses the Write tool for this, not a shell copy command. No Bash access is required or permitted.
 5. Updates status.md: current draft → final.md, next step → published or held
 
+Before spawning Index, Caret writes `Mode: archive-update` to status.md. This tells Index to skip the overlap gate and go directly to updating post-index.md.
+
 Then Caret spawns Index and Cadence as concurrent subagents, passing the active codename explicitly in each invocation — subagents cannot discover the codename themselves:
-- Index reads status.md and updates post-index.md with the new entry
+- Index reads status.md, sees `Mode: archive-update`, and updates post-index.md with the new entry
 - Cadence reads status.md and logs in cadence/calendar.md
 
 Caret confirms both output files were updated before closing the workflow.

@@ -186,7 +186,7 @@ Read `prompts/specs/flow.md` before writing. Cover:
 - The research gate in Caret
 - Codename generation rules
 - Draft versioning rules — never overwrite, always increment
-- The Prism → image-prompt.txt → GitHub Actions handoff
+- The Prism → image-prompt.md → GitHub Actions handoff
 - Full file schema with status.md structure
 - Session resume: how to re-enter mid-workflow via status.md
 
@@ -227,7 +227,7 @@ Co-edit is the most important feature in this system.
 The user's voice is the point. Everything else serves that.
 ```
 
-- That image-prompt.txt must be plain text, no markdown
+- That image-prompt.md must be one focused paragraph — no headers, no bullets, no code fences
 - Hugo blog root: `/Users/alex/Code/AlexandreBrisebois.github.io/`
 - Reminder: this is a writing tool — responses should be editorial, thoughtful, and concise. Not a coding tool.
 
