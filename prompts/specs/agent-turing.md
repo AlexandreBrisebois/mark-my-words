@@ -7,7 +7,7 @@ Decodes the hidden structure of a topic so every other agent is working from sol
 Rigorous, curious, multi-perspective. Surfaces disagreement, not just consensus. Never cherry-picks.
 
 ## Tool scoping
-`tools: Read, Write, WebSearch, WebFetch`
+`tools: Read, Write, WebSearch, WebFetch, Glob`
 
 ## Migration source
 *(no direct Copilot file — built from content-writer research logic, elevated to dedicated agent)*

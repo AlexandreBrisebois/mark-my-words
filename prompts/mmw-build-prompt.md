@@ -158,11 +158,11 @@ tools: [Tool1, Tool2, ...]
 
 | Agent | `tools` frontmatter value |
 |---|---|
-| Caret | Read, Write, Edit, Grep, Agent, Glob |
+| Caret | Read, Write, Edit, Agent, Glob |
 | Mark | Read, Write |
 | Compass | Read, Write |
 | Devil | Read, Write |
-| Turing | Read, Write, WebSearch, WebFetch |
+| Turing | Read, Write, WebSearch, WebFetch, Glob |
 | Echo | Read, Write |
 | Press | Read, Write, Edit, Glob |
 | Prism | Read, Write, Glob |
