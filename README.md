@@ -4,6 +4,15 @@ Mark My Words (MMW) is a multi-agent writing system built on Claude Code. It orc
 
 ## How to use
 
+### Before the first draft
+
+Before anything else, Index checks your archive for overlapping topics and produces a short report. You'll see four options:
+
+- **[U] Update** — improve an existing post instead of writing a new one
+- **[D] Differentiate** — continue but sharpen the angle so it doesn't duplicate
+- **[P] Proceed** — no meaningful overlap, carry on
+- **[A] Abandon** — discard this piece (you'll be asked to type the codename to confirm)
+
 ### Start a new piece
 
 Tell Caret what you want to write:
@@ -24,6 +33,12 @@ The workflow pauses at every decision point. After Mark reviews the first draft 
 
 Your voice always takes precedence. If you edited a line, Caret won't silently rewrite it.
 
+If Mark flags a structural issue that can't be fixed by revision alone, you'll see a **HOLD** instead. The loop exits immediately with three options:
+
+- **[B] Revisit brief** — rethink scope before continuing
+- **[C] Co-edit** — take manual control of the draft
+- **[S] Proceed anyway** — continue to critique with the draft as-is
+
 ### Critique and publish prep
 
 After the draft clears the Mark loop, Devil and Echo run in parallel — Devil audits for unsupported claims, Echo checks audience fit. Caret consolidates their feedback and pauses again so you can revise or proceed.
@@ -38,7 +53,7 @@ When you're happy with the draft:
 MMW:proof [codename]
 ```
 
-Caret runs a pre-flight check (draft, SEO, slug, image prompt all present), writes `final.md`, copies it to `posts/drafts/[slug].md`, and archives the piece.
+Caret runs a pre-flight check (draft, SEO, slug, image prompt all present), writes `final.md`, copies it to `writers-room/published/[slug].md`, and archives the piece.
 
 ### Resume anytime
 
@@ -48,7 +63,7 @@ Sessions can be interrupted and resumed. Pick up where you left off:
 MMW:bearings [codename]
 ```
 
-Caret reads `status.md`, reports what's done, and proposes the next step.
+Caret reads `status.md`, reports what's done, and proposes the next step — but never advances automatically. You give the instruction.
 
 ## How to run the build
 

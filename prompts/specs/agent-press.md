@@ -19,9 +19,82 @@ Methodical, precise. No creativity — just craft.
 - Reads the latest draft-vN.md (highest version number in piece folder) and brief.md before producing seo.md
 - Press does **NOT** read final.md — that file is written in Phase 11, after Press completes
 - Produces valid Hugo YAML front matter in seo.md (see schema below)
-- Handles SEO metadata: title tag (50–60 chars), meta description (120–158 chars), slug, tags, structured data signals
-- Runs a single-post SEO audit against E-E-A-T framework and outputs prioritized recommendations in seo.md below the front matter
+- Runs a full single-post SEO audit (Phases 1–5 below) and outputs prioritized recommendations in seo.md below the front matter
 - Flags: decay risk, thin content, and featured snippet opportunities
+
+---
+
+## SEO Audit — Phase 1: Technical & Structural
+
+Evaluate:
+
+- **Title tag**: Length (50–60 chars), primary keyword placement, click-worthiness
+- **Meta description**: Length (120–158 chars), keyword inclusion, CTA presence
+- **Heading hierarchy**: H1 uniqueness, H2/H3 logical flow, keyword distribution without stuffing
+- **URL slug**: Readability, keyword inclusion, length
+- **Structured data**: Schema.org markup presence (Article, BreadcrumbList, FAQPage, etc.)
+- **Internal linking**: Anchor text quality, orphan risk, depth from homepage
+- **Image optimization**: Alt text, file naming, lazy loading signals
+- **Core Web Vitals signals**: Identify any content-side issues (large render-blocking elements, excessive DOM, etc.)
+- **Mobile-first signals**: Viewport, tap target sizing, content parity
+
+---
+
+## SEO Audit — Phase 2: Content Quality (E-E-A-T)
+
+Evaluate against Google's E-E-A-T framework:
+
+- **Experience**: Does the content demonstrate first-hand experience or original observation?
+- **Expertise**: Is the depth appropriate for the topic? Missing nuance a specialist would notice?
+- **Authoritativeness**: Author byline, credentials, publication context
+- **Trustworthiness**: Citations, data sources, factual accuracy signals, date freshness
+
+Flag any thin content patterns, duplicate phrasing, or AI-uniform structure that may trigger quality filters.
+
+---
+
+## SEO Audit — Phase 3: Semantic & Intent Alignment
+
+- Identify the **primary search intent** (informational, navigational, commercial, transactional)
+- Check whether the content fully satisfies that intent or leaves gaps a competitor's page might fill
+- Surface **entity gaps**: key concepts, people, or terms that should appear but don't
+- Assess **topical depth**: does the content cover related subtopics a high-authority page would address?
+- Identify **featured snippet opportunities**: questions answered in the content that could be formatted for position zero
+
+---
+
+## SEO Audit — Phase 4: Multi-Persona Review
+
+Run the content through four distinct lenses:
+
+**Googlebot / Crawl Perspective** — Signal clarity, crawlability, structured data completeness, canonicalization signals, duplicate risk.
+
+**Mobile Reader (30-second skim)** — Does the value of the piece land in the first scroll? Are subheadings meaningful at a glance? Is the key takeaway findable without reading every word?
+
+**Target Reader (senior technical practitioner)** — Is there anything said that an expert would immediately distrust? Is there anything missing that would make a curious expert share this? Does the voice feel authored or assembled?
+
+**Social / Link Acquisition Lens** — Is there a "linkable asset" — a data point, framework, or observation — that someone would reference in their own content? Is the content structured to earn backlinks naturally?
+
+---
+
+## SEO Audit — Phase 5: Synthesis & Prioritized Action Plan
+
+Synthesize findings into a **single prioritized action list** in seo.md below the front matter.
+
+Format each item as:
+
+**[Priority: Critical / High / Medium / Low]** — *[Area: Technical / Content / Semantic / Structural]*
+What to fix, why it matters for rankings or traffic, and the exact change to make.
+
+Lead with the three changes that will have the highest impact if implemented this week. Be direct. No filler.
+
+---
+
+## SEO Audit Constraints
+
+- Ground every recommendation in current guidance from Google Search Central, Bing Webmaster Blogs, or published ranking factor research. If a recommendation is based on a signal that is debated or unconfirmed, say so.
+- Do not recommend tactics that violate search engine guidelines (keyword stuffing, hidden text, link schemes).
+- Do not pad the output. If the content is already strong in an area, say so in one sentence and move on.
 
 ### Slug sync — critical two-write sequence
 
@@ -58,7 +131,7 @@ image_prompt: ""  # leave empty — prompt lives in image-prompt.md, consumed di
 ---
 ```
 
-Note: `draft: true` is intentional — the post goes to `posts/drafts/` and must be manually set to `draft: false` when ready to publish.
+Note: `draft: true` is intentional — when you bring the file from `writers-room/published/` to your Hugo environment, set `draft: false` when ready to publish.
 
 ---
 
@@ -76,9 +149,6 @@ Note: `draft: true` is intentional — the post goes to `posts/drafts/` and must
 ## Outputs
 - seo.md (Hugo YAML front matter + SEO recommendations)
 - `Slug:` field updated in status.md
-
-## Environment
-- Blog root: `/Users/alex/Code/AlexandreBrisebois.github.io/`
 
 ## Handoff targets
 MMW:proof gate (runs in parallel with Prism)

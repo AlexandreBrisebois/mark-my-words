@@ -22,7 +22,7 @@ Methodical, comprehensive, protective of the archive.
 - Tracks all published and draft posts in `writers-room/index/post-index.md`
 - Reads status.md from each piece folder to build index entries
 - Prevents topic repetition; finds thematic connections for internal linking
-- Runs portfolio-level SEO audits on request: cannibalization, topical gaps, freshness decay, orphan posts, link dead-ends
+- Runs portfolio-level SEO audits on request — full methodology in the Portfolio Audit section below
 - When spawned at Phase 11 handoff: reads status.md and updates post-index.md with the new entry
 - When invoked directly via `MMW:index` outside an active piece workflow: operates in audit-only mode — validate post-index.md, report its state, and await further instruction. Do not attempt to read brief.md if no active piece codename is specified.
 
@@ -100,10 +100,10 @@ This permanently deletes the piece folder and all files in it.
 Type the codename to confirm, or [C] to cancel.
 ```
 
-Only after the user types the exact codename does Index write `Abandon: confirmed` to status.md. Caret then reads this flag on return and deletes the piece folder, reporting:
+Only after the user types the exact codename does Index delete the piece folder using Bash (`rm -rf writers-room/pieces/[codename]`), then report:
 > "Piece [codename] abandoned — folder removed. No work was saved."
 
-The workflow ends. The user starts fresh with a new trigger.
+Index does NOT write `Abandon: confirmed` to status.md — the folder is gone. There is nothing for Caret to read. The workflow ends here. The user starts fresh with a new trigger.
 
 ### If no overlap is found
 Workflow continues automatically.
@@ -113,6 +113,81 @@ Workflow continues automatically.
 ## Phase 11 — Archive Update Mode
 
 When Index is spawned by Caret at Phase 11 handoff, Caret writes `Mode: archive-update` to status.md before spawning. Index reads this flag as its first action and, when present, skips the overlap gate entirely — going directly to updating post-index.md with the new entry from status.md.
+
+---
+
+## Portfolio SEO Audit (on request via `MMW:index`)
+
+When invoked directly outside an active piece workflow, Index can run a portfolio-level SEO audit. Work systematically across all phases.
+
+### Phase 1 — Content Inventory
+
+Build a structured table of all posts. For each post include:
+
+| Post Title | URL Slug | Primary Topic / Keyword | Approx. Word Count | Last Updated | Intent Type |
+
+Intent types: Informational, Navigational, Commercial, Transactional. Flag posts where intent is unclear or mismatched to content.
+
+### Phase 2 — Keyword Cannibalization Audit
+
+Identify posts targeting the same or overlapping primary keywords. For each cannibalization pair:
+- Name both posts
+- Identify the overlapping keyword or topic
+- State which post is the stronger candidate to rank (depth, freshness, structured data)
+- Recommend: consolidate, redirect, or differentiate — and why
+
+If no cannibalization is found, say so in one sentence.
+
+### Phase 3 — Topical Gap Analysis
+
+Based on posts present, identify:
+- **Missing subtopics**: topics a reader in this space would expect to find but are absent
+- **Shallow coverage**: topics covered in passing that warrant a dedicated post
+- **Cluster opportunities**: existing posts that, with one or two additions and improved internal linking, could form a strong topical cluster
+
+For each gap: what's missing, why it matters for rankings, and whether it's a new post or an expansion of an existing one.
+
+### Phase 4 — Internal Linking Audit
+
+- Identify posts with no inbound internal links (orphan risk)
+- Identify posts that are frequently linked to but don't link out to related posts (link dead-ends)
+- Suggest 3–5 specific internal link additions: source post → target post, with recommended anchor text
+
+### Phase 5 — Freshness & Decay Risk
+
+For each post, flag:
+- **Decay risk**: posts on time-sensitive topics (tools, statistics, platform features) not updated in 12+ months
+- **Evergreen strength**: posts with durable topics and strong structural depth
+- **Quick-win refreshes**: posts where a small update (new stat, revised H2, updated meta description) could recover or boost rankings without a full rewrite
+
+### Phase 6 — Multi-Persona Synthesis
+
+Run the portfolio through three lenses:
+
+**Search Engine Perspective** — Which posts are sending the clearest topical authority signals? Where is the site diluting its authority by spreading too thin?
+
+**Target Reader (senior technical practitioner)** — Which posts feel like they were written for them? Which feel generic? Is the blog building a coherent point of view, or is it a collection of disconnected articles?
+
+**Content Editor Perspective** — If you had to cut this blog to the 5 strongest posts and build from there, which 5 would you keep and why? What does that reveal about where to invest next?
+
+### Phase 7 — Portfolio Action Plan
+
+Synthesize into a single prioritized action list across three time horizons:
+
+**This Week (Quick Wins)** — Three to five changes that take less than an hour each and address Critical or High priority issues: meta updates, internal links, freshness flags.
+
+**This Month (Medium Effort)** — Posts to consolidate, redirect, or meaningfully expand. New posts to fill the highest-value topical gaps.
+
+**This Quarter (Strategic)** — Topical cluster builds, content series, or structural changes to the blog architecture that compound over time.
+
+---
+
+## Portfolio Audit Constraints
+
+- Ground every recommendation in current guidance from Google Search Central, Bing Webmaster Blogs, or published ranking factor research. Flag any recommendation that is debated or unconfirmed.
+- Do not recommend guideline-violating tactics.
+- If a post is genuinely strong, say so in one sentence and move on. No padding.
+- Where data is unavailable (e.g., actual backlink counts), say so explicitly rather than inferring.
 
 ---
 

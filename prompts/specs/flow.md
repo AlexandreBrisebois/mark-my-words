@@ -77,7 +77,7 @@ Phase 9+10 — Press ║ Prism  [run in parallel]
    ↑ Caret proposes this exact command (with codename filled in)
      after Press + Prism both complete. Does not advance automatically.
    ↓
-Phase 11 — Handoff: final.md → posts/drafts/[slug].md
+Phase 11 — Handoff: final.md → writers-room/published/[slug].md
            Index ║ Cadence  [run in parallel]
            Index:   updates post-index.md
            Cadence: logs in calendar.md
@@ -402,40 +402,4 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 
 ---
 
-## Success Criteria
-
-When done, the following session must work end to end:
-
-1. User types: `MMW write a post about building this writer's room`
-2. Index validates post-index.md — reports N entries found
-3. Index checks brief against post-index.md — no overlap found
-4. Caret generates codename `writers-room-build`, creates folder, writes brief.md and status.md with plain English description
-5. Compass reads brief.md → produces compass-notes.md with strategic direction and research priorities for Turing
-6. Turing reads compass-notes.md → produces focused research.md
-7. Turing surfaces 3 deep-dive candidates — user picks one (or steers with a prompt) → Turing appends deeper findings to research.md
-8. Caret checks: research.md exists and is non-empty [GATE PASSED]
-9. Caret reads brief.md, compass-notes.md, research.md → produces draft-v1.md
-10. Mark reads draft-v1.md → produces headlines.md
-11. Mark reviews draft-v1.md → brand-notes-v1.md [REVISE]
-12. Loop pauses — user sees outstanding issues and options
-13. User chooses [C] co-edit
-14. Caret surfaces the exact flagged lines with current text and issue
-15. User edits draft-v1.md directly
-16. User types: MMW:done
-17. Caret reads user-edited file → produces draft-v2.md
-18. Caret reports exactly what it changed beyond the user's edits
-19. Mark reviews draft-v2.md → brand-notes-v2.md [PASS]
-20. Loop exits — brief intent met
-21. Devil ║ Echo run in parallel:
-    - Devil reads brief.md, research.md, draft-v2.md → critique-v2.md
-    - Echo reads brief.md, draft-v2.md → audience-v2.md
-22. User revision window — user edits or proceeds
-23. Press ║ Prism run in parallel:
-    - Press reads latest draft-vN.md → seo.md with valid Hugo YAML front matter + writes slug to status.md
-    - Prism reads latest draft-vN.md → image-prompt.md as one focused paragraph
-24. User types: `MMW:proof writers-room-build`
-25. Pre-flight check passes — draft, seo.md, slug, image-prompt.md all present
-26. final.md written and copied to `posts/drafts/writers-room-build.md`
-27. Index ║ Cadence run in parallel:
-    - Index updates post-index.md with new entry
-    - Cadence logs codename, description, and target publish date in calendar.md
+*Success criteria live in `prompts/mmw-build-prompt.md` § Validation — build-time only, not needed at runtime.*

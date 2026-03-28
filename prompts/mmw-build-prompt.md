@@ -26,36 +26,6 @@
 
 ---
 
-## Context
-
-I am an AI Enthusiast building and documenting this system publicly as
-part of my blog. My goal is to learn about AI, leveraging AI, building
-AI agents, writing about the learning process, and sharing honest
-retrospectives in public.
-
-The blog lives at https://alexandrebrisebois.github.io/ and is built
-with Hugo on GitHub Pages.
-Blog root: `/Users/alex/Code/AlexandreBrisebois.github.io/`
-
-My existing GitHub Copilot prompts are at:
-`/Users/alex/Library/Application Support/Code/User/prompts/`
-
-**Migrate the following files into the new agent system.** Preserve all
-logic. Update all brand references from multi-cloud/srvrlss.dev to
-AI Enthusiast framing:
-
-| Source File | Migrates To |
-|---|---|
-| `brand-voice.instructions.md` | Mark |
-| `brand-strategy.prompt.md` | Compass |
-| `content-writer.prompt.md` | Caret |
-| `accusation-audit.prompt.md` | Devil |
-| `seo-audit.prompt.md` | Press |
-| `seo-blog-audit.prompt.md` | Index |
-| `visual-brand-validator-dual-mode.prompt.md` | Prism |
-
----
-
 ## Spec Files
 
 All build specs live in `prompts/specs/`. Read the relevant spec before
@@ -93,9 +63,7 @@ Create `task.md` first. Then create this full directory structure:
     ├── brand/
     │   └── guidelines.md
     ├── pieces/                ← all active and completed piece folders
-    ├── posts/
-    │   ├── drafts/
-    │   └── published/
+    ├── published/             ← final drafts ready to bring to any publishing environment
     ├── research/
     │   └── notes.md
     ├── index/
@@ -162,12 +130,12 @@ tools: [Tool1, Tool2, ...]
 | Mark | Read, Write |
 | Compass | Read, Write |
 | Devil | Read, Write |
-| Turing | Read, Write, WebSearch, WebFetch, Glob |
+| Turing | Read, Write, WebSearch, WebFetch, Glob, Bash |
 | Echo | Read, Write |
-| Press | Read, Write, Edit, Glob |
+| Press | Read, Write, Edit, Glob, Bash |
 | Prism | Read, Write, Glob |
-| Index | Read, Write, Glob |
-| Cadence | Read, Write |
+| Index | Read, Write, Glob, Bash |
+| Cadence | Read, Write, Bash |
 
 Tool scoping is enforced by Claude Code via the frontmatter — not by prose
 instructions inside the file body. Do not rely on written instructions alone
@@ -228,7 +196,8 @@ The user's voice is the point. Everything else serves that.
 ```
 
 - That image-prompt.md must be one focused paragraph — no headers, no bullets, no code fences
-- Hugo blog root: `/Users/alex/Code/AlexandreBrisebois.github.io/`
+- Final drafts land in `writers-room/published/[slug].md` — bring them to your publishing environment manually. MMW does not write outside its own directory.
+- Parallel agent recovery: if you return to a session and status.md shows `[partial]` with no recent activity, the agent likely timed out. Use the relevant `MMW:agent` shortcut to retry the missing agent. Example: `[partial] Echo → pending` means `MMW:echo` to retry.
 - Reminder: this is a writing tool — responses should be editorial, thoughtful, and concise. Not a coding tool.
 
 ---
@@ -279,4 +248,38 @@ Turing reads `research/notes.md` at the start of every research pass.
 
 ## Validation
 
-When the build is complete, verify the success criteria in `prompts/specs/flow.md` § Success Criteria can be traced through the built artifacts. Do not run a live session — just confirm all required files exist and that the agent files contain the logic needed to execute each step.
+When the build is complete, verify the following success criteria can be traced through the built artifacts. Do not run a live session — just confirm all required files exist and that the agent files contain the logic needed to execute each step.
+
+1. User types: `MMW write a post about building this writer's room`
+2. Index validates post-index.md — reports N entries found
+3. Index checks brief against post-index.md — no overlap found
+4. Caret generates codename `writers-room-build`, creates folder, writes brief.md and status.md with plain English description
+5. Compass reads brief.md → produces compass-notes.md with strategic direction and research priorities for Turing
+6. Turing reads compass-notes.md → produces focused research.md
+7. Turing surfaces 3 deep-dive candidates — user picks one (or steers with a prompt) → Turing appends deeper findings to research.md
+8. Caret checks: research.md exists and is non-empty [GATE PASSED]
+9. Caret reads brief.md, compass-notes.md, research.md → produces draft-v1.md
+10. Mark reads draft-v1.md → produces headlines.md
+11. Mark reviews draft-v1.md → brand-notes-v1.md [REVISE]
+12. Loop pauses — user sees outstanding issues and options
+13. User chooses [C] co-edit
+14. Caret surfaces the exact flagged lines with current text and issue
+15. User edits draft-v1.md directly
+16. User types: MMW:done
+17. Caret reads user-edited file → produces draft-v2.md
+18. Caret reports exactly what it changed beyond the user's edits
+19. Mark reviews draft-v2.md → brand-notes-v2.md [PASS]
+20. Loop exits — brief intent met
+21. Devil ║ Echo run in parallel:
+    - Devil reads brief.md, research.md, draft-v2.md → critique-v2.md
+    - Echo reads brief.md, draft-v2.md → audience-v2.md
+22. User revision window — user edits or proceeds
+23. Press ║ Prism run in parallel:
+    - Press reads latest draft-vN.md → seo.md with valid Hugo YAML front matter + writes slug to status.md
+    - Prism reads latest draft-vN.md → image-prompt.md as one focused paragraph
+24. User types: `MMW:proof writers-room-build`
+25. Pre-flight check passes — draft, seo.md, slug, image-prompt.md all present
+26. final.md written and copied to `writers-room/published/writers-room-build.md`
+27. Index ║ Cadence run in parallel:
+    - Index updates post-index.md with new entry
+    - Cadence logs codename, description, and target publish date in calendar.md
