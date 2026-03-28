@@ -10,7 +10,7 @@
 > **task.md format** — use this structure exactly so a resumed session can parse it:
 > ```
 > ## Build Progress
-> - [ ] Step A — Scaffold + Seed files (Steps A and F complete together)
+> - [ ] Step A — Scaffold + Seed files (Steps A and F complete together — do NOT mark [x] until seed files in Step F are written)
 > - [ ] Step B — Agent files
 > - [ ] Step C — ARCHITECTURE.md
 > - [ ] Step D — CLAUDE.md
@@ -64,7 +64,7 @@ building each artifact. Do not rely on memory of a previously read spec.
 
 ### Step A — Project Scaffold
 
-Create `task.md` first. Then create this full directory structure:
+Create `writers-room/task.md` first. Then create this full directory structure:
 
 ```
 /Users/alex/Code/mark-my-words/
