@@ -4,6 +4,18 @@ Mark My Words (MMW) is a multi-agent writing system built on Claude Code. It orc
 
 ## How to use
 
+### Start a new piece
+
+Trigger Caret with any of these:
+
+```
+MMW write a post about building this writer's room
+Mark My Words write a post about building this writer's room
+mmw write a post about building this writer's room
+```
+
+Caret generates a codename, creates a piece folder, and writes `brief.md` from your intent. From there it runs the full workflow — Index checks your archive first, then Compass sets strategy, Turing researches, Caret drafts, and Mark reviews voice and headlines.
+
 ### Before the first draft
 
 Before anything else, Index checks your archive for overlapping topics and produces a short report. You'll see four options:
@@ -13,16 +25,6 @@ Before anything else, Index checks your archive for overlapping topics and produ
 - **[P] Proceed** — no meaningful overlap, carry on
 - **[A] Abandon** — discard this piece (you'll be asked to type the codename to confirm)
 
-### Start a new piece
-
-Tell Caret what you want to write:
-
-```
-MMW write a post about building this writer's room
-```
-
-Caret generates a codename, creates a piece folder, and writes `brief.md` from your intent. From there it runs the full workflow automatically — Compass sets strategy, Turing researches, Caret drafts, Mark reviews the voice and headlines.
-
 ### Stay in the loop
 
 The workflow pauses at every decision point. After Mark reviews the first draft you'll see the flagged issues and three options:
@@ -31,7 +33,7 @@ The workflow pauses at every decision point. After Mark reviews the first draft 
 - **[R] Revise** — Caret revises based on Mark's notes without your direct edits
 - **[N] Move to critique** — exit the loop and send the current draft to Devil and Echo
 
-Your voice always takes precedence. If you edited a line, Caret won't silently rewrite it.
+Your voice always takes precedence. If you edited a line, Caret won't silently rewrite it. There is no iteration cap — you decide when to move on.
 
 If Mark flags a structural issue that can't be fixed by revision alone, you'll see a **HOLD** instead. The loop exits immediately with three options:
 
@@ -43,7 +45,7 @@ If Mark flags a structural issue that can't be fixed by revision alone, you'll s
 
 After the draft clears the Mark loop, Devil and Echo run in parallel — Devil audits for unsupported claims, Echo checks audience fit. Caret consolidates their feedback and pauses again so you can revise or proceed.
 
-If you made edits during that revision window, Mark runs a one-pass brand re-alignment check on the updated draft. You'll see a PASS, a REVISE with specific fixes offered, or a HOLD for structural issues. After any fix pass you can choose **[L] Back to creative mode** to keep working with Mark, or **[P] Proceed** to move on.
+If you made edits during that revision window, Mark runs a one-pass brand re-alignment check on the updated draft (Phase 8.5 — conditional, only triggered if Phase 8 changed the draft).
 
 Press and Prism then run in parallel: Press writes the Hugo front matter and SEO notes, Prism produces the image prompt.
 
@@ -65,7 +67,24 @@ Sessions can be interrupted and resumed. Pick up where you left off:
 MMW:bearings [codename]
 ```
 
-Caret reads `status.md`, reports what's done, and proposes the next step — but never advances automatically. You give the instruction.
+Caret reads `status.md`, reports what's done, what's outstanding, and proposes the next step — but never advances automatically. You give the instruction. This runs inline; there is no separate bearings agent.
+
+## Sub-agent shortcuts
+
+Each shortcut bypasses Caret and goes directly to the named agent:
+
+| Shortcut | Agent | What it does |
+|---|---|---|
+| `MMW:turing [codename]` | Turing | Research pass on the active piece |
+| `MMW:devil [codename]` | Devil | Accusation audit on the latest draft |
+| `MMW:echo [codename]` | Echo | Audience check on the latest draft |
+| `MMW:press [codename]` | Press | SEO audit + Hugo front matter for the latest draft |
+| `MMW:prism [codename]` | Prism | Image prompt for the latest draft |
+| `MMW:compass [codename]` | Compass | Strategic direction (or next post ideas if no codename) |
+| `MMW:mark [codename]` | Mark | Brand review on the latest draft |
+| `MMW:cadence` | Cadence | Editorial calendar state and cadence suggestions |
+| `MMW:index [codename]` | Index | Overlap check (or portfolio SEO audit if no codename) |
+| `MMW:bearings [codename]` | Caret inline | Session orientation — handled inline by Caret |
 
 ## How to run the build
 
