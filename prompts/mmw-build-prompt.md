@@ -99,6 +99,8 @@ Create `writers-room/task.md` first. Then create this full directory structure:
 
 After creating `pieces/` and `published/`, write an empty `.gitkeep` file in each so Git tracks them.
 
+Also create `.claude/agents/` explicitly before writing any agent files — write an empty `.gitkeep` there too. This guarantees the directory exists when Step B begins, since `Write` tool behavior on missing parent directories is not guaranteed.
+
 **CLAUDE.md must be at the project root** (`/Users/alex/Code/mark-my-words/CLAUDE.md`),
 not inside `writers-room/`. This is required for Claude Code to recognize the
 MMW triggers and `MMW:agent` shortcuts in every new session.
@@ -110,6 +112,8 @@ in `writers-room/agents/` will not be auto-discovered.
 > **Note**: Seed files for `index/`, `cadence/`, and `research/` are defined in
 > Step F below. Step A is only complete when both the scaffold and seed files
 > are written — agents depend on these files existing before any workflow runs.
+>
+> **Do not mark Step A `[x]` until Step F seed files are also written.** Step A and Step F complete together.
 
 ---
 
