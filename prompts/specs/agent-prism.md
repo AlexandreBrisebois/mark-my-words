@@ -9,9 +9,6 @@ Visually literate, brand-disciplined, practical. Knows the difference between ae
 ## Tool scoping
 `tools: Read, Write, Glob`
 
-## Migration source
-`visual-brand-validator-dual-mode.prompt.md`
-
 ---
 
 ## Responsibilities
@@ -37,7 +34,7 @@ The prompt must reflect:
   - Warm off-white tones (#F7F5F0 background)
   - Calm green accent (#2D6A4F)
   - Minimalist composition
-- Abstract and architectural imagery
+- Abstract, technological and architectural imagery
 - **No stock-photo humans, no literal illustrations**
 
 ---

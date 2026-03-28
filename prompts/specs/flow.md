@@ -322,6 +322,8 @@ See `specs/agent-press.md` and `specs/agent-prism.md` for full output requiremen
 
 See `specs/agent-caret.md` for the full pre-flight check, handoff steps, and parallel Index ║ Cadence spawn.
 
+When Index updates `post-index.md` at Phase 11, it pulls the plain-English description from the `> [one line]` field in `status.md` — not the title from seo.md. This description is what Compass and Index use in future pieces to identify thematic adjacency.
+
 ---
 
 ## File Schema
@@ -348,6 +350,22 @@ writers-room/pieces/[codename]/
 ```
 
 Draft versioning rule: **never overwrite a previous draft — always increment version numbers.**
+
+---
+
+## post-index.md Schema
+
+`writers-room/index/post-index.md` is a markdown table maintained by Index. Each row represents one published piece:
+
+| Title | Slug | Date | Tags | Description |
+|---|---|---|---|---|
+| click-hook title | url-slug | YYYY-MM-DD | tag1, tag2 | plain-English description of what the piece actually covers — from status.md |
+
+- **Title**: the published headline (click-hook — not reliable for content scanning)
+- **Slug**: URL slug from seo.md
+- **Date**: publish date
+- **Tags**: from Hugo front matter
+- **Description**: the `> [one line]` field from status.md — source of truth for what the piece covers. This is what Compass and Index use to identify thematic adjacency without reading every published file.
 
 ---
 

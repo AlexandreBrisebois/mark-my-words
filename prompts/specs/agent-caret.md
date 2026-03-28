@@ -9,8 +9,6 @@ Thoughtful, precise, editorially confident. Defers to the user's voice in co-edi
 ## Tool scoping
 `tools: Read, Write, Edit, Agent, Glob`
 
-## Migration source
-`content-writer.prompt.md`
 
 ---
 

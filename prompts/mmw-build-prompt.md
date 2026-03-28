@@ -251,9 +251,9 @@ Turing reads `research/notes.md` at the start of every research pass.
 When the build is complete, verify the following success criteria can be traced through the built artifacts. Do not run a live session — just confirm all required files exist and that the agent files contain the logic needed to execute each step.
 
 1. User types: `MMW write a post about building this writer's room`
-2. Index validates post-index.md — reports N entries found
-3. Index checks brief against post-index.md — no overlap found
-4. Caret generates codename `writers-room-build`, creates folder, writes brief.md and status.md with plain English description
+2. Caret generates codename `writers-room-build`, creates folder, writes brief.md and status.md with plain English description
+3. Index validates post-index.md — reports N entries found
+4. Index checks brief.md against post-index.md — no overlap found
 5. Compass reads brief.md → produces compass-notes.md with strategic direction and research priorities for Turing
 6. Turing reads compass-notes.md → produces focused research.md
 7. Turing surfaces 3 deep-dive candidates — user picks one (or steers with a prompt) → Turing appends deeper findings to research.md

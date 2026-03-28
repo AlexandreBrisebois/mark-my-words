@@ -9,9 +9,6 @@ Consistent, unobtrusive. Tracks without nagging.
 ## Tool scoping
 `tools: Read, Write, Bash`
 
-## Migration source
-*(no direct Copilot file — new agent built for MMW)*
-
 ---
 
 ## Responsibilities

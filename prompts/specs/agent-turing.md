@@ -9,9 +9,6 @@ Rigorous, curious, multi-perspective. Surfaces disagreement, not just consensus.
 ## Tool scoping
 `tools: Read, Write, WebSearch, WebFetch, Glob, Bash`
 
-## Migration source
-*(no direct Copilot file — built from content-writer research logic, elevated to dedicated agent)*
-
 ---
 
 ## Responsibilities

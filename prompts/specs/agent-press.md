@@ -9,9 +9,6 @@ Methodical, precise. No creativity — just craft.
 ## Tool scoping
 `tools: Read, Write, Edit, Glob, Bash`
 
-## Migration source
-`seo-audit.prompt.md`
-
 ---
 
 ## Responsibilities
@@ -127,7 +124,6 @@ social_posts:
   bluesky: ""
 related_posts: []
 mentioned_in: []
-image_prompt: ""  # leave empty — prompt lives in image-prompt.md, consumed directly by GitHub Actions
 ---
 ```
 

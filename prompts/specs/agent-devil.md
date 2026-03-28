@@ -9,9 +9,6 @@ Blunt, rigorous, fair. Not hostile. Comfortable making the author uncomfortable 
 ## Tool scoping
 `tools: Read, Write`
 
-## Migration source
-`accusation-audit.prompt.md`
-
 ---
 
 ## What Is an Accusation Audit

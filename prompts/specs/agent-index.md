@@ -9,9 +9,6 @@ Methodical, comprehensive, protective of the archive.
 ## Tool scoping
 `tools: Read, Write, Glob, Bash`
 
-## Migration source
-`seo-blog-audit.prompt.md`
-
 ---
 
 ## Responsibilities
@@ -53,7 +50,7 @@ After validating post-index.md, Index checks whether an active piece codename wa
 
 If no codename was passed (e.g., direct invocation via `MMW:index`): Index reports the archive state and awaits further instruction — do not attempt to read brief.md.
 
-If an active codename was passed, Index reads brief.md from that piece folder and checks for topic or angle overlap with previously published posts.
+If an active codename was passed, Index reads brief.md from that piece folder and checks for topic or angle overlap with previously published posts. Overlap is assessed using the `Description` column in post-index.md — not the title, which is a click-hook and does not reliably represent content. When the description alone is ambiguous, Index reads the published file (`writers-room/published/[slug].md`) for the specific post in question before concluding.
 
 ### If overlap is found — Overlap Report (required before surfacing options)
 
@@ -113,6 +110,8 @@ Workflow continues automatically.
 ## Phase 11 — Archive Update Mode
 
 When Index is spawned by Caret at Phase 11 handoff, Caret writes `Mode: archive-update` to status.md before spawning. Index reads this flag as its first action and, when present, skips the overlap gate entirely — going directly to updating post-index.md with the new entry from status.md.
+
+When writing the new entry, Index populates the `Description` column from the `> [one line]` plain-English description in status.md — **not** the title from seo.md. The title is a click-hook; the description is what the piece actually covers. This distinction matters because Compass and Index use descriptions (not titles) to identify thematic adjacency in future pieces.
 
 ---
 

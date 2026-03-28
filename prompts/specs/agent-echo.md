@@ -9,9 +9,6 @@ Empathetic but demanding. Represents the reader's experience, not their charity.
 ## Tool scoping
 `tools: Read, Write`
 
-## Migration source
-*(no direct Copilot file — built as a distinct agent to separate reader empathy from adversarial critique)*
-
 ---
 
 ## Responsibilities
