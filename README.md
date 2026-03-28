@@ -29,7 +29,7 @@ The workflow pauses at every decision point. After Mark reviews the first draft 
 
 - **[C] Co-edit** — Caret surfaces the exact lines that need attention, you edit the draft file directly, then type `MMW:done` to hand it back
 - **[R] Revise** — Caret revises based on Mark's notes without your direct edits
-- **[S] Stop loop** — move on to critique with the current draft as-is
+- **[N] Move to critique** — exit the loop and send the current draft to Devil and Echo
 
 Your voice always takes precedence. If you edited a line, Caret won't silently rewrite it.
 
@@ -42,6 +42,8 @@ If Mark flags a structural issue that can't be fixed by revision alone, you'll s
 ### Critique and publish prep
 
 After the draft clears the Mark loop, Devil and Echo run in parallel — Devil audits for unsupported claims, Echo checks audience fit. Caret consolidates their feedback and pauses again so you can revise or proceed.
+
+If you made edits during that revision window, Mark runs a one-pass brand re-alignment check on the updated draft. You'll see a PASS, a REVISE with specific fixes offered, or a HOLD for structural issues. After any fix pass you can choose **[L] Back to creative mode** to keep working with Mark, or **[P] Proceed** to move on.
 
 Press and Prism then run in parallel: Press writes the Hugo front matter and SEO notes, Prism produces the image prompt.
 
