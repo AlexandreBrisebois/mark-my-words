@@ -435,7 +435,7 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - Current draft: draft-v2.md
 - Last agent: Mark (brand-notes-v2.md) [REVISE]
 - Brief intent: NOT YET MET
-- Slug: (written by Press — must match seo.md)
+- Slug: (written by Press)
 - Next step: Awaiting user direction
 
 ## Agent Run Log
@@ -459,6 +459,8 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - [ ] Prism → image-prompt.md
 - [ ] final.md
 ```
+
+The `- Slug: (written by Press)` line is an exact-string placeholder. Press locates it by literal match and replaces it with `- Slug: [slug-value]`. Do not add comments or extra text to this line — any variation will cause Press's slug sync to fail silently. Press is solely responsible for keeping the slug in status.md in sync with seo.md.
 
 After Press and Prism both complete, Caret writes `Next step: Ready for MMW:proof [codename]` to status.md. This is the exact string Caret scans for when `MMW:proof` is called without a codename.
 

@@ -10,12 +10,11 @@
 > **task.md format** — use this structure exactly so a resumed session can parse it:
 > ```
 > ## Build Progress
-> - [ ] Step A — Scaffold
+> - [ ] Step A — Scaffold + Seed files (Steps A and F complete together)
 > - [ ] Step B — Agent files
 > - [ ] Step C — ARCHITECTURE.md
 > - [ ] Step D — CLAUDE.md
 > - [ ] Step E — Brand guidelines
-> - [ ] Step F — Seed files
 > - [ ] Validation
 > ```
 > Mark each step `[x]` when complete. On resume, read task.md first and
@@ -109,12 +108,16 @@ This is the directory Claude Code scans to register native subagents. Files
 in `writers-room/agents/` will not be auto-discovered.
 
 > **Note**: Seed files for `index/`, `cadence/`, and `research/` are defined in
-> Step F. Do not mark Step A complete until Step F is also done — agents depend
-> on these files existing before any workflow runs.
+> Step F below. Step A is only complete when both the scaffold and seed files
+> are written — agents depend on these files existing before any workflow runs.
 
 ---
 
 ### Step B — Agent System Prompts (`.claude/agents/`)
+
+**Build order: build all agents except Caret first. Build Caret last.**
+Caret's spec cross-references behavior defined in Index, Press, and co-edit.
+Build those agents first so that logic is fresh when you write caret.md.
 
 Read each agent spec from `prompts/specs/agent-[name].md` and create the
 corresponding file in `.claude/agents/`. Build one agent at a time. Verify
@@ -169,10 +172,6 @@ to restrict tool access.
 > **Tool names are case-sensitive** and must match Claude Code's registered names
 > exactly: `Read`, `Write`, `Edit`, `Agent`, `Glob`, `Bash`, `WebSearch`, `WebFetch`.
 > A mistyped tool name will silently fail to scope access — no error is raised.
-
-> **Build Caret last.** Caret's spec cross-references behavior defined in the
-> Index, Press, and co-edit specs. Build all other agents first so the
-> cross-referenced logic is fresh when you write caret.md.
 
 > **Parallel spawning requires same-response Agent calls.** When Caret spawns a
 > parallel pair (Devil║Echo, Press║Prism, Index║Cadence), both Agent tool calls
@@ -270,8 +269,8 @@ Turing reads `research/notes.md` at the start of every research pass.
 
 **index/post-index.md**:
 ```markdown
-| Codename | Description | Slug | Status | Topics | Published | Links |
-|---|---|---|---|---|---|---|
+| Title | Slug | Date | Tags | Description |
+|---|---|---|---|---|
 ```
 
 **cadence/calendar.md**:
@@ -297,7 +296,7 @@ When the build is complete, verify the following success criteria can be traced 
 - `writers-room/index/post-index.md` — contains the markdown table header
 - `writers-room/cadence/calendar.md` — contains the markdown table header
 - `writers-room/research/notes.md` — contains the markdown table header
-- All 10 agent files in `.claude/agents/` — each has valid YAML frontmatter with `tools:` as a bracketed list
+- All 10 agent files in `.claude/agents/` — read back the `tools:` line in each file and confirm it opens with `[` and closes with `]`. A plain string (e.g., `tools: Read, Write`) will not raise an error but silently disables tool scoping at runtime. Fix any that fail this check before proceeding.
 
 1. User types: `MMW write a post about building this writer's room`
 2. Caret generates codename `writers-room-build`, creates folder, writes brief.md and status.md with plain English description
