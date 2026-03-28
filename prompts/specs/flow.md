@@ -58,7 +58,7 @@ Phase 3 — Caret: draft-v1.md
 Phase 4 — Mark: headlines and hooks (reads draft-v1.md)
    ↓
 Phase 5 — Iterative loop: Caret ↔ Mark
-           [max 2 iterations, then circuit breaker]
+           [user-driven exit — no iteration cap]
            [co-edit available at every pause]
    ↓
 Phase 6+7 — Devil ║ Echo  [run in parallel]
@@ -71,7 +71,7 @@ Phase 8 — User revision window
    ↓
 Phase 8.5 — Mark: brand re-alignment check  [conditional]
              [fires only if draft changed in Phase 8]
-             [single pass — no loop restart]
+             [single pass — option to return to creative mode]
              Mark reads latest draft → writes brand-notes-final.md
              PASS → proceed | REVISE → one fix pass | HOLD → surface to user
    ↓
@@ -153,19 +153,15 @@ See `specs/agent-mark.md` for scoring criteria and brand rules.
 
 ## Phase 5 — Iterative Loop: Caret ↔ Mark
 
-This loop runs until one of three exit conditions is met.
+This loop runs until the user decides to move on. There is no iteration cap.
 
-### Exit conditions (checked in this order)
+### Exit conditions
 
-1. Mark issues a PASS verdict in brand-notes
-2. Mark issues a HOLD verdict — loop exits immediately (same priority as PASS). HOLD means the issue is structural, not a revision problem. Caret surfaces this to the user:
+1. Mark issues a HOLD verdict — loop exits immediately. HOLD means the issue is structural, not a revision problem. Caret surfaces this to the user:
    > "Mark has issued a HOLD. The issue is structural — revising the draft won't resolve it. [Specific issue from brand-notes]. How would you like to proceed? [B] Revisit the brief / [C] Co-edit / [S] Proceed to critique anyway"
-3. The draft satisfies the original intent stated in brief.md — Caret explicitly checks the draft against brief.md and declares intent met
-4. 2 loop iterations have completed — circuit breaker fires
+2. User selects [N] to move to critique — the only way to exit the loop
 
 ### Loop pause after every Mark review
-
-After every Mark review and before pausing for user input, Caret must update status.md with the current loop iteration count: `Loop iterations: N of 2`. This ensures the count survives a session boundary and is correct on resume.
 
 After every Mark review, the loop PAUSES. The user receives:
 
@@ -177,32 +173,15 @@ Outstanding issues (if REVISE):
   2. [specific issue Mark flagged]
 
 Brief intent check: [MET / NOT YET MET]
-Loop iteration: N of 2
 
 Your options:
   [C] Co-edit — Caret surfaces the specific lines, you edit the draft
        file directly, Caret reads your edits and produces the next version
   [R] Revise — Caret revises based on brand-notes alone, no user edits
-  [S] Stop loop — proceed to Devil/Echo with the current draft as-is
+  [N] Move to critique — send this draft to Devil and Echo for review
 ```
 
-### 2-Iteration Circuit Breaker
-
-After 2 full loop iterations without a PASS, Caret stops and presents:
-
-```
-The loop has run 2 times without a full PASS from Mark.
-
-Unresolved issues:
-  1. [issue]
-  2. [issue]
-
-How would you like to proceed?
-  [C] Co-edit the current draft together
-  [S] Stop and proceed to critique with current draft
-  [B] Revisit the brief — the issues may reflect a brief problem,
-      not a draft problem
-```
+All three options are available regardless of PASS or REVISE verdict. The user chooses when they are done.
 
 ---
 
@@ -332,7 +311,14 @@ Mark does not read critique-vN.md or audience-vN.md. The scope is brand alignmen
 
 ### Verdict handling
 
-**PASS** — Caret logs the result to status.md and proceeds to Phase 9+10 immediately. No user prompt.
+**PASS** — Caret logs the result to status.md and asks:
+
+```
+Mark: PASS on brand alignment.
+
+  [L] Back to creative mode — keep working with Mark before publishing
+  [P] Proceed to publish
+```
 
 **HOLD** — same as Phase 5 HOLD handling. Caret surfaces:
 > "Mark has issued a HOLD on the final draft. The issue is structural — revising won't resolve it. [Specific issue from brand-notes-final.md]. How would you like to proceed? [B] Revisit the brief / [C] Co-edit / [S] Proceed to Press anyway"
@@ -345,19 +331,29 @@ Mark flagged issues in brand-notes-final.md:
   2. [specific issue]
 
   [C] Co-edit — Caret surfaces the specific lines, you edit directly
-  [R] Quick fix — Caret revises based on brand-notes-final.md, no further Mark review
+  [A] Apply — Caret applies Mark's feedback from brand-notes-final.md directly
   [S] Proceed anyway — go to Press with the current draft
 ```
 
-If [C] or [R]: Caret produces a new versioned draft and proceeds to Phase 9+10. There is no second Mark pass. This is a single correction opportunity, not a loop restart.
+If [C] or [A]: Caret produces a new versioned draft, then asks:
 
-If [S]: Caret logs `[user override] brand re-alignment: skipped by user` in status.md and proceeds.
+```
+Draft updated → draft-vN.md
+
+  [L] Back to creative mode — keep working with Mark before publishing
+  [P] Proceed to publish
+```
+
+If [L]: Caret logs `[loop restart] creative mode re-entry from brand check` in status.md and re-enters Phase 5 on the latest draft. On exit ([N] Move to critique), flow continues through Devil/Echo → revision window → brand check as normal (brand check fires again only if the revision window produces a new draft).
+
+If [P] (after PASS or after [C]/[A]): Caret proceeds to Phase 9+10.
+
+If [S]: Caret logs `[user override] brand re-alignment: skipped by user` in status.md and proceeds to Phase 9+10.
 
 ### What does NOT happen here
 
-- No second Mark review after a [C] or [R] fix
-- No recursion into Phase 5 loop logic
-- No re-running of Devil or Echo
+- No second Mark review after a [C] or [A] fix within this phase — [L] re-enters the full creative loop, it does not re-run Mark here
+- No re-running of Devil or Echo from within this phase — they run again naturally after the creative loop exits
 - Co-edit follows the same rules as Co-edit Mode — user voice is never overridden
 
 ---
@@ -439,9 +435,8 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - Current draft: draft-v2.md
 - Last agent: Mark (brand-notes-v2.md) [REVISE]
 - Brief intent: NOT YET MET
-- Loop iterations: 2 of 2
 - Slug: (written by Press — must match seo.md)
-- Next step: Awaiting user direction (circuit breaker reached)
+- Next step: Awaiting user direction
 
 ## Agent Run Log
 - [x] Index → overlap check (no conflicts found)
@@ -453,7 +448,7 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - [x] [user-edit] draft-v1.md → basis for draft-v2.md
 - [x] Caret → draft-v2.md
 - [x] Mark → brand-notes-v2.md (REVISE)
-- [ ] Awaiting user direction (circuit breaker reached)
+- [ ] Awaiting user direction ([N] Move to critique)
 - [ ] Devil → critique-v1.md
 - [ ] Echo → audience-v1.md
 - [ ] [skip] Phase 8.5 — no draft change in Phase 8
