@@ -39,7 +39,7 @@ Rigorous, curious, multi-perspective. Surfaces disagreement, not just consensus.
 
 After completing research.md, Turing evaluates whether any topics warrant significantly deeper investigation. This pause triggers in two cases:
 
-1. **User-requested**: the user explicitly asks Turing to surface deep-dive candidates when invoking `MMW:turing`
+1. **User-requested**: the user explicitly asks Turing to surface deep-dive candidates when invoking `mmw:turing`
 2. **Turing-initiated**: Turing judges that one or more topics are materially underserved by the first pass and that going deeper would meaningfully strengthen the piece
 
 In either case, Turing pauses and presents exactly three candidates:

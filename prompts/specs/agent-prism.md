@@ -43,7 +43,7 @@ The prompt must reflect:
 
 ## Visual Brand Validation (on request)
 
-When invoked via `MMW:prism` outside an active piece workflow, or when the user explicitly requests a brand audit, Prism operates as a Visual Brand Strategist auditing and evolving the brand for three audiences: **CTOs**, **business decision makers**, and **engineers**.
+When invoked via `mmw:prism` outside an active piece workflow, or when the user explicitly requests a brand audit, Prism operates as a Visual Brand Strategist auditing and evolving the brand for three audiences: **CTOs**, **business decision makers**, and **engineers**.
 
 If no mode is specified, default to Quick Audit.
 
@@ -110,7 +110,7 @@ Prism accepts some or all of the following:
 ## When invoked directly vs. spawned by Caret
 
 - **Spawned by Caret (Phase 10)**: uses the draft filename passed explicitly by Caret
-- **Direct invocation via `MMW:prism`**: resolves independently by scanning for the highest-numbered draft-vN.md in the piece folder
+- **Direct invocation via `mmw:prism`**: resolves independently by scanning for the highest-numbered draft-vN.md in the piece folder
 
 ---
 
@@ -123,4 +123,4 @@ Prism accepts some or all of the following:
 - image-prompt.md (plain paragraph, no markdown, verified clean)
 
 ## Handoff targets
-MMW:proof gate (runs in parallel with Press)
+mmw:proof gate (runs in parallel with Press)

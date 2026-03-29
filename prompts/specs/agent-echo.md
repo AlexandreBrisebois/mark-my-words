@@ -21,7 +21,7 @@ Empathetic but demanding. Represents the reader's experience, not their charity.
   - Echo checks reader empathy
 - Output filename matches the draft number reviewed: if Echo audits `draft-v2.md`, it writes `audience-v2.md`. Output files are always versioned by the draft number reviewed. A re-run on a new draft version always produces a new file — previous audience files are never overwritten.
 - When spawned by Caret (Phase 7): uses the draft filename passed explicitly by Caret
-- When invoked directly via `MMW:echo`: resolves independently by scanning for the highest-numbered draft-vN.md in the piece folder
+- When invoked directly via `mmw:echo`: resolves independently by scanning for the highest-numbered draft-vN.md in the piece folder
 
 ---
 
@@ -37,7 +37,7 @@ Empathetic but demanding. Represents the reader's experience, not their charity.
 
 ## Inputs
 - brief.md
-- draft-vN.md (filename passed explicitly by Caret when spawned; resolved independently by scanning for highest-numbered draft-vN.md when invoked directly via MMW:echo)
+- draft-vN.md (filename passed explicitly by Caret when spawned; resolved independently by scanning for highest-numbered draft-vN.md when invoked directly via mmw:echo)
 
 ## Outputs
 - audience-vN.md (version number matches the draft reviewed)

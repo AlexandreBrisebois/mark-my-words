@@ -1,9 +1,9 @@
-# MMW Build Prompt
+# mmw Build Prompt
 # Mark My Words — Multi-Agent Writing System
 
 > [!IMPORTANT]
 > **AGENTIC INSTRUCTION**: You are building a multi-agent writing system
-> called Mark My Words (MMW). Maintain a `task.md` file in the root of
+> called Mark My Words (mmw). Maintain a `task.md` file in the root of
 > the writers-room/ project to track your progress through each phase.
 > Do not attempt to complete the entire build in one turn.
 >
@@ -69,7 +69,7 @@ Create `writers-room/task.md` first. Then create this full directory structure:
 
 ```
 /Users/alex/Code/mark-my-words/
-├── CLAUDE.md                  ← project root — triggers MMW, MMW:agent shortcuts
+├── CLAUDE.md                  ← project root — triggers mmw, mmw:agent shortcuts
 └── writers-room/
     ├── ARCHITECTURE.md
     ├── README.md
@@ -130,7 +130,7 @@ Also create `.claude/agents/` explicitly before writing any agent files — writ
 
 **CLAUDE.md must be at the project root** (`/Users/alex/Code/mark-my-words/CLAUDE.md`),
 not inside `writers-room/`. This is required for Claude Code to recognize the
-MMW triggers and `MMW:agent` shortcuts in every new session.
+mmw triggers and `mmw:agent` shortcuts in every new session.
 
 **Agent files must be in `.claude/agents/`** relative to the project root.
 This is the directory Claude Code scans to register native subagents. Files
@@ -236,10 +236,10 @@ Read `prompts/specs/flow.md` before writing. Cover:
 
 Read `prompts/specs/flow.md` before writing. Cover:
 - What Mark My Words is — one paragraph
-- Triggers: `/mmw` is the primary slash command (registered as a Skill in `.claude/skills/`). Plain-text variants `MMW`, `Mark My Words`, and `mmw` remain as fallbacks for sessions where skills are not loaded.
-- All sub-agent shortcuts — now registered as skills (`/mmw-turing`, `/mmw-devil`, etc.) with plain-text `MMW:agent` variants documented as fallbacks. Note: each invokes a native Claude Code subagent defined in `.claude/agents/`.
-- `MMW:proof` — the human gate that triggers Phase 11. Explain that no agent calls this automatically; it is always a deliberate human decision. State explicitly that `MMW:proof` is handled inline by Caret — there is no `.claude/agents/proof.md`. When the user types `MMW:proof [codename]`, Caret reads the piece folder and executes the Phase 11 pre-flight directly.
-- State explicitly that `MMW:bearings` is handled inline by Caret — there is no `.claude/agents/bearings.md`. When the user types `MMW:bearings [codename]`, Caret reads status.md and reports the current state of the piece before proposing a next step.
+- Triggers: `/mmw` is the primary slash command (registered as a Skill in `.claude/skills/`). Plain-text variants `mmw`, `Mark My Words`, and `mmw` remain as fallbacks for sessions where skills are not loaded.
+- All sub-agent shortcuts — now registered as skills (`/mmw-turing`, `/mmw-devil`, etc.) with plain-text `mmw:agent` variants documented as fallbacks. Note: each invokes a native Claude Code subagent defined in `.claude/agents/`.
+- `mmw:proof` — the human gate that triggers Phase 11. Explain that no agent calls this automatically; it is always a deliberate human decision. State explicitly that `mmw:proof` is handled inline by Caret — there is no `.claude/agents/proof.md`. When the user types `mmw:proof [codename]`, Caret reads the piece folder and executes the Phase 11 pre-flight directly.
+- State explicitly that `mmw:bearings` is handled inline by Caret — there is no `.claude/agents/bearings.md`. When the user types `mmw:bearings [codename]`, Caret reads status.md and reports the current state of the piece before proposing a next step.
 - Caret as the default entry point
 - Codename generation rules: derived from brief, descriptive, lowercase hyphenated, 2–3 words, characters `[a-z0-9-]` only
 - The full ordered workflow summary
@@ -257,7 +257,7 @@ Example session:
   User: C
   Caret: [surfaces specific flagged lines with current text and issue]
   User: [edits draft-v1.md directly in their editor]
-  User: MMW:done
+  User: mmw:done
   Caret: [reads edited file, integrates remaining issues,
           produces draft-v2.md, reports exactly what it changed
           beyond the user's edits]
@@ -267,16 +267,16 @@ The user's voice is the point. Everything else serves that.
 ```
 
 - That image-prompt.md must be one focused paragraph — no headers, no bullets, no code fences
-- Final drafts land in `writers-room/published/[slug].md` — bring them to your publishing environment manually. MMW does not write outside its own directory.
-- Parallel agent recovery: if you return to a session and status.md shows `[partial]` with no recent activity, the agent likely timed out. Use the relevant `MMW:agent` shortcut to retry the missing agent. Example: `[partial] Echo → pending` means `MMW:echo` to retry.
-- Scaffold recovery: if `MMW:proof` stops with "writers-room/published/ directory missing", the project scaffold is incomplete. Fix: run `mkdir -p writers-room/published/` from the project root, then retry `MMW:proof [codename]`.
+- Final drafts land in `writers-room/published/[slug].md` — bring them to your publishing environment manually. mmw does not write outside its own directory.
+- Parallel agent recovery: if you return to a session and status.md shows `[partial]` with no recent activity, the agent likely timed out. Use the relevant `mmw:agent` shortcut to retry the missing agent. Example: `[partial] Echo → pending` means `mmw:echo` to retry.
+- Scaffold recovery: if `mmw:proof` stops with "writers-room/published/ directory missing", the project scaffold is incomplete. Fix: run `mkdir -p writers-room/published/` from the project root, then retry `mmw:proof [codename]`.
 - Reminder: this is a writing tool — responses should be editorial, thoughtful, and concise. Not a coding tool.
 
 ---
 
 ### Step E — Skills (`.claude/skills/`)
 
-Create one skill directory per MMW command. Each skill provides guaranteed slash-command routing instead of relying on CLAUDE.md trigger-word parsing. Skills are stored at `.claude/skills/<name>/SKILL.md`.
+Create one skill directory per mmw command. Each skill provides guaranteed slash-command routing instead of relying on CLAUDE.md trigger-word parsing. Skills are stored at `.claude/skills/<name>/SKILL.md`.
 
 **Create all twelve skill directories and their SKILL.md files:**
 
@@ -305,7 +305,7 @@ If `$ARGUMENTS` is empty, respond: "Usage: /mmw [topic or codename]" and do noth
 ```yaml
 ---
 name: mmw-turing
-description: Run a research pass on an active MMW piece. Spawns Turing directly, bypassing Caret.
+description: Run a research pass on an active mmw piece. Spawns Turing directly, bypassing Caret.
 argument-hint: [codename]
 ---
 
@@ -322,7 +322,7 @@ If `$ARGUMENTS` is empty, respond: "Usage: /mmw-turing [codename]" and do nothin
 ```yaml
 ---
 name: mmw-devil
-description: Run an accusation audit on the latest draft of an active MMW piece. Spawns Devil directly.
+description: Run an accusation audit on the latest draft of an active mmw piece. Spawns Devil directly.
 argument-hint: [codename]
 ---
 
@@ -339,7 +339,7 @@ If `$ARGUMENTS` is empty, respond: "Usage: /mmw-devil [codename]" and do nothing
 ```yaml
 ---
 name: mmw-echo
-description: Run an audience check on the latest draft of an active MMW piece. Spawns Echo directly.
+description: Run an audience check on the latest draft of an active mmw piece. Spawns Echo directly.
 argument-hint: [codename]
 ---
 
@@ -356,7 +356,7 @@ If `$ARGUMENTS` is empty, respond: "Usage: /mmw-echo [codename]" and do nothing 
 ```yaml
 ---
 name: mmw-press
-description: Run an SEO audit and generate Hugo front matter for the latest draft of an active MMW piece. Spawns Press directly.
+description: Run an SEO audit and generate Hugo front matter for the latest draft of an active mmw piece. Spawns Press directly.
 argument-hint: [codename]
 ---
 
@@ -373,7 +373,7 @@ If `$ARGUMENTS` is empty, respond: "Usage: /mmw-press [codename]" and do nothing
 ```yaml
 ---
 name: mmw-prism
-description: Generate a Gemini Image Pro prompt for the latest draft of an active MMW piece. Spawns Prism directly.
+description: Generate a Gemini Image Pro prompt for the latest draft of an active mmw piece. Spawns Prism directly.
 argument-hint: [codename]
 ---
 
@@ -390,7 +390,7 @@ If `$ARGUMENTS` is empty, respond: "Usage: /mmw-prism [codename]" and do nothing
 ```yaml
 ---
 name: mmw-compass
-description: Run a strategic direction pass on an active MMW piece, or generate next post ideas if no codename is provided. Spawns Compass directly.
+description: Run a strategic direction pass on an active mmw piece, or generate next post ideas if no codename is provided. Spawns Compass directly.
 argument-hint: [codename]
 ---
 
@@ -405,7 +405,7 @@ Spawn the `compass` subagent defined in `.claude/agents/compass.md`, passing `$A
 ```yaml
 ---
 name: mmw-mark
-description: Run a brand and voice review on the latest draft of an active MMW piece. Spawns Mark directly.
+description: Run a brand and voice review on the latest draft of an active mmw piece. Spawns Mark directly.
 argument-hint: [codename]
 ---
 
@@ -436,7 +436,7 @@ Spawn the `cadence` subagent defined in `.claude/agents/cadence.md`.
 ```yaml
 ---
 name: mmw-index
-description: Run an overlap check on an active MMW piece, or run a portfolio SEO audit if no codename is provided. Spawns Index directly.
+description: Run an overlap check on an active mmw piece, or run a portfolio SEO audit if no codename is provided. Spawns Index directly.
 argument-hint: [codename]
 ---
 
@@ -451,7 +451,7 @@ Spawn the `index` subagent defined in `.claude/agents/index.md`, passing `$ARGUM
 ````yaml
 ---
 name: mmw-bearings
-description: Get a session orientation report for an active MMW piece — what has been done, current draft, outstanding work, and proposed next step.
+description: Get a session orientation report for an active mmw piece — what has been done, current draft, outstanding work, and proposed next step.
 argument-hint: [codename]
 ---
 
@@ -482,7 +482,7 @@ If `$ARGUMENTS` is empty, respond: "Usage: /mmw-bearings [codename]" and do noth
 ```yaml
 ---
 name: mmw-proof
-description: Declare an MMW piece final. Runs pre-flight checks and, if all pass, writes final.md and publishes to writers-room/published/. This is always a deliberate human decision — no agent calls this automatically.
+description: Declare an mmw piece final. Runs pre-flight checks and, if all pass, writes final.md and publishes to writers-room/published/. This is always a deliberate human decision — no agent calls this automatically.
 argument-hint: [codename]
 ---
 
@@ -497,14 +497,14 @@ Invoke Caret inline (do not spawn a subagent). Execute the Phase 11 pre-flight d
 
 If all checks pass, write `final.md`, copy its content to `writers-room/published/[slug].md`, update `status.md`, write `Mode: archive-update` to `status.md`, then spawn Index and Cadence in parallel.
 
-If `$ARGUMENTS` is empty: scan `status.md` files in `writers-room/pieces/` for any piece containing `Next step: Ready for MMW:proof`, list them, and ask the user to confirm which one to proof. Never assume.
+If `$ARGUMENTS` is empty: scan `status.md` files in `writers-room/pieces/` for any piece containing `Next step: Ready for mmw:proof`, list them, and ask the user to confirm which one to proof. Never assume.
 ```
 
 ---
 
 **After writing all twelve SKILL.md files**, verify each exists and is non-empty before moving to Step F.
 
-**Naming convention note**: Skill names use `[a-z0-9-]` only — no spaces, underscores, or special characters. The plain-text fallbacks (`MMW:turing`, `MMW:devil`, etc.) remain documented in CLAUDE.md for sessions where skills have not loaded, but the slash-command form is the canonical invocation.
+**Naming convention note**: Skill names use `[a-z0-9-]` only — no spaces, underscores, or special characters. The plain-text fallbacks (`mmw:turing`, `mmw:devil`, etc.) remain documented in CLAUDE.md for sessions where skills have not loaded, but the slash-command form is the canonical invocation.
 
 ---
 
@@ -561,7 +561,7 @@ When the build is complete, verify the following success criteria can be traced 
 - All 10 agent files in `.claude/agents/` — read back the `tools:` line in each file and confirm it opens with `[` and closes with `]`. A plain string (e.g., `tools: Read, Write`) will not raise an error but silently disables tool scoping at runtime. Fix any that fail this check before proceeding.
 - All 12 skill directories in `.claude/skills/` — verify each contains a `SKILL.md` file that is non-empty: `mmw`, `mmw-turing`, `mmw-devil`, `mmw-echo`, `mmw-press`, `mmw-prism`, `mmw-compass`, `mmw-mark`, `mmw-cadence`, `mmw-index`, `mmw-bearings`, `mmw-proof`.
 
-1. User types: `/mmw write a post about building this writer's room` (or plain-text `MMW write a post about building this writer's room` as fallback)
+1. User types: `/mmw write a post about building this writer's room` (or plain-text `mmw write a post about building this writer's room` as fallback)
 2. Caret generates codename `writers-room-build`, creates folder, writes brief.md and status.md with plain English description
 3. Index validates post-index.md — reports N entries found
 4. Index checks brief.md against post-index.md — no overlap found
@@ -576,7 +576,7 @@ When the build is complete, verify the following success criteria can be traced 
 13. User chooses [C] co-edit
 14. Caret surfaces the exact flagged lines with current text and issue
 15. User edits draft-v1.md directly
-16. User types: MMW:done
+16. User types: mmw:done
 17. Caret reads user-edited file → produces draft-v2.md
 18. Caret reports exactly what it changed beyond the user's edits
 19. Mark reviews draft-v2.md → brand-notes-v2.md [PASS]
@@ -588,7 +588,7 @@ When the build is complete, verify the following success criteria can be traced 
 23. Press ║ Prism run in parallel:
     - Press reads latest draft-vN.md → seo.md with valid Hugo YAML front matter + writes slug to status.md
     - Prism reads latest draft-vN.md → image-prompt.md as one focused paragraph
-24. User types: `MMW:proof writers-room-build`
+24. User types: `mmw:proof writers-room-build`
 25. Pre-flight check passes — draft, seo.md, slug, image-prompt.md all present
 26. final.md written and copied to `writers-room/published/writers-room-build.md`
 27. Index ║ Cadence run in parallel:

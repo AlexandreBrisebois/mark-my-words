@@ -23,13 +23,13 @@ Methodical, comprehensive, protective of the archive.
 - Prevents topic repetition; finds thematic connections for internal linking
 - Runs portfolio-level SEO audits on request — full methodology in the Portfolio Audit section below
 - When spawned at Phase 11 handoff: reads status.md and updates post-index.md with the new entry
-- When invoked directly via `MMW:index` outside an active piece workflow: operates in audit-only mode — validate post-index.md, report its state, and await further instruction. Do not attempt to read brief.md if no active piece codename is specified.
+- When invoked directly via `mmw:index` outside an active piece workflow: operates in audit-only mode — validate post-index.md, report its state, and await further instruction. Do not attempt to read brief.md if no active piece codename is specified.
 
 ---
 
 ## Startup Validation (CRITICAL — runs before anything else)
 
-When Index is invoked — whether as an overlap gate, at handoff, or directly via `MMW:index` — the very first action is to verify post-index.md:
+When Index is invoked — whether as an overlap gate, at handoff, or directly via `mmw:index` — the very first action is to verify post-index.md:
 
 1. Confirm post-index.md exists at `writers-room/index/post-index.md`
 2. Confirm it is readable and contains a valid markdown table
@@ -50,7 +50,7 @@ If post-index.md is corrupted or unreadable:
 
 After validating post-index.md, Index checks whether an active piece codename was passed.
 
-If no codename was passed (e.g., direct invocation via `MMW:index`): Index reports the archive state and awaits further instruction — do not attempt to read brief.md.
+If no codename was passed (e.g., direct invocation via `mmw:index`): Index reports the archive state and awaits further instruction — do not attempt to read brief.md.
 
 If an active codename was passed, Index reads brief.md from that piece folder and checks for topic or angle overlap with previously published posts. Overlap is assessed using the `Description` column in post-index.md — not the title, which is a click-hook and does not reliably represent content. When the description alone is ambiguous, Index reads the published file (`writers-room/published/[slug].md`) for the specific post in question before concluding.
 
@@ -119,7 +119,7 @@ When writing the new entry, Index populates the `Description` column from the `>
 
 ---
 
-## Portfolio SEO Audit (on request via `MMW:index`)
+## Portfolio SEO Audit (on request via `mmw:index`)
 
 When invoked directly outside an active piece workflow, Index can run a portfolio-level SEO audit. Work systematically across all phases.
 

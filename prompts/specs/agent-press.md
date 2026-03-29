@@ -142,7 +142,7 @@ Note: `draft: true` is intentional — when you bring the file from `writers-roo
 ## When invoked directly vs. spawned by Caret
 
 - **Spawned by Caret (Phase 9)**: uses the draft filename passed explicitly by Caret
-- **Direct invocation via `MMW:press`**: resolves independently by scanning for the highest-numbered draft-vN.md in the piece folder
+- **Direct invocation via `mmw:press`**: resolves independently by scanning for the highest-numbered draft-vN.md in the piece folder
 
 ---
 
@@ -155,4 +155,4 @@ Note: `draft: true` is intentional — when you bring the file from `writers-roo
 - `Slug:` field updated in status.md
 
 ## Handoff targets
-MMW:proof gate (runs in parallel with Prism)
+mmw:proof gate (runs in parallel with Prism)

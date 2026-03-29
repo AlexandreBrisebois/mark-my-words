@@ -1,4 +1,4 @@
-# MMW Flow Spec — Workflow, Protocols, and File Schema
+# mmw Flow Spec — Workflow, Protocols, and File Schema
 
 This file is the canonical source of truth for how Mark My Words orchestrates its agents. Agent specs reference this file. When the workflow changes, change it here first.
 
@@ -7,9 +7,8 @@ This file is the canonical source of truth for how Mark My Words orchestrates it
 ## Invocation
 
 This system responds to the following triggers:
-- `MMW` — shorthand alias
+- `mmw` — shorthand alias
 - `Mark My Words` — full name
-- `mmw` — lowercase variant
 
 All three launch Caret as the default entry point.
 
@@ -17,23 +16,23 @@ All three launch Caret as the default entry point.
 
 | Shortcut | Agent |
 |---|---|
-| `MMW:turing` | research |
-| `MMW:devil` | critique |
-| `MMW:echo` | audience check |
-| `MMW:press` | publish prep |
-| `MMW:prism` | image prompt generation |
-| `MMW:compass` | strategy |
-| `MMW:mark` | brand check |
-| `MMW:cadence` | editorial calendar |
-| `MMW:index` | archive and overlap check |
-| `MMW:bearings [codename]` | session orientation — recap current state, propose next step, pause |
+| `mmw:turing` | research |
+| `mmw:devil` | critique |
+| `mmw:echo` | audience check |
+| `mmw:press` | publish prep |
+| `mmw:prism` | image prompt generation |
+| `mmw:compass` | strategy |
+| `mmw:mark` | brand check |
+| `mmw:cadence` | editorial calendar |
+| `mmw:index` | archive and overlap check |
+| `mmw:bearings [codename]` | session orientation — recap current state, propose next step, pause |
 
 ### Workflow gate
-- `MMW:proof [codename]` → human declares draft final, triggers Phase 11 handoff
+- `mmw:proof [codename]` → human declares draft final, triggers Phase 11 handoff
 
 ### Invocation model
 
-Each `MMW:agent` shortcut invokes a **native Claude Code subagent** — an isolated subprocess with its own context window and tool permissions. Agent definition files live in `.claude/agents/` (not `writers-room/agents/`). State is passed exclusively through files in the piece folder — agents cannot share in-memory state across subprocess boundaries.
+Each `mmw:agent` shortcut invokes a **native Claude Code subagent** — an isolated subprocess with its own context window and tool permissions. Agent definition files live in `.claude/agents/` (not `writers-room/agents/`). State is passed exclusively through files in the piece folder — agents cannot share in-memory state across subprocess boundaries.
 
 Caret, as orchestrator, spawns subagents explicitly and coordinates the workflow through the shared file system. When spawning any subagent, Caret must pass the active codename explicitly in the invocation — subagents cannot discover the codename themselves.
 
@@ -79,7 +78,7 @@ Phase 9+10 — Press ║ Prism  [run in parallel]
              Press: SEO and Hugo front matter → seo.md
              Prism: image prompt              → image-prompt.md
    ↓
-[MMW:proof [codename] — human declares draft final]
+[mmw:proof [codename] — human declares draft final]
    ↑ Caret proposes this exact command (with codename filled in)
      after Press + Prism both complete. Does not advance automatically.
    ↓
@@ -245,11 +244,11 @@ Your edit here:
 The user edits the draft file directly — not through Caret. This is intentional. The user owns the keyboard at this moment. Caret waits. No suggestions, no rewrites, no hovering.
 
 Before waiting, Caret writes this state marker to status.md:
-`[in-progress] user-edit — awaiting MMW:done`
+`[in-progress] user-edit — awaiting mmw:done`
 
-This ensures the co-edit state survives a session boundary. If the session ends before `MMW:done` is received, Caret will re-surface the co-edit prompt on resume rather than advancing to the next phase.
+This ensures the co-edit state survives a session boundary. If the session ends before `mmw:done` is received, Caret will re-surface the co-edit prompt on resume rather than advancing to the next phase.
 
-User signals completion by typing: `MMW:done` as a chat message. Caret listens for this signal in the conversation only — it does not scan file content for it. For posts about MMW itself, `MMW:done` may appear inside the draft file as an example; that does not trigger co-edit completion.
+User signals completion by typing: `mmw:done` as a chat message. Caret listens for this signal in the conversation only — it does not scan file content for it. For posts about mmw itself, `mmw:done` may appear inside the draft file as an example; that does not trigger co-edit completion.
 
 ### Step 3 — Caret reads and integrates
 
@@ -289,7 +288,7 @@ Nothing else was changed. Your voice is intact.
 
 Before spawning, Caret resolves the current latest draft filename once (highest-numbered draft-vN.md in the piece folder) and passes it explicitly to both subagents in the invocation. Agents must use the filename Caret passes — they do not scan for the latest draft themselves.
 
-If invoked directly via `MMW:devil` or `MMW:echo`, they resolve independently by scanning for the highest-numbered draft-vN.md.
+If invoked directly via `mmw:devil` or `mmw:echo`, they resolve independently by scanning for the highest-numbered draft-vN.md.
 
 Before spawning, Caret writes to status.md: `[partial] Devil → pending, Echo → pending`
 
@@ -404,11 +403,11 @@ If [S]: Caret logs `[user override] brand re-alignment: skipped by user` in stat
 
 Before spawning, Caret resolves the current latest draft filename once (highest-numbered draft-vN.md in the piece folder) and passes it explicitly to both subagents in the invocation. Agents must use the filename Caret passes — they do not scan for the latest draft themselves.
 
-If invoked directly via `MMW:press` or `MMW:prism`, they resolve independently by scanning for the highest-numbered draft-vN.md.
+If invoked directly via `mmw:press` or `mmw:prism`, they resolve independently by scanning for the highest-numbered draft-vN.md.
 
 Before spawning, Caret writes to status.md: `[partial] Press → pending, Prism → pending`
 
-Caret spawns Press and Prism as concurrent subagents. Both receive the same codename and the same explicit draft filename. Press writes seo.md. Prism writes image-prompt.md. Neither reads the other's output. As each completes, Caret replaces its `pending` entry with the full completion log entry. Caret waits for both before the MMW:proof gate is valid. If one fails, the `[partial]` marker persists as a resume signal.
+Caret spawns Press and Prism as concurrent subagents. Both receive the same codename and the same explicit draft filename. Press writes seo.md. Prism writes image-prompt.md. Neither reads the other's output. As each completes, Caret replaces its `pending` entry with the full completion log entry. Caret waits for both before the mmw:proof gate is valid. If one fails, the `[partial]` marker persists as a resume signal.
 
 See `specs/agent-press.md` and `specs/agent-prism.md` for full output requirements.
 
@@ -504,7 +503,7 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 
 The `- Slug: (written by Press)` line is an exact-string placeholder. Press locates it by literal match and replaces it with `- Slug: [slug-value]`. Do not add comments or extra text to this line — any variation will cause Press's slug sync to fail silently. Press is solely responsible for keeping the slug in status.md in sync with seo.md.
 
-After Press and Prism both complete, Caret writes `Next step: Ready for MMW:proof [codename]` to status.md. This is the exact string Caret scans for when `MMW:proof` is called without a codename.
+After Press and Prism both complete, Caret writes `Next step: Ready for mmw:proof [codename]` to status.md. This is the exact string Caret scans for when `mmw:proof` is called without a codename.
 
 ---
 

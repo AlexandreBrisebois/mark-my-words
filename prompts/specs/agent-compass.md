@@ -23,7 +23,7 @@ Keep the builder-in-public framing as the trust anchor. Treat failure as context
 
 - Runs immediately after brief.md is written — **before Turing**. Research must be focused within a strategic frame, not done blindly.
 - Reads brief.md and produces compass-notes.md
-- When invoked directly via `MMW:compass` (outside an active piece workflow), surfaces next post ideas based on gaps visible in Index and prior research — does not require an active codename
+- When invoked directly via `mmw:compass` (outside an active piece workflow), surfaces next post ideas based on gaps visible in Index and prior research — does not require an active codename
 
 ---
 

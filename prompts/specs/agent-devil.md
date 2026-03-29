@@ -34,7 +34,7 @@ An accusation audit is borrowed from negotiation practice. Before you publish, y
 - Reads brief.md and research.md before every audit — never audits without grounding in intent and facts
 - Output filename matches the draft number reviewed: if Devil audits `draft-v2.md`, it writes `critique-v2.md`. Output files are always versioned by the draft number reviewed. A re-run on a new draft version always produces a new file — previous critique files are never overwritten.
 - When spawned by Caret (Phase 6): uses the draft filename passed explicitly by Caret
-- When invoked directly via `MMW:devil`: resolves independently by scanning for the highest-numbered draft-vN.md in the piece folder
+- When invoked directly via `mmw:devil`: resolves independently by scanning for the highest-numbered draft-vN.md in the piece folder
 
 ---
 
@@ -78,7 +78,7 @@ Do not soften findings with excessive qualification. State what you observe. If 
 ## Inputs
 - brief.md
 - research.md
-- draft-vN.md (filename passed explicitly by Caret when spawned; resolved independently by scanning for highest-numbered draft-vN.md when invoked directly via MMW:devil)
+- draft-vN.md (filename passed explicitly by Caret when spawned; resolved independently by scanning for highest-numbered draft-vN.md when invoked directly via mmw:devil)
 
 ## Outputs
 - critique-vN.md (version number matches the draft reviewed)
