@@ -222,13 +222,19 @@ Next step: Loop iteration 1 — revise draft or co-edit.
 
 ## Session Resume
 
-If `MMW:proof [codename]` or `MMW [codename]` arrives in a fresh session with no active context, Caret reads status.md first and reports the current state before doing anything:
+If `MMW [codename]` arrives in a fresh session with no active context, Caret reads status.md first and reports the current state before doing anything.
+
+When the piece is ready to proof (last completed action was Press or Prism):
 
 ```
 Resuming: writers-room-build
 Last action: Prism → image-prompt.md
-Next step: MMW:proof writers-room-build — or continue editing.
+
+  [P] Proof and publish — run pre-flight checks and declare this draft final
+  [E] Keep editing — I'm not done with this piece yet
 ```
+
+When the piece is mid-workflow, Caret reports the current state and surfaces the options appropriate to that phase.
 
 This supports interrupted workflows — start Monday, resume Wednesday. Caret never assumes it knows the state. It always reads status.md first.
 
@@ -236,7 +242,7 @@ This supports interrupted workflows — start Monday, resume Wednesday. Caret ne
 
 ## Press + Prism Completion — Proof Prompt
 
-After both Press and Prism complete and their output files are verified, Caret always proposes the next step with the codename already filled in:
+After both Press and Prism complete and their output files are verified, Caret always presents this exact prompt:
 
 ```
 Press and Prism are done.
@@ -244,14 +250,11 @@ Press and Prism are done.
   ✓ seo.md (slug: [slug from status.md])
   ✓ image-prompt.md
 
-When you're ready to declare this piece final, type:
-
-  MMW:proof [codename]
-
-There's nothing else to do until you say so.
+  [P] Proof and publish — run pre-flight checks and declare this draft final
+  [E] Keep editing — I'm not done with this piece yet
 ```
 
-Caret waits. It does not advance automatically.
+Caret waits. It does not advance automatically. If the user selects [P], Caret executes the Phase 11 pre-flight and handoff directly — no command to type.
 
 ---
 

@@ -128,12 +128,27 @@ Before writing any draft, Caret MUST explicitly verify that research.md exists a
 If research.md does not exist:
 - Do NOT proceed to drafting
 - Surface this to the user:
-  > "research.md is missing. Turing has not completed research for this piece. Run MMW:turing before drafting, or confirm you want to proceed without research."
-- Wait for explicit user confirmation before continuing
+
+```
+research.md is missing — Turing has not run for this piece.
+
+  [T] Run Turing now — start a focused research pass before drafting
+  [W] Proceed without research — draft from the brief alone (not recommended)
+```
+
+- Wait for user selection before continuing
 
 If research.md exists but appears thin (under 200 words):
-- Flag it: "research.md exists but appears brief. Turing may not have completed a full research pass. Proceed anyway or run MMW:turing again?"
-- Wait for user confirmation
+- Flag it:
+
+```
+research.md exists but appears brief (under 200 words) — Turing may not have completed a full pass.
+
+  [T] Run Turing again — deepen the research before drafting
+  [W] Proceed with current research — draft from what's here
+```
+
+- Wait for user selection before continuing
 
 **Never silently skip this check.**
 
@@ -158,7 +173,15 @@ This loop runs until the user decides to move on. There is no iteration cap.
 ### Exit conditions
 
 1. Mark issues a HOLD verdict — loop exits immediately. HOLD means the issue is structural, not a revision problem. Caret surfaces this to the user:
-   > "Mark has issued a HOLD. The issue is structural — revising the draft won't resolve it. [Specific issue from brand-notes]. How would you like to proceed? [B] Revisit the brief / [C] Co-edit / [S] Proceed to critique anyway"
+
+```
+Mark has issued a HOLD — the issue is structural and revising won't resolve it.
+[Specific issue from brand-notes]
+
+  [B] Revisit the brief — go back to brief.md and rethink the angle before continuing
+  [C] Co-edit — you take the keyboard and address the structural issue directly
+  [S] Proceed to critique anyway — send this draft to Devil and Echo as-is
+```
 2. User selects [N] to move to critique — the only way to exit the loop
 
 ### Loop pause after every Mark review
@@ -278,14 +301,25 @@ See `specs/agent-devil.md` and `specs/agent-echo.md` for full audit and review c
 
 ## Phase 8 — User Revision Window
 
-After Devil and Echo complete, Caret reads critique-vN.md and audience-vN.md, then presents a consolidated feedback summary and pauses. The user may:
-- Edit the draft directly (co-edit mode available)
-- Ask Caret to revise based on Devil/Echo feedback
-- Proceed to publish prep with the current draft as-is
+After Devil and Echo complete, Caret reads critique-vN.md and audience-vN.md, then presents a consolidated feedback summary and pauses:
 
-If changes are made: Caret produces a new versioned draft before handing off to Press.
+```
+Devil and Echo have reviewed [draft-vN.md].
 
-If no changes: Press reads the existing latest draft — no new version is created. Caret does not increment the draft version without a reason.
+Key findings:
+  Devil: [1–3 bullet summary of the sharpest accusations from critique-vN.md]
+  Echo:  [1–3 bullet summary of the top audience concerns from audience-vN.md]
+
+What would you like to do?
+
+  [C] Co-edit — Caret surfaces the flagged passages, you edit the draft directly
+  [R] Revise — Caret rewrites the flagged sections based on Devil and Echo's feedback
+  [P] Proceed to publish prep — move to Press and Prism with the current draft as-is
+```
+
+If [C] or [R]: Caret produces a new versioned draft before handing off to Press.
+
+If [P]: Press reads the existing latest draft — no new version is created. Caret does not increment the draft version without a reason.
 
 ---
 
@@ -317,11 +351,19 @@ Mark does not read critique-vN.md or audience-vN.md. The scope is brand alignmen
 Mark: PASS on brand alignment.
 
   [L] Back to creative mode — keep working with Mark before publishing
-  [P] Proceed to publish
+  [P] Move to publish prep — run Press and Prism on the current draft
 ```
 
 **HOLD** — same as Phase 5 HOLD handling. Caret surfaces:
-> "Mark has issued a HOLD on the final draft. The issue is structural — revising won't resolve it. [Specific issue from brand-notes-final.md]. How would you like to proceed? [B] Revisit the brief / [C] Co-edit / [S] Proceed to Press anyway"
+
+```
+Mark has issued a HOLD on the final draft — the issue is structural and revising won't resolve it.
+[Specific issue from brand-notes-final.md]
+
+  [B] Revisit the brief — go back to brief.md and rethink the angle before continuing
+  [C] Co-edit — you take the keyboard and address the structural issue directly
+  [S] Proceed to Press anyway — skip the brand fix and move to publish prep
+```
 
 **REVISE** — Caret presents the issues and offers one fix pass. No loop:
 
@@ -341,7 +383,7 @@ If [C] or [A]: Caret produces a new versioned draft, then asks:
 Draft updated → draft-vN.md
 
   [L] Back to creative mode — keep working with Mark before publishing
-  [P] Proceed to publish
+  [P] Move to publish prep — run Press and Prism on the current draft
 ```
 
 If [L]: Caret logs `[loop restart] creative mode re-entry from brand check` in status.md and re-enters Phase 5 on the latest draft. On exit ([N] Move to critique), flow continues through Devil/Echo → revision window → brand check as normal (brand check fires again only if the revision window produces a new draft).
