@@ -511,16 +511,13 @@ If `$ARGUMENTS` is empty: scan `status.md` files in `writers-room/pieces/` for a
 ### Step F — Brand Guidelines (`writers-room/brand/guidelines.md`)
 
 Write starter brand guidelines for Mark based on:
-- Author: Alexandre Brisebois, AI Enthusiast, builder-in-public
-- Brand pivot: from multi-cloud engineering to AI agent building and learning in public
+- Author: Alexandre Brisebois, AI Enthusiast, Agentic AI, building and learning in public
 - Audience: CTOs, engineers, technical leaders — skeptical, time-poor, technically sharp
 - Tone: honest, reflective, direct — no hype, no fluff, no consulting-deck polish
 - Blog aesthetic: minimalist, editorial, warm — "Calm Signal"
 - Visual: warm off-white #F7F5F0, calm green accent #2D6A4F, near-black ink #1A1A18
-- Topics: AI agents, building in public, retrospectives, failure, recovery, honest learning
+- Topics: AI, Public Cloud, building in public, retrospectives, failure, recovery, honest learning
 - Voice: first person, contemplative, exploratory, honestly excited
-- Microsoft is origin story, not current identity
-- The old WordPress blog is archive, not content to migrate
 - Banned words enforced at all times: Utilize, Deep-dive, Game-changing, Synergy, Very, Extremely, Robust, Additionally, Furthermore, Moreover, Leverage
 - Pronoun rules: "We" for shared capability and success, "I" for vulnerability and opinion, never "I built" or "I achieved" alone
 - Emotional register default: reflective-vulnerable blended with urgently excited
