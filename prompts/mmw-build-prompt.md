@@ -161,10 +161,6 @@ Each agent file must:
 - List all responsibilities explicitly
 - Define inputs (exact filenames) and outputs (exact filenames)
 - Specify handoff targets
-- Apply brand pivot throughout using these exact substitutions:
-  - `srvrlss.dev` → `alexandrebrisebois.github.io`
-  - `multi-cloud engineer` / `serverless` → `AI agent builder` / `AI Enthusiast`
-  - `Technical Outcome Leader` → omit or replace with `builder-in-public`
 
 **Each agent file must open with this frontmatter structure:**
 
@@ -217,10 +213,50 @@ to restrict tool access.
 - Phase 8 in auto: apply Devil/Echo feedback directly, produce new draft, log summary, skip Phase 8.5
 - Manual mode: surface a concrete next-step prompt after every phase completion (pre-filled command + [C]/[S] options)
 
+**Flexible invocation input — Caret**: When writing `.claude/agents/caret.md`, include this behavior (read `prompts/specs/agent-caret.md` § Flexible invocation input for full detail):
+- After stripping flags, Caret determines the input type:
+  - **Topic string** — use directly to generate codename (current behavior)
+  - **File path** — Caret reads the file as the brief foundation, derives codename from its content, writes brief.md from the file's content
+  - **Bullet brainstorm** (items prefixed with `-`) — Caret structures the bullets into brief.md (angle, intent, constraints), then generates the codename from that structure
+- Input type detection happens before codename generation — never before flag stripping.
+
+**Auto-quick mode behavior — Caret**: When writing `.claude/agents/caret.md`, include these behaviors (read `prompts/specs/agent-caret.md` § Auto-quick mode for full detail):
+- Pre-step flag parsing: check for both `--auto` and `--quick` in the trigger text. If both present, strip them and set mode = auto-quick. Write `- Mode: auto-quick` in `## Current State` of status.md at init.
+- Session resume: if `Mode: auto-quick` is present in status.md, auto-quick mode applies for all remaining phases.
+- Auto-quick skips these phases entirely — log each skip in status.md as `[skip] Phase N — auto-quick mode`:
+  - Phase 1 (Compass) — `[skip] Phase 1 — auto-quick mode`
+  - Phase 4 (Mark headlines) — `[skip] Phase 4 — auto-quick mode`
+  - Phase 5 (Mark loop) — `[skip] Phase 5 — auto-quick mode`
+  - Phase 6+7 (Devil+Echo) — `[skip] Phase 6+7 — auto-quick mode`
+  - Phase 8 (revision window) — `[skip] Phase 8 — auto-quick mode`
+  - Phase 8.5 — `[skip] Phase 8.5 — auto-quick mode`
+- Auto-quick runs: Phase 0 (Index), Phase 2 (Turing — single focused search only, no deep dive), Phase 3 (Caret drafts from brief + research; no compass-notes.md available), Phase 9+10 (Press ║ Prism), mmw:proof gate, Phase 11.
+- Draft-elaborator use case: after auto-quick completes, the user may run `mmw [codename]` to continue in manual mode — the full pipeline picks up from the existing draft.
+
+**Deadline-constrained auto upgrade — Caret**: When writing `.claude/agents/caret.md`, include this behavior (read `prompts/specs/agent-caret.md` § Deadline-aware mode upgrade for full detail):
+- In auto mode only (not already auto-quick), before Phase 0, Caret reads `writers-room/cadence/calendar.md`.
+- If the codename appears with a target publish date and that date is <3 days from today, Caret upgrades mode to auto-quick and logs `[auto] Publish deadline in N days — fast path activated` in status.md.
+- If no calendar entry exists for this codename, auto mode runs at full depth unchanged.
+- This check runs at startup only — not on session resume.
+
 **Auto-mode behavior — Turing**: When writing `.claude/agents/turing.md`, include these behaviors (read `prompts/specs/agent-turing.md` for full detail):
-- At startup, read `Mode:` from status.md; if `Mode: auto`, skip the deep dive entirely
+- At startup, read `Mode:` from status.md; if `Mode: auto` or `Mode: auto-quick`, skip the deep dive entirely
 - Log `[auto] Deep dive skipped` under `## Deep Dive Candidates (skipped — auto mode)` in research.md
 - Proceed to Phase 3 immediately without surfacing candidates
+
+**Manual mode — Phase 8 triage — Caret**: When writing `.claude/agents/caret.md`, include this behavior (read `prompts/specs/flow.md` § Phase 8 and `prompts/specs/agent-caret.md` § Manual mode — Phase 8 triage for full detail):
+- After Devil and Echo complete, Caret synthesizes critique-vN.md and audience-vN.md into a structured triage before presenting options:
+  - **Must address before publishing**: Devil's REVISE items + Echo persona bounce points
+  - **Worth addressing if time allows**: Devil's Challenge Questions + minor Echo notes
+  - **Already working well**: positive signals from both
+- [F] Fact-check option: show this option **only** if Devil flagged credibility concerns in critique-vN.md. If shown and selected, Turing runs `--fact-check` and produces fact-check-vN.md.
+- When producing a post-Phase 8 draft (after [C] or [R]): Caret reads critique-vN.md + audience-vN.md + fact-check-vN.md (if it exists) and addresses all in one combined revision pass. Reports what it addressed from each file.
+- [P] Proceed: no new draft version is created. Press reads the existing latest draft.
+
+**Phase 11 outputs — Caret**: When writing `.claude/agents/caret.md`, Phase 11 must write **two** files to `writers-room/published/` using the Write tool (read then write — no shell copy commands):
+- `writers-room/published/[slug].md` — read final.md, write to this path
+- `writers-room/published/[slug]-image-prompt.md` — read image-prompt.md from the piece folder, write to this path
+Both must be written before Index and Cadence are spawned in parallel.
 
 **Cross-check before moving to Step C**: Read back the status.md initialization block in `.claude/agents/caret.md` and the Edit-tool replace target in `.claude/agents/press.md`. Confirm both reference the exact string `- Slug: (written by Press)` — character for character, including parentheses and capitalization. If they differ, fix whichever is wrong before continuing.
 
@@ -231,7 +267,9 @@ to restrict tool access.
 Read `prompts/specs/flow.md` before writing. Cover:
 - How Caret orchestrates the sub-agents
 - The full ordered workflow with all 11 phases
-- **Manual vs auto mode**: invocation syntax, what differs per phase (Phase 5 loop cap, Phase 8 no-pause, Phase 8.5 skipped, Turing deep dive skipped), proof gate always a human step in both modes
+- **All three modes**: manual, auto (`--auto`), and auto-quick (`--auto --quick`) — invocation syntax and what each skips or changes per phase. Include: Phase 5 loop cap (auto), Phase 8 no-pause (auto), Phase 8.5 skipped (auto), Turing deep dive skipped (auto + auto-quick), phases skipped entirely in auto-quick (Compass, Mark, Devil, Echo, revision window), proof gate always a human step in all modes
+- **Deadline-constrained auto**: if calendar.md has a target date <3 days away, auto mode upgrades to auto-quick at startup; Caret logs the reason
+- **Phase 11 handoff**: two files written to `writers-room/published/` — `[slug].md` (final.md) and `[slug]-image-prompt.md` (image-prompt.md)
 - The three parallel execution pairs: Devil ║ Echo, Press ║ Prism, Index ║ Cadence
 - The iterative Caret/Mark loop, co-edit mode, and circuit breaker logic
 - The Index overlap gate and startup validation
@@ -294,7 +332,7 @@ The user's voice is the point. Everything else serves that.
 ```
 
 - That image-prompt.md must be one focused paragraph — no headers, no bullets, no code fences
-- Final drafts land in `writers-room/published/[slug].md` — bring them to your publishing environment manually. mmw does not write outside its own directory.
+- Final drafts land in `writers-room/published/[slug].md` and the image prompt lands in `writers-room/published/[slug]-image-prompt.md` — bring them to your publishing environment manually. mmw does not write outside its own directory.
 - Parallel agent recovery: if you return to a session and status.md shows `[partial]` with no recent activity, the agent likely timed out. Use the relevant `mmw:agent` shortcut to retry the missing agent. Example: `[partial] Echo → pending` means `mmw:echo` to retry.
 - Scaffold recovery: if `mmw:proof` stops with "writers-room/published/ directory missing", the project scaffold is incomplete. Fix: run `mkdir -p writers-room/published/` from the project root, then retry `mmw:proof [codename]`.
 - Reminder: this is a writing tool — responses should be editorial, thoughtful, and concise. Not a coding tool.
@@ -522,7 +560,13 @@ Invoke Caret inline (do not spawn a subagent). Execute the Phase 11 pre-flight d
 5. Verify the latest `draft-vN.md` exists in the piece folder
 6. Verify `writers-room/published/` directory exists
 
-If all checks pass, write `final.md`, copy its content to `writers-room/published/[slug].md`, update `status.md`, write `Mode: archive-update` to `status.md`, then spawn Index and Cadence in parallel.
+If all checks pass:
+1. Write `final.md` in the piece folder
+2. Read `final.md` and write to `writers-room/published/[slug].md` (Write tool — no shell commands)
+3. Read `image-prompt.md` and write to `writers-room/published/[slug]-image-prompt.md` (Write tool — no shell commands)
+4. Update `status.md`
+5. Write `Mode: archive-update` to `status.md`
+6. Spawn Index and Cadence in parallel
 
 If `$ARGUMENTS` is empty: scan `status.md` files in `writers-room/pieces/` for any piece containing `Next step: Ready for mmw:proof`, list them, and ask the user to confirm which one to proof. Never assume.
 ```
@@ -537,17 +581,7 @@ If `$ARGUMENTS` is empty: scan `status.md` files in `writers-room/pieces/` for a
 
 ### Step F — Brand Guidelines (`writers-room/brand/guidelines.md`)
 
-Write starter brand guidelines for Mark based on:
-- Author: Alexandre Brisebois, AI Enthusiast, Agentic AI, building and learning in public
-- Audience: CTOs, engineers, technical leaders — skeptical, time-poor, technically sharp
-- Tone: honest, reflective, direct — no hype, no fluff, no consulting-deck polish
-- Blog aesthetic: minimalist, editorial, warm — "Calm Signal"
-- Visual: warm off-white #F7F5F0, calm green accent #2D6A4F, near-black ink #1A1A18
-- Topics: AI, Public Cloud, building in public, retrospectives, failure, recovery, honest learning
-- Voice: first person, contemplative, exploratory, honestly excited
-- Banned words enforced at all times: Utilize, Deep-dive, Game-changing, Synergy, Very, Extremely, Robust, Additionally, Furthermore, Moreover, Leverage
-- Pronoun rules: "We" for shared capability and success, "I" for vulnerability and opinion, never "I built" or "I achieved" alone
-- Emotional register default: reflective-vulnerable blended with urgently excited
+Write `writers-room/brand/guidelines.md` based on the brand spec at `prompts/specs/brand.md`. Copy the full contents of that spec into the guidelines file — this is the runtime copy that agents read during piece workflows.
 
 ---
 
@@ -595,6 +629,19 @@ When the build is complete, verify the following success criteria can be traced 
 - Phase 8: Caret applies Devil/Echo feedback directly, logs summary, skips Phase 8.5
 - `mmw:proof` → still a human gate; auto mode pauses and waits
 - Session resume: `mmw [codename]` → Caret reads `Mode: auto` from status.md → continues in auto mode
+- Phase 11: Caret writes both `writers-room/published/[slug].md` and `writers-room/published/[slug]-image-prompt.md` via Write tool
+
+**Auto-quick trace** (verify caret.md contains the required logic):
+- `mmw --auto --quick [topic]` → Caret strips both flags, writes `- Mode: auto-quick` to status.md
+- Phase 1 skipped — logs `[skip] Phase 1 — auto-quick mode`
+- Phase 0 (Index) runs as normal
+- Phase 2 (Turing) runs — single focused search, no deep dive — logs `[auto] Deep dive skipped`
+- Phase 3 (Caret draft) runs — from brief + research only; no compass-notes.md
+- Phases 4, 5, 6+7, 8, 8.5 all skipped — each logged in status.md
+- Phase 9+10 (Press ║ Prism) runs in parallel
+- `mmw:proof` → human gate; waits
+- Phase 11: same as auto, including both published/ file writes
+- Deadline-constrained upgrade: if `calendar.md` shows target date <3 days away in auto mode, caret.md upgrades to auto-quick and logs `[auto] Publish deadline in N days — fast path activated`
 
 **Manual-mode trace** (existing workflow, unchanged):
 
