@@ -8,7 +8,7 @@ Methodical, precise. No creativity — just craft.
 
 ## Tool scoping
 `tools: Read, Write, Edit, Glob, Bash`
-`model: claude-sonnet-4-6`
+`model: claude-haiku-4-5-20251001`
 `description: Formats the final draft for Hugo and makes it discoverable.`
 
 ---

@@ -1,6 +1,6 @@
 # mark-my-words
 
-Mark My Words (MMW) is a multi-agent writing system built on Claude Code. It orchestrates a set of specialized agents — researcher, strategist, writer, critic, publisher — through a structured workflow to produce blog posts for [alexandrebrisebois.github.io](https://alexandrebrisebois.github.io/).
+Mark My Words (mmw) is a multi-agent writing system built on Claude Code. It orchestrates a set of specialized agents — researcher, strategist, writer, critic, publisher — through a structured workflow to produce blog posts for [srvrlss.dev](srvrlss.dev).
 
 ## How to use
 
@@ -26,7 +26,7 @@ Caret generates a codename, creates a piece folder, and writes `brief.md` from y
 mmw --auto write a post about observability in multi-agent systems
 ```
 
-**Auto-quick** — fast path for short posts or cheap first drafts. Skips Compass, Mark, Devil, Echo, and the revision window. Produces a complete draft at low cost:
+**Auto-quick** — fast path for short posts or cheap first drafts. Skips Compass, Mark, Devil, and the revision window. Echo runs a lightweight audience check after the draft — if it flags a structural fit issue, you'll get one revise/skip choice before Press and Prism run. Produces a complete draft at low cost:
 
 ```
 mmw --auto --quick write a post about observability in multi-agent systems
@@ -45,22 +45,16 @@ Before anything else, Index checks your archive for overlapping topics and produ
 - **[P] Proceed** — no meaningful overlap, carry on
 - **[A] Abandon** — discard this piece (you'll be asked to type the codename to confirm)
 
-### Commissioning gate (manual only)
+### After Compass (manual only)
 
-After Compass sets direction, Caret pauses before research begins — the last low-cost moment to redirect the angle:
+After Compass sets direction, Caret surfaces a one-line notice and immediately starts Turing:
 
 ```
-Angle: [one-sentence angle]
-Focus for Turing: [research priorities]
-Piece type: [Type 1 / Type 2]
-Cadence: [note from calendar — e.g., "3rd post in AI agents cluster this month"]
-
-  [Y] Approve — Turing starts research on this angle
-  [R] Redirect — adjust the angle before research begins
-  [S] Skip research — draft from compass-notes.md alone
+Compass has set the direction: [one-sentence angle]
+Starting Turing — [S] to skip research.
 ```
 
-On [R]: Caret re-invokes Compass with your redirect note. The gate fires again. On [S]: Turing is skipped and Caret drafts from the brief and compass-notes alone.
+On [S]: Turing is skipped and Caret drafts from the brief and compass-notes alone. To adjust the angle after Compass has run, use `mmw:compass [codename]` directly.
 
 ### The Mark loop
 
@@ -78,37 +72,38 @@ If Mark flags a structural issue, you'll see a **HOLD** instead. The loop exits 
 - **[C] Co-edit** — take manual control of the draft
 - **[M] Move to critique** — proceed to Devil and Echo with the draft as-is
 
+In auto mode, HOLD also surfaces to you — it's the one interruption auto mode will make during the Mark pass. You can co-edit or skip it and continue.
+
 ### Critique and the revision window
 
 After the draft clears the Mark loop, Devil and Echo run in parallel — Devil audits for unsupported claims, Echo checks audience fit through two named reader personas: **The Executive** (strategic CTO, reads for credibility signal) and **The Builder** (hands-on engineer, reads for "did they actually build it?").
 
-Caret synthesizes their feedback into a structured triage:
+Caret surfaces the feedback files directly and waits:
 
 ```
-Must address before publishing:
-  [Devil REVISE items + Echo bounce points]
-
-Worth addressing if time allows:
-  [Devil Challenge Questions + minor Echo notes]
-
-Already working well:
-  [positive signals from both]
+Feedback files:
+  critique-vN.md (Devil)
+  audience-vN.md (Echo)
 
   [C] Co-edit
   [R] Revise
+  [T] Re-research
   [F] Fact-check  ← only shown if Devil flagged credibility concerns
   [P] Proceed to Press and Prism
+  [X] Prioritize — Caret synthesizes Must / Worth / Already Working Well
 ```
+
+Read the files first. Use **[X] Prioritize** if you want Caret to synthesize the feedback into a structured triage before choosing an action.
 
 **[F] Fact-check**: Turing checks every draft claim against research.md and produces `fact-check-vN.md` with three sections — Confirmed, Ungrounded, Inaccurate. If a claim is ungrounded, you can run `mmw:turing [codename] --find-citation "[claim]"` to search for a supporting source. Caret reads the fact-check alongside Devil and Echo feedback in the combined revision pass.
 
 **Single-persona mode**: Steer Echo to focus on one persona — `mmw:echo [codename] --persona "The Executive"` — when your brief specifies the primary audience.
 
-If you made revisions during the revision window, Mark runs a one-pass brand re-alignment check on the updated draft (Phase 8.5 — conditional, fires only if Phase 8 changed the draft). Outcomes:
+After revising, you can run a brand re-alignment check on the updated draft before moving to publish prep — select **[B] Brand check** from the post-revision menu. Outcomes:
 
 - **PASS** → `[L] Back to draft` or `[P] Proceed to Press and Prism`
-- **REVISE** → `[C] Co-edit` / `[R] Revise` / `[P] Proceed to Press and Prism` — then same [L]/[P] choice
-- **HOLD** → `[B] Revisit brief` / `[C] Co-edit` / `[P] Proceed to Press and Prism`
+- **REVISE** → `[C] Co-edit` / `[R] Revise` / `[P] Proceed` — then same [L]/[P] choice
+- **HOLD** → `[B] Revisit brief` / `[C] Co-edit` / `[P] Proceed`
 
 ### Publish prep
 

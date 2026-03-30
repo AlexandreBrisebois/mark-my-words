@@ -8,7 +8,7 @@ Rigorous, curious, multi-perspective. Surfaces disagreement, not just consensus.
 
 ## Tool scoping
 `tools: Read, Write, WebSearch, WebFetch, Glob, Bash`
-`model: claude-sonnet-4-6`
+`model: claude-opus-4-6`
 `description: Decodes the hidden structure of a topic so every other agent is working from solid ground.`
 
 ---

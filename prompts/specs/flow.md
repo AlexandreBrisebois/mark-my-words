@@ -72,9 +72,9 @@ Phase 2 — Turing: focused research (reads compass-notes.md first)
 Phase 3 — Caret: draft-v1.md
            [research.md gate — must exist and be non-empty]
    ↓
-Phase 3.5 — Echo: audience signal  [manual only]
+Phase 3.5 — Echo: audience signal  [manual only, non-blocking]
              quick structural fit check → audience-signal.md
-             [C] Continue  [R] Restructure first
+             result surfaced as advisory sidebar at Phase 4
    ↓
 Phase 4 — Mark: headlines and hooks (reads draft-v1.md)
    ↓
@@ -208,17 +208,7 @@ mmw:echo [codename] --quick
 
 Echo in `--quick` mode reads only brief.md and draft-v1.md. It writes `audience-signal.md` — a single paragraph answering one question: **does the structural shape of this draft match what the intended audience needs?** PASS or FLAG verdict only. No persona breakdown, no full audience review.
 
-Caret reads audience-signal.md and surfaces the result before proceeding:
-
-```
-Audience signal: [PASS / FLAG]
-[one-sentence finding if FLAG]
-
-  [C] Continue to Phase 4 — headlines
-  [R] Restructure — address the flag before headlines
-```
-
-**[R] Restructure**: Caret revises draft-v1.md to address the flag, produces draft-v2.md, then proceeds to Phase 4 on the new draft.
+Caret does **not** surface the result at Phase 3.5. Echo runs silently. The result is held and surfaced as an advisory note at the start of Phase 4 — it does not block the writer from proceeding.
 
 **Auto mode and auto-quick**: Phase 3.5 is skipped. Caret logs `[skip] Phase 3.5 — auto mode` in status.md.
 
@@ -227,6 +217,14 @@ Audience signal: [PASS / FLAG]
 ## Phase 4 — Mark: Headlines
 
 Mark reads draft-v1.md and produces headlines.md. The draft is the ground truth — headlines must reflect what the piece is actually about, not just the original brief.
+
+If audience-signal.md exists (i.e., Phase 3.5 ran), Caret surfaces the Echo quick result as a sidebar before presenting Mark's headlines — no action required:
+
+```
+Audience signal (advisory): [PASS / FLAG — one sentence]
+```
+
+The writer can note it and continue. The signal is informational only at this point.
 
 See `specs/agent-mark.md` for scoring criteria and brand rules.
 
@@ -242,8 +240,16 @@ This loop runs until the user decides to move on. There is no iteration cap.
 
 Caret runs exactly 1 Mark pass, then exits the loop:
 - **REVISE**: Caret applies Mark's feedback directly (no pause), exits loop
-- **PASS**: exit immediately, proceed to Phase 6+7
-- **HOLD**: Caret logs `[auto] Mark HOLD — proceeding (structural issue logged)` in status.md, exits loop without blocking
+- **PASS**: exit immediately, proceed to Devil and Echo
+- **HOLD**: Caret pauses and surfaces the HOLD to the user:
+
+```
+[auto] Mark has issued a HOLD — structural issue that revision won't resolve.
+[Specific issue from brand-notes]
+
+  [C] Co-edit — address the structural issue directly
+  [S] Skip — proceed to critique and audience review (HOLD logged in status.md)
+```
 
 Co-edit is not available in auto mode.
 
@@ -415,52 +421,60 @@ Caret reads critique-vN.md and audience-vN.md, applies the feedback directly (no
 
 ### Manual mode
 
-After Devil and Echo complete, Caret reads critique-vN.md and audience-vN.md, synthesizes a structured triage, and pauses:
-
-**Triage mapping**:
-- **Must address before publishing**: Devil's REVISE items + Echo persona bounce points
-- **Worth addressing if time allows**: Devil's Challenge Questions + minor Echo notes
-- **Already working well**: Devil's positive Persona Reactions + Echo passing assessments
+After Devil and Echo complete, Caret pauses and surfaces the feedback files directly:
 
 ```
 Devil and Echo have reviewed [draft-vN.md].
 
-Must address before publishing:
-  [bullet list — Devil REVISE items + Echo bounce points]
-
-Worth addressing if time allows:
-  [bullet list — Devil Challenge Questions + minor Echo notes]
-
-Already working well:
-  [bullet list — positive signals from both]
+Feedback files:
+  critique-vN.md (Devil)
+  audience-vN.md (Echo)
 
   [C] Co-edit — Caret surfaces the flagged passages, you edit the draft directly
   [R] Revise — Caret revises using Devil and Echo's feedback
   [T] Re-research — Turing runs a targeted gap-fill, then re-enter the draft loop
   [F] Fact-check — Turing checks draft claims against research.md  ← only shown if Devil flagged credibility concerns
   [P] Proceed to Press and Prism
+  [X] Prioritize — Caret synthesizes Must / Worth / Already Working Well
 ```
+
+**[X] Prioritize**: On request, Caret synthesizes critique-vN.md and audience-vN.md into a structured triage before the writer chooses an action:
+- **Must address before publishing**: Devil's REVISE items + Echo persona bounce points
+- **Worth addressing if time allows**: Devil's Challenge Questions + minor Echo notes
+- **Already working well**: Devil's positive Persona Reactions + Echo passing assessments
 
 **[F] Fact-check** is shown only if Devil flagged credibility concerns in critique-vN.md. See flow.md § Turing Fact-Check Sub-mode.
 
 **[T] Re-research**: Caret invokes Turing with a targeted gap-fill prompt. The prompt is derived from Devil's and Echo's flags when triggered via menu, or from the writer's own prompt when the writer types it directly (e.g., "I need more on [specific topic] before revising"). Turing appends new findings to research.md — it does not overwrite it. Caret logs `[loop] re-research → Turing gap-fill` in status.md. After Turing completes, Caret re-enters the Phase 5 loop on the latest draft. On [M] exit, flow continues through Phase 6+7 again (Devil and Echo re-run on the new draft).
 
-If [C] or [R]: Caret produces a new versioned draft using Devil + Echo feedback (+ fact-check-vN.md if it exists) before handing off to Press. Caret reports what it addressed from each feedback file.
+If [C] or [R]: Caret produces a new versioned draft using Devil + Echo feedback (+ fact-check-vN.md if it exists). Caret reports what it addressed from each feedback file, then asks:
 
-If [P]: Press reads the existing latest draft — no new version is created. Caret does not increment the draft version without a reason.
+```
+Draft updated → draft-vN.md
+
+  [B] Brand check — run Mark on the updated draft
+  [L] Back to draft — re-enter the Mark loop for more drafting passes
+  [P] Proceed to Press and Prism
+```
+
+If [P] without producing a new draft: Press reads the existing latest draft. Caret does not increment the draft version without a reason. Before proceeding, Caret offers:
+
+```
+  [B] Brand check first — run Mark, then proceed to Press and Prism
+  [P] Proceed to Press and Prism
+```
 
 ---
 
-## Phase 8.5 — Mark: Brand Re-Alignment Check [conditional — manual only]
+## Phase 8.5 — Mark: Brand Re-Alignment Check [user-initiated — manual only]
 
-**Auto mode**: Phase 8.5 does not run. Caret logs `[skip] Phase 8.5 — auto mode` in status.md and proceeds directly to Phase 9+10. Rationale: a single Mark pass already occurred in Phase 5; a second brand check adds tokens without proportional value in an unattended run.
+**Auto mode**: Phase 8.5 does not run. Caret logs `[skip] Phase 8.5 — auto mode` in status.md and proceeds directly to Press and Prism.
 
 ### When it fires (manual mode only)
 
-After Phase 8 completes, Caret compares the draft filename passed to Devil/Echo at Phase 6+7 against the highest-numbered draft in the piece folder. If a new draft version was produced during Phase 8, Phase 8.5 fires. If no new draft exists (the user chose to proceed as-is), Phase 8.5 is skipped entirely. Caret logs the outcome in status.md:
+Phase 8.5 fires when the user selects `[B] Brand check` from the Phase 8 menu (available after a [C] or [R] revision produces a new draft, and also as a pre-proceed option before [P]). Caret does not trigger Phase 8.5 automatically — no filename comparison, no heuristic.
 
-- Skipped: `[skip] Phase 8.5 — no draft change in Phase 8`
-- Fired: Caret spawns Mark as a subagent, passing the latest draft filename explicitly
+Caret logs `[user] Phase 8.5 — brand check requested` in status.md and spawns Mark as a subagent, passing the latest draft filename explicitly.
 
 ### What Mark reads
 
@@ -582,7 +596,7 @@ mmw --auto [topic | file | bullets]
 [Phase 5] Mark — 1 pass, copy mode (polish: banned words, rhythm, pronouns)
     REVISE → Caret revises directly, no pause, exits loop
     PASS   → exit immediately
-    HOLD   → log [auto] Mark HOLD — proceeding (structural issue logged), exit loop
+    HOLD   → surface to user: [C] Co-edit or [S] Skip (HOLD logged if skipped)
     ↓
 [Phase 6+7] Devil ║ Echo — parallel
     Devil → critique-vN.md
@@ -619,6 +633,13 @@ mmw --auto --quick [topic | file | bullets]
     ↓
 [Phase 3] Caret — first draft → draft-v1.md
     (drafts from brief + research; no compass-notes.md)
+    ↓
+[Phase 3.5] Echo --quick → audience-signal.md
+    PASS → log [auto-quick] Echo PASS — continue, proceed silently
+    FLAG → surface to user:
+      [auto-quick] Echo FLAG: [one sentence]
+        [C] Revise opening — Caret addresses the flag, produces draft-v2.md
+        [S] Skip — proceed to Press and Prism with flag noted in status.md
     [Phase 4 Mark headlines: SKIPPED — logs [skip] Phase 4 — auto-quick mode]
     [Phase 5 Mark loop: SKIPPED — logs [skip] Phase 5 — auto-quick mode]
     [Phase 6+7 Devil+Echo: SKIPPED — logs [skip] Phase 6+7 — auto-quick mode]

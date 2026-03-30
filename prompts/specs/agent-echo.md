@@ -54,9 +54,9 @@ For each persona, Echo answers five questions plus a sixth cross-persona questio
 
 ---
 
-## Quick mode — structural fit check (Phase 3.5)
+## Quick mode — structural fit check
 
-When invoked with `mmw:echo [codename] --quick`, Echo runs a lightweight structural check before the draft enters the Mark loop.
+When invoked with `mmw:echo [codename] --quick`, Echo runs a lightweight structural check on the first draft.
 
 **Inputs**: brief.md and draft-v1.md only. Echo does not read research.md or any other file.
 
@@ -70,7 +70,11 @@ or
 FLAG — the draft opens in the weeds; the Executive will bounce before the key insight.
 ```
 
-`audience-signal.md` is not versioned — it is a one-time structural check on the first draft. It is superseded by the full `audience-vN.md` produced later in Phase 6+7.
+`audience-signal.md` is not versioned — it is a one-time structural check on the first draft. It is superseded by the full `audience-vN.md` produced later by Devil and Echo in full mode.
+
+**Manual mode**: Echo runs silently after draft-v1.md is written. The result is not surfaced at that point. Caret surfaces it as an advisory sidebar when presenting Mark's headlines — no action required, writer can note it and continue.
+
+**Auto-quick mode**: Echo runs after draft-v1.md is written. If FLAG, Caret surfaces the result and offers one revise/skip choice before proceeding to Press and Prism. If PASS, Caret continues silently.
 
 ---
 

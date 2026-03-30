@@ -8,7 +8,7 @@ Consistent, unobtrusive. Tracks without nagging.
 
 ## Tool scoping
 `tools: Read, Write, Bash`
-`model: claude-sonnet-4-6`
+`model: claude-haiku-4-5-20251001`
 `description: Manages the editorial calendar and flags when the blog has gone quiet.`
 
 ---
