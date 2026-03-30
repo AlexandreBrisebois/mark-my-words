@@ -61,6 +61,41 @@ building each artifact. Do not rely on memory of a previously read spec.
 
 ---
 
+## Project Root
+
+> **PROJECT ROOT**: All absolute paths in this prompt use `/Users/alex/Code/mark-my-words` as the project root. ← `PROJECT_ROOT`
+> If this repo is checked out elsewhere, replace this value everywhere before running the build.
+
+---
+
+## Shared String Constants
+
+These strings must be reproduced character-for-character in the agent files that reference them. Change them here first, then rerun the affected steps.
+
+```
+SLUG_SENTINEL = "- Slug: (written by Press)"
+```
+
+Used in: `.claude/agents/caret.md` (status.md initialization block) and `.claude/agents/press.md` (Edit-tool replace target). Both must match exactly — including parentheses and capitalization. See the cross-check at the end of Step B.
+
+---
+
+## Maintenance Map
+
+Use this table when making targeted changes after the initial build. You do not need to rerun the full build — only the steps listed.
+
+| If you change… | Rerun steps |
+|---|---|
+| Any agent spec (`prompts/specs/agent-*.md`) | Step B (that agent only) + Validation auto-mode trace |
+| `prompts/specs/brand.md` | Step F only |
+| `prompts/specs/flow.md` | Step C, Step D, Validation |
+| `mmw_tools.py` signatures | Step B (affected agents), Step D, Validation |
+| A skill spec (`prompts/specs/skills/<name>.md`) | Step E (that skill only) |
+| `prompts/specs/tool-scoping.md` | Step B (all agents) + Validation |
+| `SLUG_SENTINEL` value (above) | Step B (caret.md + press.md) + cross-check at end of Step B |
+
+---
+
 ## Python Tools (`mmw_tools.py`)
 
 A Python helper script lives at the project root: `mmw_tools.py`. Agents call it via Bash to handle all deterministic file operations — this keeps mechanical work out of agent context windows.
@@ -98,7 +133,7 @@ Field names for `status_read` / `status_write` are lowercase: `phase`, `mode`, `
 Create `writers-room/task.md` first. Then create this full directory structure:
 
 ```
-/Users/alex/Code/mark-my-words/
+/Users/alex/Code/mark-my-words/           ← PROJECT_ROOT
 ├── CLAUDE.md                  ← project root — triggers mmw, mmw:agent shortcuts
 └── writers-room/
     ├── ARCHITECTURE.md
@@ -115,7 +150,7 @@ Create `writers-room/task.md` first. Then create this full directory structure:
     ├── cadence/
     │   └── calendar.md
 
-/Users/alex/Code/mark-my-words/.claude/agents/
+/Users/alex/Code/mark-my-words/.claude/agents/    ← PROJECT_ROOT
     ├── caret.md
     ├── mark.md
     ├── compass.md
@@ -127,7 +162,7 @@ Create `writers-room/task.md` first. Then create this full directory structure:
     ├── cadence.md
     └── prism.md
 
-/Users/alex/Code/mark-my-words/.claude/skills/
+/Users/alex/Code/mark-my-words/.claude/skills/    ← PROJECT_ROOT
     ├── mmw/
     │   └── SKILL.md
     ├── mmw-turing/
@@ -158,7 +193,7 @@ After creating `pieces/` and `published/`, write an empty `.gitkeep` file in eac
 
 Also create `.claude/agents/` explicitly before writing any agent files — write an empty `.gitkeep` there too. This guarantees the directory exists when Step B begins, since `Write` tool behavior on missing parent directories is not guaranteed.
 
-**CLAUDE.md must be at the project root** (`/Users/alex/Code/mark-my-words/CLAUDE.md`),
+**CLAUDE.md must be at the project root** (`/Users/alex/Code/mark-my-words/CLAUDE.md` ← PROJECT_ROOT),
 not inside `writers-room/`. This is required for Claude Code to recognize the
 mmw triggers and `mmw:agent` shortcuts in every new session.
 
@@ -207,28 +242,7 @@ The `tools` value must be a YAML inline sequence (bracketed, comma-separated). T
 
 Every agent file must also include `model: claude-sonnet-4-6` in its frontmatter. This ensures all subagents run on a capable model regardless of which model the parent session is using.
 
-**Tool scoping per agent — use exactly these values in frontmatter:**
-
-| Agent | `tools` frontmatter value |
-|---|---|
-| Caret | Read, Write, Edit, Agent, Glob, Bash |
-| Mark | Read, Write |
-| Compass | Read, Write, Glob |
-| Devil | Read, Write |
-| Turing | Read, Write, WebSearch, WebFetch, Glob, Bash |
-| Echo | Read, Write |
-| Press | Read, Write, Edit, Glob, Bash |
-| Prism | Read, Write, Glob |
-| Index | Read, Write, Glob, Bash |
-| Cadence | Read, Write, Bash |
-
-Tool scoping is enforced by Claude Code via the frontmatter — not by prose
-instructions inside the file body. Do not rely on written instructions alone
-to restrict tool access.
-
-> **Tool names are case-sensitive** and must match Claude Code's registered names
-> exactly: `Read`, `Write`, `Edit`, `Agent`, `Glob`, `Bash`, `WebSearch`, `WebFetch`.
-> A mistyped tool name will silently fail to scope access — no error is raised.
+**Tool scoping per agent**: Read `prompts/specs/tool-scoping.md` for the authoritative tool scoping table — do not infer from memory. That file also documents the YAML inline sequence requirement and case-sensitivity rules.
 
 > **Parallel spawning requires same-response Agent calls.** When Caret spawns a
 > parallel pair (Devil║Echo, Press║Prism, Index║Cadence), both Agent tool calls
@@ -303,7 +317,7 @@ to restrict tool access.
 All three file writes happen in one atomic operation. Both published/ files must exist before Index and Cadence are spawned in parallel.
 
 **mmw_tools.py usage — Press**: When writing `.claude/agents/press.md`, instruct Press to:
-- **Slug sync verification**: After writing the slug to status.md via the Edit tool (the existing exact-string replace for `- Slug: (written by Press)`), call `python mmw_tools.py slug_validate <codename>` to confirm the values match. If `match` is false, log the mismatch and correct the value before proceeding.
+- **Slug sync verification**: After writing the slug to status.md via the Edit tool (the existing exact-string replace for the `SLUG_SENTINEL` value defined above), call `python mmw_tools.py slug_validate <codename>` to confirm the values match. If `match` is false, log the mismatch and correct the value before proceeding.
 
 **mmw_tools.py usage — Index**: When writing `.claude/agents/index.md`, instruct Index to:
 - **Overlap candidate scan (Phase 0)**: Instead of reading the full post-index.md table in context, call `python mmw_tools.py overlap_check writers-room/pieces/<codename>/brief.md writers-room/index/post-index.md`. The tool returns a ranked shortlist of up to 5 lexical overlap candidates with scores and shared keywords. Index then reads only the shortlisted entries (or their published files) to make the editorial judgment — not the full table.
@@ -312,7 +326,7 @@ All three file writes happen in one atomic operation. Both published/ files must
 **mmw_tools.py usage — Cadence**: When writing `.claude/agents/cadence.md`, instruct Cadence to:
 - **Calendar entry append**: Instead of reading and manually appending a formatted row, call `python mmw_tools.py calendar_log <codename> '<description>' <target_date>`. Description should be the one-liner from status.md; target_date in YYYY-MM-DD format.
 
-**Cross-check before moving to Step C**: Read back the status.md initialization block in `.claude/agents/caret.md` and the Edit-tool replace target in `.claude/agents/press.md`. Confirm both reference the exact string `- Slug: (written by Press)` — character for character, including parentheses and capitalization. If they differ, fix whichever is wrong before continuing.
+**Cross-check before moving to Step C**: Read back the status.md initialization block in `.claude/agents/caret.md` and the Edit-tool replace target in `.claude/agents/press.md`. Confirm both use the `SLUG_SENTINEL` value defined at the top of this prompt — character for character. If they differ, fix whichever is wrong before continuing.
 
 ---
 
@@ -345,7 +359,7 @@ Read `prompts/specs/flow.md` before writing. Cover:
 
 ### Step D — CLAUDE.md
 
-**Location**: `/Users/alex/Code/mark-my-words/CLAUDE.md` (project root — not inside writers-room/).
+**Location**: `/Users/alex/Code/mark-my-words/CLAUDE.md` ← PROJECT_ROOT (project root — not inside writers-room/).
 
 Read `prompts/specs/flow.md` before writing. Cover:
 - What Mark My Words is — one paragraph
@@ -397,226 +411,25 @@ The user's voice is the point. Everything else serves that.
 
 Create one skill directory per mmw command. Each skill provides guaranteed slash-command routing instead of relying on CLAUDE.md trigger-word parsing. Skills are stored at `.claude/skills/<name>/SKILL.md`.
 
-**Create all twelve skill directories and their SKILL.md files:**
+**Create all twelve skill directories and their SKILL.md files.** For each skill, read the corresponding spec file from `prompts/specs/skills/` and write its contents verbatim to the target path. Do not paraphrase — copy exactly.
 
----
+| Skill | Spec file | Target path |
+|---|---|---|
+| `/mmw` | `prompts/specs/skills/mmw.md` | `.claude/skills/mmw/SKILL.md` |
+| `/mmw-turing` | `prompts/specs/skills/mmw-turing.md` | `.claude/skills/mmw-turing/SKILL.md` |
+| `/mmw-devil` | `prompts/specs/skills/mmw-devil.md` | `.claude/skills/mmw-devil/SKILL.md` |
+| `/mmw-echo` | `prompts/specs/skills/mmw-echo.md` | `.claude/skills/mmw-echo/SKILL.md` |
+| `/mmw-press` | `prompts/specs/skills/mmw-press.md` | `.claude/skills/mmw-press/SKILL.md` |
+| `/mmw-prism` | `prompts/specs/skills/mmw-prism.md` | `.claude/skills/mmw-prism/SKILL.md` |
+| `/mmw-compass` | `prompts/specs/skills/mmw-compass.md` | `.claude/skills/mmw-compass/SKILL.md` |
+| `/mmw-mark` | `prompts/specs/skills/mmw-mark.md` | `.claude/skills/mmw-mark/SKILL.md` |
+| `/mmw-cadence` | `prompts/specs/skills/mmw-cadence.md` | `.claude/skills/mmw-cadence/SKILL.md` |
+| `/mmw-index` | `prompts/specs/skills/mmw-index.md` | `.claude/skills/mmw-index/SKILL.md` |
+| `/mmw-bearings` | `prompts/specs/skills/mmw-bearings.md` | `.claude/skills/mmw-bearings/SKILL.md` |
+| `/mmw-proof` | `prompts/specs/skills/mmw-proof.md` | `.claude/skills/mmw-proof/SKILL.md` |
 
-#### `/mmw` — Main entry point
+To update a skill in the future, edit its spec file in `prompts/specs/skills/` and rerun Step E for that skill only (see Maintenance Map above).
 
-`.claude/skills/mmw/SKILL.md`:
-```yaml
----
-name: mmw
-description: Launch the Mark My Words writing system. Spawns Caret as orchestrator for a new piece or resumes an existing one by codename.
-argument-hint: [topic or codename]
----
-
-Spawn the `caret` subagent defined in `.claude/agents/caret.md`, passing `$ARGUMENTS` as the user's topic, brief, or codename.
-
-If `$ARGUMENTS` is empty, respond: "Usage: /mmw [topic or codename]" and do nothing further.
-```
-
----
-
-#### `/mmw-turing` — Research pass
-
-`.claude/skills/mmw-turing/SKILL.md`:
-```yaml
----
-name: mmw-turing
-description: Run a research pass on an active mmw piece. Spawns Turing directly, bypassing Caret.
-argument-hint: [codename]
----
-
-Spawn the `turing` subagent defined in `.claude/agents/turing.md`, passing `$ARGUMENTS` as the active piece codename.
-
-If `$ARGUMENTS` is empty, respond: "Usage: /mmw-turing [codename]" and do nothing further.
-```
-
----
-
-#### `/mmw-devil` — Accusation audit
-
-`.claude/skills/mmw-devil/SKILL.md`:
-```yaml
----
-name: mmw-devil
-description: Run an accusation audit on the latest draft of an active mmw piece. Spawns Devil directly.
-argument-hint: [codename]
----
-
-Spawn the `devil` subagent defined in `.claude/agents/devil.md`, passing `$ARGUMENTS` as the active piece codename.
-
-If `$ARGUMENTS` is empty, respond: "Usage: /mmw-devil [codename]" and do nothing further.
-```
-
----
-
-#### `/mmw-echo` — Audience check
-
-`.claude/skills/mmw-echo/SKILL.md`:
-```yaml
----
-name: mmw-echo
-description: Run an audience check on the latest draft of an active mmw piece. Spawns Echo directly.
-argument-hint: [codename]
----
-
-Spawn the `echo` subagent defined in `.claude/agents/echo.md`, passing `$ARGUMENTS` as the active piece codename.
-
-If `$ARGUMENTS` is empty, respond: "Usage: /mmw-echo [codename]" and do nothing further.
-```
-
----
-
-#### `/mmw-press` — SEO + Hugo front matter
-
-`.claude/skills/mmw-press/SKILL.md`:
-```yaml
----
-name: mmw-press
-description: Run an SEO audit and generate Hugo front matter for the latest draft of an active mmw piece. Spawns Press directly.
-argument-hint: [codename]
----
-
-Spawn the `press` subagent defined in `.claude/agents/press.md`, passing `$ARGUMENTS` as the active piece codename.
-
-If `$ARGUMENTS` is empty, respond: "Usage: /mmw-press [codename]" and do nothing further.
-```
-
----
-
-#### `/mmw-prism` — Image prompt
-
-`.claude/skills/mmw-prism/SKILL.md`:
-```yaml
----
-name: mmw-prism
-description: Generate a Gemini Image Pro prompt for the latest draft of an active mmw piece. Spawns Prism directly.
-argument-hint: [codename]
----
-
-Spawn the `prism` subagent defined in `.claude/agents/prism.md`, passing `$ARGUMENTS` as the active piece codename.
-
-If `$ARGUMENTS` is empty, respond: "Usage: /mmw-prism [codename]" and do nothing further.
-```
-
----
-
-#### `/mmw-compass` — Strategic direction
-
-`.claude/skills/mmw-compass/SKILL.md`:
-```yaml
----
-name: mmw-compass
-description: Run a strategic direction pass on an active mmw piece, or generate next post ideas if no codename is provided. Spawns Compass directly.
-argument-hint: [codename]
----
-
-Spawn the `compass` subagent defined in `.claude/agents/compass.md`, passing `$ARGUMENTS` as the active piece codename (or empty for a next-post-ideas pass).
-```
-
----
-
-#### `/mmw-mark` — Brand review
-
-`.claude/skills/mmw-mark/SKILL.md`:
-```yaml
----
-name: mmw-mark
-description: Run a brand and voice review on the latest draft of an active mmw piece. Spawns Mark directly.
-argument-hint: [codename]
----
-
-Spawn the `mark` subagent defined in `.claude/agents/mark.md`, passing `$ARGUMENTS` as the active piece codename.
-
-If `$ARGUMENTS` is empty, respond: "Usage: /mmw-mark [codename]" and do nothing further.
-```
-
----
-
-#### `/mmw-cadence` — Editorial calendar
-
-`.claude/skills/mmw-cadence/SKILL.md`:
-```yaml
----
-name: mmw-cadence
-description: Check the editorial calendar state and get cadence suggestions. Spawns Cadence directly.
----
-
-Spawn the `cadence` subagent defined in `.claude/agents/cadence.md`.
-```
-
----
-
-#### `/mmw-index` — Overlap check or portfolio audit
-
-`.claude/skills/mmw-index/SKILL.md`:
-```yaml
----
-name: mmw-index
-description: Run an overlap check on an active mmw piece, or run a portfolio SEO audit if no codename is provided. Spawns Index directly.
-argument-hint: [codename]
----
-
-Spawn the `index` subagent defined in `.claude/agents/index.md`, passing `$ARGUMENTS` as the active piece codename (or empty for a portfolio SEO audit).
-```
-
----
-
-#### `/mmw-bearings` — Session orientation
-
-`.claude/skills/mmw-bearings/SKILL.md`:
-````yaml
----
-name: mmw-bearings
-description: Get a session orientation report for an active mmw piece — what has been done, current draft, outstanding work, and proposed next step.
-argument-hint: [codename]
----
-
-Invoke Caret inline (do not spawn a subagent). Read `writers-room/pieces/$ARGUMENTS/status.md` and the agent run log, then produce a concise orientation report:
-
-```
-Bearings: [codename]
-Description: [one-line description from status.md]
-
-Done:
-  [x] [each completed agent run from the log]
-
-Current draft: [latest draft-vN.md]
-Outstanding: [summary of what is not yet done]
-
-Next step: [proposed next action]
-  [C] Continue  [S] Stop
-```
-
-If `$ARGUMENTS` is empty, respond: "Usage: /mmw-bearings [codename]" and do nothing further. Always pause after the report — never auto-advance.
-````
-
----
-
-#### `/mmw-proof` — Declare draft final (human gate)
-
-`.claude/skills/mmw-proof/SKILL.md`:
-```yaml
----
-name: mmw-proof
-description: Declare an mmw piece final. Runs pre-flight checks and, if all pass, writes final.md and publishes to writers-room/published/. This is always a deliberate human decision — no agent calls this automatically.
-argument-hint: [codename]
----
-
-Invoke Caret inline (do not spawn a subagent). Execute the Phase 11 pre-flight directly for the piece named by `$ARGUMENTS`:
-
-1. Run `python mmw_tools.py preflight $ARGUMENTS` — returns `{"ready": true/false, "failures": [...]}`.
-2. If `ready` is false: surface each item in `failures` to the user and stop.
-3. If `ready` is true: run `python mmw_tools.py publish $ARGUMENTS` — atomically writes final.md, published/[slug].md, and published/[slug]-image-prompt.md and updates status.md.
-4. Write `Mode: archive-update` to `status.md` (via `python mmw_tools.py status_write $ARGUMENTS '{"mode": "archive-update"}'`).
-5. Spawn Index and Cadence in parallel.
-
-If `$ARGUMENTS` is empty: scan `status.md` files in `writers-room/pieces/` for any piece containing `Next step: Ready for mmw:proof`, list them, and ask the user to confirm which one to proof. Never assume.
-```
-
----
 
 **After writing all twelve SKILL.md files**, verify each exists and is non-empty before moving to Step F.
 
@@ -659,13 +472,23 @@ Turing reads `research/notes.md` at the start of every research pass.
 
 When the build is complete, verify the following success criteria can be traced through the built artifacts. Do not run a live session — just confirm all required files exist and that the agent files contain the logic needed to execute each step.
 
-**Pre-flight file check** (verify all of these exist and are non-empty before tracing the workflow):
+**Step 1 — Run the automated pre-flight script:**
+
+```
+python mmw_validate.py
+```
+
+This script (spec: `prompts/specs/validate.md`) checks that all required files exist and are non-empty, that every agent's `tools:` frontmatter is a YAML inline sequence (not a plain string), that every agent has `model:` set, and that the `SLUG_SENTINEL` string matches in both caret.md and press.md. Fix all failures before continuing.
+
+If `mmw_validate.py` has not been built yet, perform these checks manually:
 - `writers-room/brand/guidelines.md` — contains the banned words list
 - `writers-room/index/post-index.md` — contains the markdown table header
 - `writers-room/cadence/calendar.md` — contains the markdown table header
 - `writers-room/research/notes.md` — contains the markdown table header
-- All 10 agent files in `.claude/agents/` — read back the `tools:` line in each file and confirm it opens with `[` and closes with `]`. A plain string (e.g., `tools: Read, Write`) will not raise an error but silently disables tool scoping at runtime. Fix any that fail this check before proceeding.
+- All 10 agent files in `.claude/agents/` — read the `tools:` line in each and confirm it opens with `[` and closes with `]`. See `prompts/specs/tool-scoping.md` for the authoritative list of expected values.
 - All 12 skill directories in `.claude/skills/` — verify each contains a `SKILL.md` file that is non-empty: `mmw`, `mmw-turing`, `mmw-devil`, `mmw-echo`, `mmw-press`, `mmw-prism`, `mmw-compass`, `mmw-mark`, `mmw-cadence`, `mmw-index`, `mmw-bearings`, `mmw-proof`.
+
+**Step 2 — Trace the workflow paths manually** (semantic reasoning required — the script cannot do this):
 
 **Auto-mode trace** (verify caret.md and turing.md contain the required logic):
 - `mmw --auto [topic]` → Caret strips `--auto`, generates codename, writes `- Mode: auto` to status.md
