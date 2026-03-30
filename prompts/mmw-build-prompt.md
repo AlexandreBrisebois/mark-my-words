@@ -61,6 +61,36 @@ building each artifact. Do not rely on memory of a previously read spec.
 
 ---
 
+## Python Tools (`mmw_tools.py`)
+
+A Python helper script lives at the project root: `mmw_tools.py`. Agents call it via Bash to handle all deterministic file operations — this keeps mechanical work out of agent context windows.
+
+**Invocation pattern** (agents use Bash tool):
+```
+python mmw_tools.py <tool_name> [args...]
+```
+All tools print JSON to stdout and exit 0 on success. On failure they print a descriptive error to stderr and exit 1.
+
+| Tool | Signature | Returns |
+|---|---|---|
+| `draft_version` | `<codename> latest\|next` | `{"path": "...", "version": N}` |
+| `status_read` | `<codename> <field>` | `{"field": "...", "value": "..."}` |
+| `status_write` | `<codename> '<json_updates>'` | `{"updated": [...]}` |
+| `status_log` | `<codename> '<entry>'` | `{"appended": true}` |
+| `research_prune` | `<notes_path> [max_age_days]` | `{"pruned": N, "remaining": M}` |
+| `overlap_check` | `<brief_path> <index_path>` | `{"candidates": [{title, slug, score, shared_keywords}]}` |
+| `slug_validate` | `<codename>` | `{"match": true/false, "status_slug": "...", "seo_slug": "..."}` |
+| `preflight` | `<codename>` | `{"ready": true/false, "failures": [...]}` |
+| `publish` | `<codename>` | `{"success": true, "published_path": "...", "image_path": "..."}` |
+| `index_update` | `<codename>` | `{"appended": true, "title": "...", "slug": "..."}` |
+| `calendar_log` | `<codename> '<description>' <target_date>` | `{"appended": true}` |
+
+Field names for `status_read` / `status_write` are lowercase: `phase`, `mode`, `slug`, `current_draft`, `last_agent`, `next_step`, `brief_intent`.
+
+**Tool scoping**: Add `Bash` to the tools list for any agent that calls `mmw_tools.py`. See the updated tool scoping table in Step B.
+
+---
+
 ## What To Build
 
 ### Step A — Project Scaffold
@@ -181,7 +211,7 @@ Every agent file must also include `model: claude-sonnet-4-6` in its frontmatter
 
 | Agent | `tools` frontmatter value |
 |---|---|
-| Caret | Read, Write, Edit, Agent, Glob |
+| Caret | Read, Write, Edit, Agent, Glob, Bash |
 | Mark | Read, Write |
 | Compass | Read, Write, Glob |
 | Devil | Read, Write |
@@ -204,6 +234,14 @@ to restrict tool access.
 > parallel pair (Devil║Echo, Press║Prism, Index║Cadence), both Agent tool calls
 > must be issued in the same response turn. Sequential calls are functionally
 > correct but will not run concurrently.
+
+**mmw_tools.py usage — Caret**: When writing `.claude/agents/caret.md`, instruct Caret to use `mmw_tools.py` via Bash for all deterministic operations:
+- **Draft version resolution**: Instead of scanning draft-vN.md files manually, call `python mmw_tools.py draft_version <codename> latest` (to read) or `draft_version <codename> next` (before writing a new draft).
+- **status.md field reads**: Instead of reading the full status.md and parsing fields in prose, call `python mmw_tools.py status_read <codename> <field>` for single-field lookups (e.g., `mode`, `phase`, `slug`, `current_draft`).
+- **status.md field updates**: Instead of using Edit tool to update individual fields in status.md, call `python mmw_tools.py status_write <codename> '{"phase": "3 — First draft", "current_draft": "draft-v1.md"}'`.
+- **status.md log entries**: Instead of appending log lines via Edit tool, call `python mmw_tools.py status_log <codename> '[x] Turing → research.md'`.
+- **Phase 11 pre-flight**: Instead of checking 6 conditions individually, call `python mmw_tools.py preflight <codename>`. If `ready` is false, surface `failures` to the user.
+- **Phase 11 publish**: Instead of reading and writing files individually, call `python mmw_tools.py publish <codename>`. This atomically writes final.md, published/[slug].md, and published/[slug]-image-prompt.md and updates status.md.
 
 **Auto-mode behavior — Caret**: When writing `.claude/agents/caret.md`, include these behaviors (read `prompts/specs/agent-caret.md` for full detail):
 - Pre-step flag parsing: check for `--auto` in the trigger text, strip it, set mode
@@ -239,6 +277,10 @@ to restrict tool access.
 - If no calendar entry exists for this codename, auto mode runs at full depth unchanged.
 - This check runs at startup only — not on session resume.
 
+**mmw_tools.py usage — Turing**: When writing `.claude/agents/turing.md`, instruct Turing to:
+- **Prune research notes**: Instead of date-math and manual file rewrite, call `python mmw_tools.py research_prune writers-room/research/notes.md` at the end of every research pass. The tool removes entries older than 90 days and returns pruned/remaining counts.
+- **Mode check at startup**: Use `python mmw_tools.py status_read <codename> mode` to read the mode field instead of reading and parsing the full status.md.
+
 **Auto-mode behavior — Turing**: When writing `.claude/agents/turing.md`, include these behaviors (read `prompts/specs/agent-turing.md` for full detail):
 - At startup, read `Mode:` from status.md; if `Mode: auto` or `Mode: auto-quick`, skip the deep dive entirely
 - Log `[auto] Deep dive skipped` under `## Deep Dive Candidates (skipped — auto mode)` in research.md
@@ -253,10 +295,22 @@ to restrict tool access.
 - When producing a post-Phase 8 draft (after [C] or [R]): Caret reads critique-vN.md + audience-vN.md + fact-check-vN.md (if it exists) and addresses all in one combined revision pass. Reports what it addressed from each file.
 - [P] Proceed: no new draft version is created. Press reads the existing latest draft.
 
-**Phase 11 outputs — Caret**: When writing `.claude/agents/caret.md`, Phase 11 must write **two** files to `writers-room/published/` using the Write tool (read then write — no shell copy commands):
-- `writers-room/published/[slug].md` — read final.md, write to this path
-- `writers-room/published/[slug]-image-prompt.md` — read image-prompt.md from the piece folder, write to this path
-Both must be written before Index and Cadence are spawned in parallel.
+**Phase 11 outputs — Caret**: When writing `.claude/agents/caret.md`, Phase 11 must use `python mmw_tools.py publish <codename>` to atomically write all published output files:
+- Writes `final.md` (clean copy of latest draft)
+- Writes `writers-room/published/[slug].md`
+- Writes `writers-room/published/[slug]-image-prompt.md`
+- Updates status.md phase and next_step fields
+All three file writes happen in one atomic operation. Both published/ files must exist before Index and Cadence are spawned in parallel.
+
+**mmw_tools.py usage — Press**: When writing `.claude/agents/press.md`, instruct Press to:
+- **Slug sync verification**: After writing the slug to status.md via the Edit tool (the existing exact-string replace for `- Slug: (written by Press)`), call `python mmw_tools.py slug_validate <codename>` to confirm the values match. If `match` is false, log the mismatch and correct the value before proceeding.
+
+**mmw_tools.py usage — Index**: When writing `.claude/agents/index.md`, instruct Index to:
+- **Overlap candidate scan (Phase 0)**: Instead of reading the full post-index.md table in context, call `python mmw_tools.py overlap_check writers-room/pieces/<codename>/brief.md writers-room/index/post-index.md`. The tool returns a ranked shortlist of up to 5 lexical overlap candidates with scores and shared keywords. Index then reads only the shortlisted entries (or their published files) to make the editorial judgment — not the full table.
+- **Archive update (Phase 11)**: Instead of reading status.md and appending a formatted row in prose, call `python mmw_tools.py index_update <codename>`. The tool extracts metadata from status.md and seo.md and appends the correctly formatted row to post-index.md.
+
+**mmw_tools.py usage — Cadence**: When writing `.claude/agents/cadence.md`, instruct Cadence to:
+- **Calendar entry append**: Instead of reading and manually appending a formatted row, call `python mmw_tools.py calendar_log <codename> '<description>' <target_date>`. Description should be the one-liner from status.md; target_date in YYYY-MM-DD format.
 
 **Cross-check before moving to Step C**: Read back the status.md initialization block in `.claude/agents/caret.md` and the Edit-tool replace target in `.claude/agents/press.md`. Confirm both reference the exact string `- Slug: (written by Press)` — character for character, including parentheses and capitalization. If they differ, fix whichever is wrong before continuing.
 
@@ -269,7 +323,7 @@ Read `prompts/specs/flow.md` before writing. Cover:
 - The full ordered workflow with all 11 phases
 - **All three modes**: manual, auto (`--auto`), and auto-quick (`--auto --quick`) — invocation syntax and what each skips or changes per phase. Include: Phase 5 loop cap (auto), Phase 8 no-pause (auto), Phase 8.5 skipped (auto), Turing deep dive skipped (auto + auto-quick), phases skipped entirely in auto-quick (Compass, Mark, Devil, Echo, revision window), proof gate always a human step in all modes
 - **Deadline-constrained auto**: if calendar.md has a target date <3 days away, auto mode upgrades to auto-quick at startup; Caret logs the reason
-- **Phase 11 handoff**: two files written to `writers-room/published/` — `[slug].md` (final.md) and `[slug]-image-prompt.md` (image-prompt.md)
+- **Phase 11 handoff**: `mmw_tools.py publish` atomically writes final.md + two files to `writers-room/published/` — `[slug].md` (final.md) and `[slug]-image-prompt.md` (image-prompt.md)
 - The three parallel execution pairs: Devil ║ Echo, Press ║ Prism, Index ║ Cadence
 - The iterative Caret/Mark loop, co-edit mode, and circuit breaker logic
 - The Index overlap gate and startup validation
@@ -553,20 +607,11 @@ argument-hint: [codename]
 
 Invoke Caret inline (do not spawn a subagent). Execute the Phase 11 pre-flight directly for the piece named by `$ARGUMENTS`:
 
-1. Verify `writers-room/pieces/$ARGUMENTS/seo.md` exists
-2. Verify the `Slug:` field in `writers-room/pieces/$ARGUMENTS/status.md` is populated
-3. Verify the slug in `status.md` matches the slug in `seo.md`
-4. Verify `writers-room/pieces/$ARGUMENTS/image-prompt.md` exists
-5. Verify the latest `draft-vN.md` exists in the piece folder
-6. Verify `writers-room/published/` directory exists
-
-If all checks pass:
-1. Write `final.md` in the piece folder
-2. Read `final.md` and write to `writers-room/published/[slug].md` (Write tool — no shell commands)
-3. Read `image-prompt.md` and write to `writers-room/published/[slug]-image-prompt.md` (Write tool — no shell commands)
-4. Update `status.md`
-5. Write `Mode: archive-update` to `status.md`
-6. Spawn Index and Cadence in parallel
+1. Run `python mmw_tools.py preflight $ARGUMENTS` — returns `{"ready": true/false, "failures": [...]}`.
+2. If `ready` is false: surface each item in `failures` to the user and stop.
+3. If `ready` is true: run `python mmw_tools.py publish $ARGUMENTS` — atomically writes final.md, published/[slug].md, and published/[slug]-image-prompt.md and updates status.md.
+4. Write `Mode: archive-update` to `status.md` (via `python mmw_tools.py status_write $ARGUMENTS '{"mode": "archive-update"}'`).
+5. Spawn Index and Cadence in parallel.
 
 If `$ARGUMENTS` is empty: scan `status.md` files in `writers-room/pieces/` for any piece containing `Next step: Ready for mmw:proof`, list them, and ask the user to confirm which one to proof. Never assume.
 ```
@@ -629,7 +674,7 @@ When the build is complete, verify the following success criteria can be traced 
 - Phase 8: Caret applies Devil/Echo feedback directly, logs summary, skips Phase 8.5
 - `mmw:proof` → still a human gate; auto mode pauses and waits
 - Session resume: `mmw [codename]` → Caret reads `Mode: auto` from status.md → continues in auto mode
-- Phase 11: Caret writes both `writers-room/published/[slug].md` and `writers-room/published/[slug]-image-prompt.md` via Write tool
+- Phase 11: Caret calls `mmw_tools.py publish <codename>` which writes both `writers-room/published/[slug].md` and `writers-room/published/[slug]-image-prompt.md` atomically
 
 **Auto-quick trace** (verify caret.md contains the required logic):
 - `mmw --auto --quick [topic]` → Caret strips both flags, writes `- Mode: auto-quick` to status.md
@@ -640,7 +685,7 @@ When the build is complete, verify the following success criteria can be traced 
 - Phases 4, 5, 6+7, 8, 8.5 all skipped — each logged in status.md
 - Phase 9+10 (Press ║ Prism) runs in parallel
 - `mmw:proof` → human gate; waits
-- Phase 11: same as auto, including both published/ file writes
+- Phase 11: same as auto, including both published/ file writes via `mmw_tools.py publish`
 - Deadline-constrained upgrade: if `calendar.md` shows target date <3 days away in auto mode, caret.md upgrades to auto-quick and logs `[auto] Publish deadline in N days — fast path activated`
 
 **Manual-mode trace** (existing workflow, unchanged):
