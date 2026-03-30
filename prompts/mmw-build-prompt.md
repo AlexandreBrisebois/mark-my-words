@@ -63,8 +63,7 @@ building each artifact. Do not rely on memory of a previously read spec.
 
 ## Project Root
 
-> **PROJECT ROOT**: All absolute paths in this prompt use `/Users/alex/Code/mark-my-words` as the project root. ← `PROJECT_ROOT`
-> If this repo is checked out elsewhere, replace this value everywhere before running the build.
+> **PROJECT ROOT**: All paths in this prompt are relative to the repository root (the directory containing this file). The build agent runs from the repo root, so relative paths resolve correctly regardless of where the repo is cloned.
 
 ---
 
@@ -73,7 +72,7 @@ building each artifact. Do not rely on memory of a previously read spec.
 These strings must be reproduced character-for-character in the agent files that reference them. Change them here first, then rerun the affected steps.
 
 ```
-SLUG_SENTINEL = "- Slug: (written by Press)"
+SLUG_SENTINEL = "- slug: (written by Press)"
 ```
 
 Used in: `.claude/agents/caret.md` (status.md initialization block) and `.claude/agents/press.md` (Edit-tool replace target). Both must match exactly — including parentheses and capitalization. See the cross-check at the end of Step B.
@@ -133,7 +132,7 @@ Field names for `status_read` / `status_write` are lowercase: `phase`, `mode`, `
 Create `writers-room/task.md` first. Then create this full directory structure:
 
 ```
-/Users/alex/Code/mark-my-words/           ← PROJECT_ROOT
+./                             ← repo root
 ├── CLAUDE.md                  ← project root — triggers mmw, mmw:agent shortcuts
 └── writers-room/
     ├── ARCHITECTURE.md
@@ -150,7 +149,7 @@ Create `writers-room/task.md` first. Then create this full directory structure:
     ├── cadence/
     │   └── calendar.md
 
-/Users/alex/Code/mark-my-words/.claude/agents/    ← PROJECT_ROOT
+.claude/agents/
     ├── caret.md
     ├── mark.md
     ├── compass.md
@@ -162,7 +161,7 @@ Create `writers-room/task.md` first. Then create this full directory structure:
     ├── cadence.md
     └── prism.md
 
-/Users/alex/Code/mark-my-words/.claude/skills/    ← PROJECT_ROOT
+.claude/skills/
     ├── mmw/
     │   └── SKILL.md
     ├── mmw-turing/
@@ -193,7 +192,7 @@ After creating `pieces/` and `published/`, write an empty `.gitkeep` file in eac
 
 Also create `.claude/agents/` explicitly before writing any agent files — write an empty `.gitkeep` there too. This guarantees the directory exists when Step B begins, since `Write` tool behavior on missing parent directories is not guaranteed.
 
-**CLAUDE.md must be at the project root** (`/Users/alex/Code/mark-my-words/CLAUDE.md` ← PROJECT_ROOT),
+**CLAUDE.md must be at the project root** (`./CLAUDE.md`),
 not inside `writers-room/`. This is required for Claude Code to recognize the
 mmw triggers and `mmw:agent` shortcuts in every new session.
 
@@ -359,7 +358,7 @@ Read `prompts/specs/flow.md` before writing. Cover:
 
 ### Step D — CLAUDE.md
 
-**Location**: `/Users/alex/Code/mark-my-words/CLAUDE.md` ← PROJECT_ROOT (project root — not inside writers-room/).
+**Location**: `./CLAUDE.md` (project root — not inside writers-room/).
 
 Read `prompts/specs/flow.md` before writing. Cover:
 - What Mark My Words is — one paragraph
