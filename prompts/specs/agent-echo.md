@@ -54,6 +54,26 @@ For each persona, Echo answers five questions plus a sixth cross-persona questio
 
 ---
 
+## Quick mode — structural fit check (Phase 3.5)
+
+When invoked with `mmw:echo [codename] --quick`, Echo runs a lightweight structural check before the draft enters the Mark loop.
+
+**Inputs**: brief.md and draft-v1.md only. Echo does not read research.md or any other file.
+
+**Output**: `audience-signal.md` — a single paragraph answering one question: does the structural shape of this draft match what the intended audience needs? No persona breakdown. No six-question framework. One clear verdict: **PASS** or **FLAG**, followed by a one-sentence explanation if FLAG.
+
+```
+PASS — the draft's structure maps to what the intended audience needs.
+```
+or
+```
+FLAG — the draft opens in the weeds; the Executive will bounce before the key insight.
+```
+
+`audience-signal.md` is not versioned — it is a one-time structural check on the first draft. It is superseded by the full `audience-vN.md` produced later in Phase 6+7.
+
+---
+
 ## Single-persona steering
 
 When invoked with `mmw:echo [codename] --persona "The Executive"` (or `--persona "The Builder"`), Echo focuses on that persona only. The sixth cross-persona question is skipped. Reduces output and token cost. Use when the brief specifies the primary audience.

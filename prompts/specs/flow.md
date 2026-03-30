@@ -63,17 +63,18 @@ Phase 0 — Index: overlap gate
 Phase 1 — Compass: strategic direction
            Compass reads brief.md + post-index.md + calendar.md
            → compass-notes.md (includes ## Cadence Context)
-   ↓
-Phase 1.5 — Commissioning Gate  [manual only — skipped in auto]
-            [Y] Approve — Turing starts research on this angle
-            [R] Redirect — adjust angle; Compass re-runs; gate fires again
-            [S] Skip research — draft from compass-notes.md alone
+           Caret surfaces one-line angle notice → Turing starts
+           [S] Skip research — draft from compass-notes.md alone
    ↓
 Phase 2 — Turing: focused research (reads compass-notes.md first)
            [auto: deep dive skipped | manual: deep dive pause offered]
    ↓
 Phase 3 — Caret: draft-v1.md
            [research.md gate — must exist and be non-empty]
+   ↓
+Phase 3.5 — Echo: audience signal  [manual only]
+             quick structural fit check → audience-signal.md
+             [C] Continue  [R] Restructure first
    ↓
 Phase 4 — Mark: headlines and hooks (reads draft-v1.md)
    ↓
@@ -88,6 +89,7 @@ Phase 6+7 — Devil ║ Echo  [run in parallel]
 Phase 8 — User revision window
            [manual: Caret reads both critique-vN.md and audience-vN.md, pauses for user]
            [auto: Caret reads feedback, applies directly, produces new draft, logs summary]
+           [T] Re-research — Turing gap-fill → re-enter Phase 5 loop → Phase 6+7 again
    ↓
 Phase 8.5 — Mark: brand re-alignment check  [conditional — manual only]
              [skipped entirely in auto mode]
@@ -131,34 +133,18 @@ See `specs/agent-compass.md` for full compass-notes.md content requirements.
 
 ---
 
-## Phase 1.5 — Commissioning Gate [manual only]
+## Phase 2 Transition — Angle Notice
 
-**Auto mode**: This gate does not run. Caret proceeds directly to Phase 2 (Turing).
-
-After Compass completes and compass-notes.md is verified, Caret pauses and presents the editorial direction for explicit approval before spawning Turing:
+After Compass completes and compass-notes.md is verified, Caret surfaces a one-line angle notice and immediately proceeds to Turing:
 
 ```
-Compass has set the editorial direction.
-
-Angle: [one-sentence angle from compass-notes.md]
-Focus for Turing: [research priorities]
-Piece type: [Type 1 / Type 2]
-Cadence: [note from ## Cadence Context in compass-notes.md]
-
-  [Y] Approve — Turing starts research on this angle
-  [R] Redirect — adjust the angle before research begins
-  [S] Skip research — draft from compass-notes.md alone (no Turing)
+Compass has set the direction: [one-sentence angle from compass-notes.md]
+Starting Turing — [S] to skip research.
 ```
 
-**[Y] Approve**: Caret proceeds to Phase 2 (Turing).
+**[S] Skip research**: If the user types [S] before Turing completes, Caret aborts the Turing spawn (or skips it if not yet started), logs `[skip] Phase 2 — user skipped research` in status.md, and proceeds to Phase 3. The research gate at Phase 3 will fire; the user must select [W] to draft from brief alone.
 
-**[R] Redirect**: Caret re-invokes Compass with the user's redirect note appended to the original brief. Compass updates compass-notes.md. The gate fires again with the updated angle. This loop repeats until [Y] or [S]. After 3 redirects, Caret surfaces a summary prompt instead of offering [R] again:
-
-> "You've redirected Compass 3 times. Current angle: [one-line summary from compass-notes.md]. [Y] Approve this angle and continue to research / [S] Skip research and draft from the brief alone."
-
-No further [R] option is offered after the third redirect.
-
-**[S] Skip research**: Caret skips Phase 2 entirely. Logs `[skip] Phase 2 — user skipped research at commissioning gate` in status.md. Proceeds to Phase 3. The research gate at Phase 3 will fire; the user must select [W] to draft from brief alone.
+No acknowledgment required before Turing starts. To adjust the angle after Compass has run, use `mmw:compass [codename]` directly.
 
 ---
 
@@ -211,6 +197,30 @@ research.md exists but appears brief ([N] words) — Turing may not have complet
 ### Drafting
 
 Caret reads brief.md, compass-notes.md, and research.md before writing draft-v1.md. Caret follows the story arc: **hook → exploration → insight → deeper dive → reflection**.
+
+### Phase 3.5 — Audience Signal [manual mode only]
+
+After draft-v1.md is written and before Phase 4, Caret invokes Echo in quick mode:
+
+```
+mmw:echo [codename] --quick
+```
+
+Echo in `--quick` mode reads only brief.md and draft-v1.md. It writes `audience-signal.md` — a single paragraph answering one question: **does the structural shape of this draft match what the intended audience needs?** PASS or FLAG verdict only. No persona breakdown, no full audience review.
+
+Caret reads audience-signal.md and surfaces the result before proceeding:
+
+```
+Audience signal: [PASS / FLAG]
+[one-sentence finding if FLAG]
+
+  [C] Continue to Phase 4 — headlines
+  [R] Restructure — address the flag before headlines
+```
+
+**[R] Restructure**: Caret revises draft-v1.md to address the flag, produces draft-v2.md, then proceeds to Phase 4 on the new draft.
+
+**Auto mode and auto-quick**: Phase 3.5 is skipped. Caret logs `[skip] Phase 3.5 — auto mode` in status.md.
 
 ---
 
@@ -349,6 +359,26 @@ Caret also addressed:
 Nothing else was changed. Your voice is intact.
 ```
 
+### Step 5 — Selective accept/reject
+
+After Caret reports its changes in Step 4, the user may selectively reject individual items. Step 5 is a conversation-only exchange — the writer does not edit the draft file during this step.
+
+```
+draft-v3.md produced.
+
+Your edits: preserved exactly as written.
+Caret also addressed:
+  1. Removed "additionally" from paragraph 3 (banned word not in your edit)
+  2. Tightened transition between paragraph 5 and 6 per brand-notes
+
+  [K] Keep all — accept Caret's changes and proceed
+  [X] Reject one — specify item number to revert
+```
+
+**[X] Reject one**: Caret reverts only the named item, restoring the user's original text for that passage. Caret re-presents the list with the rejected item struck through. The loop continues until [K] or no remaining items. The final accepted state is written as the next versioned draft.
+
+If the user wants to make further direct edits, they select [K] first to close Step 5, then begin a new co-edit round.
+
 ### Co-edit rules Caret must never break
 
 - NEVER rewrite a passage the user just wrote without flagging it first
@@ -358,6 +388,8 @@ Nothing else was changed. Your voice is intact.
 - The user's voice overrides Mark's preferences when there is a conflict
 - Caret's job in co-edit is to be the user's assistant, not their editor
 - User edits are always recorded in status.md: `[user-edit] draft-v2.md → basis for draft-v3.md`
+- Caret never re-argues a change the user rejected in Step 5; flags once if a banned word is kept, then moves on
+- Caret does not edit the draft file during Step 2 (writer's turn) or between receiving `mmw:done` and completing Step 4
 
 ---
 
@@ -404,11 +436,14 @@ Already working well:
 
   [C] Co-edit — Caret surfaces the flagged passages, you edit the draft directly
   [R] Revise — Caret revises using Devil and Echo's feedback
+  [T] Re-research — Turing runs a targeted gap-fill, then re-enter the draft loop
   [F] Fact-check — Turing checks draft claims against research.md  ← only shown if Devil flagged credibility concerns
   [P] Proceed to Press and Prism
 ```
 
 **[F] Fact-check** is shown only if Devil flagged credibility concerns in critique-vN.md. See flow.md § Turing Fact-Check Sub-mode.
+
+**[T] Re-research**: Caret invokes Turing with a targeted gap-fill prompt. The prompt is derived from Devil's and Echo's flags when triggered via menu, or from the writer's own prompt when the writer types it directly (e.g., "I need more on [specific topic] before revising"). Turing appends new findings to research.md — it does not overwrite it. Caret logs `[loop] re-research → Turing gap-fill` in status.md. After Turing completes, Caret re-enters the Phase 5 loop on the latest draft. On [M] exit, flow continues through Phase 6+7 again (Devil and Echo re-run on the new draft).
 
 If [C] or [R]: Caret produces a new versioned draft using Devil + Echo feedback (+ fact-check-vN.md if it exists) before handing off to Press. Caret reports what it addressed from each feedback file.
 
@@ -536,11 +571,11 @@ mmw --auto [topic | file | bullets]
 [Phase 0] Index — overlap gate (same as manual)
     ↓
 [Phase 1] Compass — reads brief.md + post-index.md + calendar.md → compass-notes.md
-    [No commissioning gate in auto]
     ↓
 [Phase 2] Turing — research → research.md (deep dive: SKIPPED)
     ↓
 [Phase 3] Caret — first draft → draft-v1.md
+    [Phase 3.5 audience signal: SKIPPED — logs [skip] Phase 3.5 — auto mode]
     ↓
 [Phase 4] Mark — headlines → headlines.md
     ↓
@@ -643,6 +678,7 @@ writers-room/pieces/[codename]/
 ├── research.md           ← Turing's grounding document
 ├── headlines.md          ← Mark's hook and headline options
 ├── draft-v1.md           ← Caret's first draft
+├── audience-signal.md    ← Echo's structural fit check (Phase 3.5, manual only; not versioned)
 ├── draft-v2.md           ← after first Caret/Mark loop
 ├── draft-v3.md           ← after second loop or user edits
 ├── brand-notes-v1.md     ← Mark's review of draft-v1
@@ -690,12 +726,10 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 >  to identify this piece without opening other files]
 
 ## Current State
-- Phase: 0 — Index overlap gate
+- Phase: 3 — Caret first draft
 - Mode: auto    ← only present in auto mode; absent = manual
-- Current draft: draft-v2.md
-- Last agent: Mark (brand-notes-v2.md) [REVISE]
-- Brief intent: NOT YET MET
-- co_edit_draft: draft-v2.md  ← transient; set only while awaiting mmw:done; cleared on resume
+- Current draft: draft-v1.md
+- co_edit_draft: draft-v1.md  ← transient; set only while awaiting mmw:done; cleared on resume
 - Slug: (written by Press)
 - Next step: Awaiting user direction
 
@@ -704,22 +738,9 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - [x] Compass → compass-notes.md
 - [x] Turing → research.md
 - [x] Caret → draft-v1.md [research gate: PASSED]
-- [x] Mark → headlines.md
-- [x] Mark → brand-notes-v1.md (REVISE)
-- [x] [user-edit] draft-v1.md → basis for draft-v2.md
-- [x] Caret → draft-v2.md
-- [x] Mark → brand-notes-v2.md (REVISE)
-- [ ] Awaiting user direction ([N] Move to critique)
-- [ ] Devil → critique-v1.md
-- [ ] Echo → audience-v1.md
-- [ ] [skip] Phase 8.5 — no draft change in Phase 8
-  (or: [x] Mark → brand-notes-final.md (PASS))
-  (or: [x] Mark → brand-notes-final.md (REVISE) → Caret produced draft-vN.md)
-  (or: [x] Mark → brand-notes-final.md (REVISE) → user proceeded as-is)
-- [ ] Press → seo.md
-- [ ] Prism → image-prompt.md
-- [ ] final.md
 ```
+
+The Agent Run Log contains only completed entries, written as each phase finishes. Pending phases are implied by absence — do not pre-populate future entries.
 
 The `- Slug: (written by Press)` line is an exact-string placeholder. Press locates it by literal match and replaces it with `- Slug: [slug-value]`. Do not add comments or extra text to this line — any variation will cause Press's slug sync to fail silently. Press is solely responsible for keeping the slug in status.md in sync with seo.md.
 
