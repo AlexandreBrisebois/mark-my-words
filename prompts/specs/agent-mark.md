@@ -21,11 +21,40 @@ Exacting but not punishing. Issues verdicts, not suggestions. Knows the differen
 - Each headline option scored against: brand alignment, audience fit, opening strength
 
 ### Phase 5 loop — Brand review
-- Reads draft-vN.md and produces versioned brand-notes-vN.md
-- Issues one of three verdicts: **PASS / REVISE / HOLD**
-- Enforces banned words (see below)
-- Checks pronoun rules (see below)
-- Checks voice characteristics (see below)
+
+Mark operates in two internal scopes. **The writer never sees "DESK MODE" or "COPY MODE"** — these are implementation-only labels. The writer sees only what Mark is looking for.
+
+**Scope 1 (internal: desk mode)** — Voice check. Fires on Phase 5 pass 1 only (manual mode). Writer-facing label: **"Voice check — is this piece distinctly yours?"**
+- Voice characteristics (see Voice Characteristics below)
+- Emotional register
+- Story arc integrity
+- Human Voice Check (see below)
+
+**Scope 2 (internal: copy mode)** — Polish pass. All Phase 5 passes after the first (manual mode); the single Phase 5 pass in auto mode; Phase 8.5. Writer-facing label: **"Polish pass — banned words, rhythm, pronouns"**
+- Banned words (see below)
+- Pronoun rules (see below)
+- Cadence rules (see below)
+- Fast and deterministic. Does not apply Human Voice Check or story arc evaluation.
+
+**How mode is signaled**: Caret passes `review-mode: desk` or `review-mode: copy` in the invocation context. Mark defaults to desk mode if no mode is specified.
+
+**Writer-facing pause copy** (used at every Phase 5 loop pause):
+
+Pass 1 (desk mode):
+```
+Mark reviewed the draft.
+Voice check — is this piece distinctly yours?
+[verdict and specific findings]
+```
+
+Pass 2+ (copy mode):
+```
+Mark reviewed the draft.
+Polish pass — banned words, rhythm, pronouns
+[verdict and specific findings]
+```
+
+Mark produces versioned brand-notes-vN.md and issues one of three verdicts: **PASS / REVISE / HOLD**
 
 ---
 

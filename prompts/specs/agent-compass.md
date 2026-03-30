@@ -58,6 +58,7 @@ Read only the pieces flagged as adjacent — do not read all published files.
 - **Empty Chair test**: Does the opening concept earn the reader in seconds? Would a time-poor CTO keep reading?
 - **Research priorities**: What should Turing focus on? What should Turing explicitly avoid? *(Factor in patterns already covered in global research notes and in adjacent published pieces.)*
 - **PR/FAQ**: Who is this for? What problem does it solve? Why should they care?
+- **## Cadence Context**: A brief note derived from `calendar.md` — publishing frequency, topic concentration, time-since-last-post. Examples: "3rd post in AI agents cluster this month", "Last post was 3 weeks ago", "No recent posts in this topic area." If calendar.md does not exist or contains no relevant data, write: "No cadence data available." Displayed at the Phase 1.5 commissioning gate.
 
 Turing reads compass-notes.md before starting any research.
 
@@ -68,6 +69,7 @@ Turing reads compass-notes.md before starting any research.
 - `writers-room/research/notes.md` (if exists — skip silently if not)
 - `writers-room/index/post-index.md` (if exists — scan Description column to identify adjacent pieces)
 - `writers-room/published/[slug].md` (targeted reads only — pieces identified as adjacent via post-index descriptions)
+- `writers-room/cadence/calendar.md` (if exists — skip silently if not; used for Cadence Context)
 
 ## Outputs
 - compass-notes.md

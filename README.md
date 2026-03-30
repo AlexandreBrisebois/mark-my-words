@@ -6,15 +6,35 @@ Mark My Words (MMW) is a multi-agent writing system built on Claude Code. It orc
 
 ### Start a new piece
 
-Trigger Caret with any of these:
+Trigger Caret with a topic string, a file path, or bullet brainstorm items:
 
 ```
-MMW write a post about building this writer's room
-Mark My Words write a post about building this writer's room
 mmw write a post about building this writer's room
+mmw path/to/my-notes.md
+mmw - First observation about the topic / Second angle / Key constraint
 ```
 
 Caret generates a codename, creates a piece folder, and writes `brief.md` from your intent. From there it runs the full workflow — Index checks your archive first, then Compass sets strategy, Turing researches, Caret drafts, and Mark reviews voice and headlines.
+
+### Modes
+
+**Manual (default)** — full control. Caret pauses at every decision point.
+
+**Auto** — unattended. Caret runs the full pipeline and stops only at the human proof gate:
+
+```
+mmw --auto write a post about observability in multi-agent systems
+```
+
+**Auto-quick** — fast path for short posts or cheap first drafts. Skips Compass, Mark, Devil, Echo, and the revision window. Produces a complete draft at low cost:
+
+```
+mmw --auto --quick write a post about observability in multi-agent systems
+```
+
+Use auto-quick when you need something concrete to react to before committing to a full pipeline run. After it completes, run `mmw [codename]` to continue in manual mode — the full pipeline picks up from the existing draft.
+
+**Deadline-constrained auto**: If a piece has a target publish date in `calendar.md` and it is fewer than 3 days away, auto mode activates the quick path automatically. Caret logs the reason in status.md.
 
 ### Before the first draft
 
@@ -25,49 +45,94 @@ Before anything else, Index checks your archive for overlapping topics and produ
 - **[P] Proceed** — no meaningful overlap, carry on
 - **[A] Abandon** — discard this piece (you'll be asked to type the codename to confirm)
 
-### Stay in the loop
+### Commissioning gate (manual only)
 
-The workflow pauses at every decision point. After Mark reviews the first draft you'll see the flagged issues and three options:
+After Compass sets direction, Caret pauses before research begins — the last low-cost moment to redirect the angle:
 
-- **[C] Co-edit** — Caret surfaces the exact lines that need attention, you edit the draft file directly, then type `MMW:done` to hand it back
+```
+Angle: [one-sentence angle]
+Focus for Turing: [research priorities]
+Piece type: [Type 1 / Type 2]
+Cadence: [note from calendar — e.g., "3rd post in AI agents cluster this month"]
+
+  [Y] Approve — Turing starts research on this angle
+  [R] Redirect — adjust the angle before research begins
+  [S] Skip research — draft from compass-notes.md alone
+```
+
+On [R]: Caret re-invokes Compass with your redirect note. The gate fires again. On [S]: Turing is skipped and Caret drafts from the brief and compass-notes alone.
+
+### The Mark loop
+
+After the first draft, Mark reviews voice and brand alignment. The first pass is a **voice check** ("is this piece distinctly yours?"). Subsequent passes are **polish passes** (banned words, rhythm, pronouns). After each pass:
+
+- **[C] Co-edit** — Caret surfaces the exact lines that need attention, you edit the draft file directly, then type `mmw:done` to hand it back
 - **[R] Revise** — Caret revises based on Mark's notes without your direct edits
-- **[N] Move to critique** — exit the loop and send the current draft to Devil and Echo
+- **[M] Move to critique** — exit the loop and send the current draft to Devil and Echo
 
 Your voice always takes precedence. If you edited a line, Caret won't silently rewrite it. There is no iteration cap — you decide when to move on.
 
-If Mark flags a structural issue that can't be fixed by revision alone, you'll see a **HOLD** instead. The loop exits immediately with three options:
+If Mark flags a structural issue, you'll see a **HOLD** instead. The loop exits immediately:
 
-- **[B] Revisit brief** — rethink scope before continuing
+- **[B] Revisit brief** — re-examine the premise (the angle is the problem, not the lines)
 - **[C] Co-edit** — take manual control of the draft
-- **[S] Proceed anyway** — continue to critique with the draft as-is
+- **[M] Move to critique** — proceed to Devil and Echo with the draft as-is
 
-### Critique and publish prep
+### Critique and the revision window
 
-After the draft clears the Mark loop, Devil and Echo run in parallel — Devil audits for unsupported claims, Echo checks audience fit. Caret consolidates their feedback and pauses again so you can revise or proceed.
+After the draft clears the Mark loop, Devil and Echo run in parallel — Devil audits for unsupported claims, Echo checks audience fit through two named reader personas: **The Executive** (strategic CTO, reads for credibility signal) and **The Builder** (hands-on engineer, reads for "did they actually build it?").
 
-If you made edits during that revision window, Mark runs a one-pass brand re-alignment check on the updated draft (Phase 8.5 — conditional, only triggered if Phase 8 changed the draft).
+Caret synthesizes their feedback into a structured triage:
 
-Press and Prism then run in parallel: Press writes the Hugo front matter and SEO notes, Prism produces the image prompt.
+```
+Must address before publishing:
+  [Devil REVISE items + Echo bounce points]
+
+Worth addressing if time allows:
+  [Devil Challenge Questions + minor Echo notes]
+
+Already working well:
+  [positive signals from both]
+
+  [C] Co-edit
+  [R] Revise
+  [F] Fact-check  ← only shown if Devil flagged credibility concerns
+  [P] Proceed to Press and Prism
+```
+
+**[F] Fact-check**: Turing checks every draft claim against research.md and produces `fact-check-vN.md` with three sections — Confirmed, Ungrounded, Inaccurate. If a claim is ungrounded, you can run `mmw:turing [codename] --find-citation "[claim]"` to search for a supporting source. Caret reads the fact-check alongside Devil and Echo feedback in the combined revision pass.
+
+**Single-persona mode**: Steer Echo to focus on one persona — `mmw:echo [codename] --persona "The Executive"` — when your brief specifies the primary audience.
+
+If you made revisions during the revision window, Mark runs a one-pass brand re-alignment check on the updated draft (Phase 8.5 — conditional, fires only if Phase 8 changed the draft). Outcomes:
+
+- **PASS** → `[L] Back to draft` or `[P] Proceed to Press and Prism`
+- **REVISE** → `[C] Co-edit` / `[R] Revise` / `[P] Proceed to Press and Prism` — then same [L]/[P] choice
+- **HOLD** → `[B] Revisit brief` / `[C] Co-edit` / `[P] Proceed to Press and Prism`
+
+### Publish prep
+
+Press and Prism run in parallel: Press writes the Hugo front matter and SEO notes, Prism produces the image prompt.
 
 ### Declare it done
 
 When you're happy with the draft:
 
 ```
-MMW:proof [codename]
+mmw:proof [codename]
 ```
 
-Caret runs a pre-flight check (draft, SEO, slug, image prompt all present), writes `final.md`, copies it to `writers-room/published/[slug].md`, and archives the piece.
+Caret runs a pre-flight check (draft, SEO, slug, image prompt all present), writes `final.md`, copies it to `writers-room/published/[slug].md`, copies `image-prompt.md` to `writers-room/published/[slug]-image-prompt.md`, and archives the piece.
 
 ### Resume anytime
 
 Sessions can be interrupted and resumed. Pick up where you left off:
 
 ```
-MMW:bearings [codename]
+mmw:bearings [codename]
 ```
 
-Caret reads `status.md`, reports what's done, what's outstanding, and proposes the next step — but never advances automatically. You give the instruction. This runs inline; there is no separate bearings agent.
+Caret reads `status.md`, reports what's done, what's outstanding, and proposes the next step — but never advances automatically. You give the instruction.
 
 ## Sub-agent shortcuts
 
@@ -75,16 +140,20 @@ Each shortcut bypasses Caret and goes directly to the named agent:
 
 | Shortcut | Agent | What it does |
 |---|---|---|
-| `MMW:turing [codename]` | Turing | Research pass on the active piece |
-| `MMW:devil [codename]` | Devil | Accusation audit on the latest draft |
-| `MMW:echo [codename]` | Echo | Audience check on the latest draft |
-| `MMW:press [codename]` | Press | SEO audit + Hugo front matter for the latest draft |
-| `MMW:prism [codename]` | Prism | Image prompt for the latest draft |
-| `MMW:compass [codename]` | Compass | Strategic direction (or next post ideas if no codename) |
-| `MMW:mark [codename]` | Mark | Brand review on the latest draft |
-| `MMW:cadence` | Cadence | Editorial calendar state and cadence suggestions |
-| `MMW:index [codename]` | Index | Overlap check (or portfolio SEO audit if no codename) |
-| `MMW:bearings [codename]` | Caret inline | Session orientation — handled inline by Caret |
+| `mmw:turing [codename]` | Turing | Research pass on the active piece |
+| `mmw:turing [codename] --fact-check` | Turing | Fact-check draft claims against research.md |
+| `mmw:turing [codename] --find-citation "[claim]"` | Turing | Search for a citation, append to fact-check-vN.md |
+| `mmw:devil [codename]` | Devil | Accusation audit on the latest draft |
+| `mmw:echo [codename]` | Echo | Audience check (both personas) on the latest draft |
+| `mmw:echo [codename] --persona "The Executive"` | Echo | Audience check — The Executive only |
+| `mmw:echo [codename] --persona "The Builder"` | Echo | Audience check — The Builder only |
+| `mmw:press [codename]` | Press | SEO audit + Hugo front matter for the latest draft |
+| `mmw:prism [codename]` | Prism | Image prompt for the latest draft |
+| `mmw:compass [codename]` | Compass | Strategic direction (or next post ideas if no codename) |
+| `mmw:mark [codename]` | Mark | Brand review on the latest draft |
+| `mmw:cadence` | Cadence | Editorial calendar state and cadence suggestions |
+| `mmw:index [codename]` | Index | Overlap check (or portfolio SEO audit if no codename) |
+| `mmw:bearings [codename]` | Caret inline | Session orientation — handled inline by Caret |
 
 ## How to run the build
 
@@ -107,8 +176,8 @@ All build specs live in `prompts/specs/`. Each file is independently editable.
 | `specs/agent-mark.md` | Mark — brand + voice |
 | `specs/agent-compass.md` | Compass — strategist |
 | `specs/agent-devil.md` | Devil — critique |
-| `specs/agent-turing.md` | Turing — research |
-| `specs/agent-echo.md` | Echo — audience |
+| `specs/agent-turing.md` | Turing — research + fact-check |
+| `specs/agent-echo.md` | Echo — audience (The Executive, The Builder) |
 | `specs/agent-press.md` | Press — publisher |
 | `specs/agent-prism.md` | Prism — visual brand |
 | `specs/agent-index.md` | Index — archivist |
