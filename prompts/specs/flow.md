@@ -15,13 +15,16 @@ This system responds to a single trigger: `mmw`
 - `mmw [topic | file path | bullet brainstorm]` — manual mode (default). Caret pauses after each phase and proposes the next step. The user decides when to advance.
 - `mmw --auto [topic | file path | bullets]` — auto mode. Caret runs the full pipeline without pausing between phases. Stops at the proof gate (`mmw:proof`), which is always a human step.
 - `mmw --auto --quick [topic | file path | bullets]` — auto-quick mode. Reduced-agent fast path for short posts or cheap first drafts. See Auto Quick Flow below.
+- `mmw --discovery [topic | file path | bullets]` — discovery mode. Generates 3 distinct briefs and a single Compass pass across all three. User picks an angle before the pipeline proceeds. See Discovery Mode below.
+  - Can combine with `--auto`: `mmw --discovery --auto [...]` — after selection, auto mode applies for all remaining phases.
+  - Incompatible with `--quick` — Caret rejects `mmw --discovery --quick` with: `"--discovery requires deliberate editorial choice and cannot run with --quick."`
 
 **Input types**: After stripping flags, the remaining input may be:
 - A topic string — current behavior
 - A file path — Caret reads the file as the brief foundation, derives codename from content
 - Bullet brainstorm items — Caret structures them into brief.md, then generates the codename
 
-Caret strips `--auto` and `--quick` from the input before processing. If `--auto` is present, Caret writes `- Mode: auto` in `## Current State` of `status.md`. If `--auto --quick` are both present, Caret writes `- Mode: auto-quick`. Absence of both = manual mode.
+Caret strips `--auto`, `--quick`, and `--discovery` from the input before processing. If `--auto` is present, Caret writes `- Mode: auto` in `## Current State` of `status.md`. If `--auto --quick` are both present, Caret writes `- Mode: auto-quick`. If `--discovery` is present (alone or with `--auto`), Caret writes `- Mode: discovery` during the discovery phase; this is overwritten on selection (see Discovery Mode). Absence of all flags = manual mode.
 
 On session resume, Caret reads `Mode:` from `## Current State` in `status.md`. The mode applies for all remaining phases and survives session boundaries.
 
@@ -662,6 +665,54 @@ status.md writes `- Mode: auto-quick` at initialization.
 **Deadline-constrained auto**: If `calendar.md` contains a target publish date for this piece and it is <3 days away, auto mode activates the quick path automatically. Caret logs: `[auto] Publish deadline in N days — fast path activated` in status.md and proceeds as auto-quick. This only applies when the piece has a calendar entry with a target date; if no entry exists, auto mode runs at full depth.
 
 At auto mode startup (before Phase 0), Caret reads `writers-room/cadence/calendar.md`. If the codename appears with a target date and that date is <3 days from today: auto-quick is activated regardless of whether `--quick` was passed. If >3 days (or no calendar entry): full auto mode runs as normal.
+
+---
+
+## Discovery Mode (`mmw --discovery`)
+
+Discovery mode runs before Phase 0. It is a pre-pipeline phase for selecting an editorial direction when the user isn't sure which angle to pursue.
+
+```
+mmw --discovery [topic | file | bullets]
+    ↓
+Caret generates codename, creates piece folder, writes status.md with:
+    - Mode: discovery
+    ↓
+Caret produces 3 distinct briefs:
+    brief-discovery-1.md
+    brief-discovery-2.md
+    brief-discovery-3.md
+    (each a complete brief — different angle, audience lean, and opening tension)
+    ↓
+Compass — single pass across all three briefs
+    → compass-notes.md (three ## Option N sections)
+    ↓
+Caret surfaces selection menu:
+
+    Discovery: [codename]
+
+    Option 1 — [one-sentence angle]
+    Option 2 — [one-sentence angle]
+    Option 3 — [one-sentence angle]
+
+    [1] Choose Option 1  [2] Choose Option 2  [3] Choose Option 3
+    [E] Edit a brief before choosing
+
+    ↓
+User selects (e.g. [2]):
+    Caret promotes brief-discovery-2.md → brief.md
+    Caret trims compass-notes.md to ## Option 2 content only
+    Status.md updated: Mode: discovery cleared → Mode: auto (if --auto present) or omitted (manual)
+    Log: [discovery] Option 2 selected → brief.md promoted, compass-notes.md trimmed to Option 2
+    ↓
+Phase 0 — Index overlap gate (proceeds normally from here)
+```
+
+**[E] Edit option**: Caret asks which option (1/2/3), opens that brief in co-edit flow (`mmw:done` to hand back). After done, Caret re-runs Compass on all three briefs, updates compass-notes.md, and re-surfaces the selection menu.
+
+**Combining with `--auto`**: `mmw --discovery --auto [...]` — discovery phase runs interactively (user must pick), then auto mode applies for all phases after selection.
+
+**Incompatibility with `--quick`**: Caret rejects `mmw --discovery --quick` immediately: `"--discovery requires deliberate editorial choice and cannot run with --quick."`
 
 ---
 

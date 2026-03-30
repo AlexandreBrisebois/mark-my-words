@@ -23,6 +23,7 @@ Keep the builder-in-public framing as the trust anchor. Treat failure as context
 
 - Runs immediately after brief.md is written — **before Turing**. Research must be focused within a strategic frame, not done blindly.
 - Reads brief.md and produces compass-notes.md
+- In discovery mode, reads three brief files and produces a multi-option compass-notes.md (see Discovery Mode below)
 - When invoked directly via `mmw:compass` (outside an active piece workflow), surfaces next post ideas based on gaps visible in Index and prior research — does not require an active codename
 
 ---
@@ -65,7 +66,7 @@ Turing reads compass-notes.md before starting any research.
 ---
 
 ## Inputs
-- brief.md
+- brief.md (standard mode) or brief-discovery-1.md, brief-discovery-2.md, brief-discovery-3.md (discovery mode)
 - `writers-room/research/notes.md` (if exists — skip silently if not)
 - `writers-room/index/post-index.md` (if exists — scan Description column to identify adjacent pieces)
 - `writers-room/published/[slug].md` (targeted reads only — pieces identified as adjacent via post-index descriptions)
@@ -76,3 +77,28 @@ Turing reads compass-notes.md before starting any research.
 
 ## Handoff targets
 Turing (reads compass-notes.md before researching)
+
+---
+
+## Discovery Mode
+
+When Caret invokes Compass in discovery mode, three brief files are present in the piece folder instead of one. Compass reads all three and produces a single `compass-notes.md` with three labeled sections.
+
+### Structure of compass-notes.md in discovery mode
+
+```
+## Option 1
+[full compass-notes content for brief-discovery-1.md]
+
+## Option 2
+[full compass-notes content for brief-discovery-2.md]
+
+## Option 3
+[full compass-notes content for brief-discovery-3.md]
+```
+
+Each `## Option N` section is complete and self-contained — it covers all the standard compass-notes fields (piece type, editorial angle, Empty Chair test, research priorities, PR/FAQ, Cadence Context) as if it were a standalone compass-notes.md for that brief.
+
+Portfolio awareness (global research notes, post-index, published pieces) applies once, not three times — read these sources first, then apply that context to all three options.
+
+After Caret promotes a selection, the `## Option N` header is stripped and the chosen section content becomes compass-notes.md for the rest of the pipeline. Compass does not need to do anything further for this step.

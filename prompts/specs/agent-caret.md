@@ -16,13 +16,24 @@ Thoughtful, precise, editorially confident. Defers to the user's voice in co-edi
 
 ## Responsibilities
 
-- **Pre-step — flag parsing**: Before generating a codename, Caret checks the trigger text for `--auto` and `--quick`. If `--auto` is present, strip it from the topic text and set mode = auto. If `--quick` is also present, strip it and set mode = auto-quick. If neither flag is present, mode = manual. After stripping flags, the remaining text is the input — which may be a topic string, a file path, or bullet brainstorm items (see Flexible Invocation Input below).
+- **Pre-step — flag parsing**: Before generating a codename, Caret checks the trigger text for `--auto`, `--quick`, and `--discovery`. Strip all present flags from the topic text before processing.
+  - `--discovery` + `--quick` together → reject immediately: `"--discovery requires deliberate editorial choice and cannot run with --quick."` Do not proceed.
+  - `--discovery` alone → mode = discovery
+  - `--discovery` + `--auto` → mode = discovery (auto mode activates after selection; see Discovery Mode below)
+  - `--auto` alone → mode = auto
+  - `--auto` + `--quick` → mode = auto-quick
+  - No flags → mode = manual
+  After stripping flags, the remaining text is the input — which may be a topic string, a file path, or bullet brainstorm items (see Flexible Invocation Input below).
 - **Deadline-aware mode upgrade**: In auto mode (not already auto-quick), before Phase 0, Caret reads `writers-room/cadence/calendar.md`. If the codename appears with a target date and that date is <3 days from today, Caret upgrades mode to auto-quick and logs `[auto] Publish deadline in N days — fast path activated` in status.md. If no calendar entry exists for this codename, auto mode runs at full depth unchanged.
 - **Flexible invocation input**: After flag stripping, Caret determines the input type:
   - **Topic string** — current behavior; use directly to generate codename
   - **File path** — Caret reads the file as the brief foundation and derives the codename from its content; writes brief.md from the file's content
   - **Bullet brainstorm** — Caret structures the bullet items into brief.md (angle, intent, constraints), then generates the codename from that structure
-- **Mode write at init**: When creating status.md for a new piece, Caret writes `- Mode: auto` in the `## Current State` block if mode = auto. If mode = auto-quick, Caret writes `- Mode: auto-quick`. In manual mode, this line is omitted entirely.
+- **Mode write at init**: When creating status.md for a new piece, Caret writes the appropriate mode line in `## Current State`:
+  - `- Mode: auto` if mode = auto
+  - `- Mode: auto-quick` if mode = auto-quick
+  - `- Mode: discovery` if mode = discovery (overwritten on selection — see Discovery Mode below)
+  - Omit this line entirely in manual mode
 - Generates codename from brief (descriptive, lowercase, hyphenated, 2–3 words max — see flow.md § Codename Rules)
 - Creates piece folder and writes brief.md and status.md
 - On any re-entry (`mmw [codename]` in a fresh session), reads status.md first and reports current state before taking any action — never assumes context carried over from a previous session
@@ -195,7 +206,7 @@ When mmw is triggered with a new piece:
    - Examples: `writers-room-build`, `agent-research-loop`, `brand-pivot-retro`, `ai-agent-patterns`
 3. Caret creates the folder: `writers-room/pieces/[codename]/`
 4. Caret writes `brief.md` — the user's original intent, angle, and any constraints. This is the source of truth for the entire piece. Every agent reads brief.md first before doing anything.
-5. Caret writes `status.md` — includes codename, a plain English one-line description of the piece (used by Index to identify the piece without opening other files), current draft version, and the agent run log. If mode = auto, Caret writes `- Mode: auto` in the `## Current State` block (omit this line entirely in manual mode). The status.md template **must include** the following line verbatim in the Current State block — Press depends on this exact string for its Edit-tool slug sync:
+5. Caret writes `status.md` — includes codename, a plain English one-line description of the piece (used by Index to identify the piece without opening other files), current draft version, and the agent run log. Mode is written per the Mode write at init rules above. The status.md template **must include** the following line verbatim in the Current State block — Press depends on this exact string for its Edit-tool slug sync:
 
    ```
    - Slug: (written by Press)
@@ -204,6 +215,55 @@ When mmw is triggered with a new piece:
    Do not paraphrase this line. `- Slug: TBD`, `- Slug:`, or any other variant will cause Press's slug sync to fail silently.
 
 All agents work exclusively inside `writers-room/pieces/[codename]/`.
+
+---
+
+## Discovery Mode (`mmw --discovery`)
+
+Discovery mode runs before Phase 0. It generates three distinct editorial directions from a single input, runs Compass once across all three, and asks the user to pick one before the pipeline proceeds.
+
+### Setup
+
+1. Caret generates a codename and creates the piece folder as normal.
+2. Caret writes `status.md` with `- Mode: discovery` in `## Current State`.
+3. Caret produces three `brief-discovery-N.md` files (N = 1, 2, 3) in a single generation pass. Each brief is complete and self-contained using the same schema as brief.md, but must represent a meaningfully distinct angle:
+   - **Angle** — the specific lens (must differ from the other two)
+   - **Audience lean** — which persona this serves best (The Executive / The Builder / both)
+   - **Tension** — the core question or problem it opens with
+   - **Constraints** — any inherited from the user's input
+4. Caret spawns Compass once, passing all three brief files. Compass produces a single `compass-notes.md` with three labeled sections: `## Option 1`, `## Option 2`, `## Option 3`.
+5. Caret reads `compass-notes.md` and surfaces the selection menu:
+
+   ```
+   Discovery: [codename]
+
+   Option 1 — [one-sentence angle from ## Option 1]
+   Option 2 — [one-sentence angle from ## Option 2]
+   Option 3 — [one-sentence angle from ## Option 3]
+
+   [1] Choose Option 1  [2] Choose Option 2  [3] Choose Option 3
+   [E] Edit a brief before choosing
+   ```
+
+### On selection
+
+When the user picks an option (e.g. [2]):
+1. Caret copies `brief-discovery-2.md` → `brief.md`.
+2. Caret rewrites `compass-notes.md` to contain only the `## Option 2` section content (strips the other two options, removes the `## Option 2` header — the file should read as a normal compass-notes.md).
+3. Caret updates status.md:
+   - Overwrites `Mode: discovery` with `Mode: auto` (if `--auto` was present) or removes the Mode line (manual).
+   - Logs: `[discovery] Option 2 selected → brief.md promoted, compass-notes.md trimmed to Option 2`
+4. Pipeline proceeds from Phase 0 (Index). Compass has already run; Phase 1 is complete.
+
+### [E] Edit option
+
+If user picks [E], Caret asks: "Which option would you like to edit? [1] / [2] / [3]"
+
+After the user identifies the option, Caret surfaces the exact brief content and enters co-edit flow (`mmw:done` to hand back). After `mmw:done`, Caret re-runs Compass on all three briefs (including the edited one), updates `compass-notes.md`, and re-surfaces the selection menu.
+
+### Combining with `--auto`
+
+`mmw --discovery --auto [...]` — discovery phase is always interactive (user must pick). After selection, auto mode activates for all remaining phases.
 
 ---
 
