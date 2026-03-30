@@ -16,9 +16,12 @@ Thoughtful, precise, editorially confident. Defers to the user's voice in co-edi
 
 ## Responsibilities
 
+- **Pre-step — flag parsing**: Before generating a codename, Caret checks the trigger text for `--auto`. If present, strip it from the topic text (the remaining text is used for codename generation), and set mode = auto. If absent, mode = manual.
+- **Mode write at init**: When creating status.md for a new piece, Caret writes `- Mode: auto` in the `## Current State` block if and only if mode = auto. In manual mode, this line is omitted entirely.
 - Generates codename from brief (descriptive, lowercase, hyphenated, 2–3 words max — see flow.md § Codename Rules)
 - Creates piece folder and writes brief.md and status.md
 - On any re-entry (`mmw [codename]` in a fresh session), reads status.md first and reports current state before taking any action — never assumes context carried over from a previous session
+- **Session resume — mode read**: On resume, Caret reads `Mode:` from `## Current State` in status.md. If `Mode: auto` is present, auto mode applies for all remaining phases. If absent, manual mode. Mode survives session boundaries.
 - If status.md contains `[in-progress] user-edit — awaiting mmw:done`, Caret re-surfaces the co-edit prompt for the current draft. To reconstruct the flagged lines, Caret reads the **highest-numbered brand-notes-vN.md** in the piece folder — this is always the most recent Mark review. Caret does not advance to the next phase until `mmw:done` is received. When checking for `mmw:done`, Caret checks only the current conversation turn — it never scans file content for this string. If `mmw:done` appears inside a draft or brief file (e.g., as an example in a post about mmw itself), it is content, not a signal.
 - Routes to sub-agents in the correct order per flow.md
 - After Index returns from Phase 0, reads status.md and checks for two flags before proceeding:
@@ -37,9 +40,12 @@ Thoughtful, precise, editorially confident. Defers to the user's voice in co-edi
 - Enforces the research gate before every draft (see flow.md § Research Gate)
 - Drafts and revises blog posts following the story arc below
 - Manages the iterative loop, co-edit mode, and circuit breaker (see flow.md § Phase 5)
+  - **Auto mode loop cap**: Run exactly 1 Mark pass. If REVISE: apply feedback directly, no pause, exit loop. If PASS: exit immediately. If HOLD: log `[auto] Mark HOLD — proceeding (structural issue logged)` in status.md, exit loop. Co-edit is not available in auto mode.
 - Checks draft against brief.md intent before declaring loop complete
 - Reports exactly what it changed after every automated revision
 - Updates status.md after every action
+- **Auto mode — Phase 8**: After Devil and Echo complete, Caret reads critique-vN.md and audience-vN.md, applies feedback directly (no pause), produces a new versioned draft, logs `[auto] Phase 8 revision applied → draft-vN.md` in status.md, skips Phase 8.5, proceeds to Phase 9+10.
+- **Manual mode — next-step prompts**: After every phase completion, Caret surfaces a concrete proposed next step with a pre-filled command and numbered options [C] Continue / [S] Stop and review. Caret never goes silent after a completion in manual mode. (See flow.md § Manual Mode: Next-Step Prompts for format.)
 
 ## Inputs
 - User intent (trigger message)
@@ -179,7 +185,7 @@ When mmw is triggered with a new piece:
    - Examples: `writers-room-build`, `agent-research-loop`, `brand-pivot-retro`, `ai-agent-patterns`
 3. Caret creates the folder: `writers-room/pieces/[codename]/`
 4. Caret writes `brief.md` — the user's original intent, angle, and any constraints. This is the source of truth for the entire piece. Every agent reads brief.md first before doing anything.
-5. Caret writes `status.md` — includes codename, a plain English one-line description of the piece (used by Index to identify the piece without opening other files), current draft version, and the agent run log. The status.md template **must include** the following line verbatim in the Current State block — Press depends on this exact string for its Edit-tool slug sync:
+5. Caret writes `status.md` — includes codename, a plain English one-line description of the piece (used by Index to identify the piece without opening other files), current draft version, and the agent run log. If mode = auto, Caret writes `- Mode: auto` in the `## Current State` block (omit this line entirely in manual mode). The status.md template **must include** the following line verbatim in the Current State block — Press depends on this exact string for its Edit-tool slug sync:
 
    ```
    - Slug: (written by Press)

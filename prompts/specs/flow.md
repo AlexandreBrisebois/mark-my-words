@@ -1,16 +1,23 @@
 # mmw Flow Spec — Workflow, Protocols, and File Schema
 
-This file is the canonical source of truth for how Mark My Words orchestrates its agents. Agent specs reference this file. When the workflow changes, change it here first.
+This file is the canonical source of truth for how mmw orchestrates its agents. Agent specs reference this file. When the workflow changes, change it here first.
 
 ---
 
 ## Invocation
 
-This system responds to the following triggers:
-- `mmw` — shorthand alias
-- `Mark My Words` — full name
+This system responds to a single trigger: `mmw`
 
-All three launch Caret as the default entry point.
+`mmw` launches Caret as the default entry point.
+
+### Modes
+
+- `mmw [topic]` — manual mode (default). Caret pauses after each phase and proposes the next step. The user decides when to advance.
+- `mmw --auto [topic]` — auto mode. Caret runs the full pipeline without pausing between phases. Stops at the proof gate (`mmw:proof`), which is always a human step.
+
+Caret strips `--auto` from the topic text before generating the codename. If `--auto` is present, Caret writes `- Mode: auto` to the `## Current State` block of `status.md` at initialization. Absence of this line = manual mode.
+
+On session resume, Caret reads `Mode:` from `## Current State` in `status.md`. If `Mode: auto` is present, auto mode applies for all remaining phases. Mode survives session boundaries.
 
 ### Sub-agent shortcuts (bypass Caret, go directly to an agent)
 
@@ -50,6 +57,7 @@ Phase 0 — Index: overlap gate
 Phase 1 — Compass: strategic direction
    ↓
 Phase 2 — Turing: focused research (reads compass-notes.md first)
+           [auto: deep dive skipped | manual: deep dive pause offered]
    ↓
 Phase 3 — Caret: draft-v1.md
            [research.md gate — must exist and be non-empty]
@@ -57,18 +65,19 @@ Phase 3 — Caret: draft-v1.md
 Phase 4 — Mark: headlines and hooks (reads draft-v1.md)
    ↓
 Phase 5 — Iterative loop: Caret ↔ Mark
-           [user-driven exit — no iteration cap]
-           [co-edit available at every pause]
+           [manual: user-driven exit — no iteration cap | co-edit available]
+           [auto: 1 Mark pass only — REVISE applied directly, HOLD logged and exits]
    ↓
 Phase 6+7 — Devil ║ Echo  [run in parallel]
             Devil: accusation audit → critique-vN.md
             Echo:  audience check  → audience-vN.md
    ↓
 Phase 8 — User revision window
-           [Caret reads both critique-vN.md and audience-vN.md]
-           [co-edit available]
+           [manual: Caret reads both critique-vN.md and audience-vN.md, pauses for user]
+           [auto: Caret reads feedback, applies directly, produces new draft, logs summary]
    ↓
-Phase 8.5 — Mark: brand re-alignment check  [conditional]
+Phase 8.5 — Mark: brand re-alignment check  [conditional — manual only]
+             [skipped entirely in auto mode]
              [fires only if draft changed in Phase 8]
              [single pass — option to return to creative mode]
              Mark reads latest draft → writes brand-notes-final.md
@@ -167,9 +176,20 @@ See `specs/agent-mark.md` for scoring criteria and brand rules.
 
 ## Phase 5 — Iterative Loop: Caret ↔ Mark
 
+### Manual mode
+
 This loop runs until the user decides to move on. There is no iteration cap.
 
-### Exit conditions
+### Auto mode
+
+Caret runs exactly 1 Mark pass, then exits the loop:
+- **REVISE**: Caret applies Mark's feedback directly (no pause), exits loop
+- **PASS**: exit immediately, proceed to Phase 6+7
+- **HOLD**: Caret logs `[auto] Mark HOLD — proceeding (structural issue logged)` in status.md, exits loop without blocking
+
+Co-edit is not available in auto mode.
+
+### Exit conditions (manual)
 
 1. Mark issues a HOLD verdict — loop exits immediately. HOLD means the issue is structural, not a revision problem. Caret surfaces this to the user:
 
@@ -300,6 +320,12 @@ See `specs/agent-devil.md` and `specs/agent-echo.md` for full audit and review c
 
 ## Phase 8 — User Revision Window
 
+### Auto mode
+
+Caret reads critique-vN.md and audience-vN.md, applies the feedback directly (no pause), produces a new versioned draft, and logs a one-line summary in status.md: `[auto] Phase 8 revision applied → draft-vN.md`. Phase 8.5 does not run in auto mode. Caret proceeds directly to Phase 9+10.
+
+### Manual mode
+
 After Devil and Echo complete, Caret reads critique-vN.md and audience-vN.md, then presents a consolidated feedback summary and pauses:
 
 ```
@@ -322,9 +348,11 @@ If [P]: Press reads the existing latest draft — no new version is created. Car
 
 ---
 
-## Phase 8.5 — Mark: Brand Re-Alignment Check [conditional]
+## Phase 8.5 — Mark: Brand Re-Alignment Check [conditional — manual only]
 
-### When it fires
+**Auto mode**: Phase 8.5 does not run. Caret logs `[skip] Phase 8.5 — auto mode` in status.md and proceeds directly to Phase 9+10. Rationale: a single Mark pass already occurred in Phase 5; a second brand check adds tokens without proportional value in an unattended run.
+
+### When it fires (manual mode only)
 
 After Phase 8 completes, Caret compares the draft filename passed to Devil/Echo at Phase 6+7 against the highest-numbered draft in the piece folder. If a new draft version was produced during Phase 8, Phase 8.5 fires. If no new draft exists (the user chose to proceed as-is), Phase 8.5 is skipped entirely. Caret logs the outcome in status.md:
 
@@ -473,6 +501,8 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 >  to identify this piece without opening other files]
 
 ## Current State
+- Phase: 0 — Index overlap gate
+- Mode: auto    ← only present in auto mode; absent = manual
 - Current draft: draft-v2.md
 - Last agent: Mark (brand-notes-v2.md) [REVISE]
 - Brief intent: NOT YET MET
@@ -507,6 +537,24 @@ After Press and Prism both complete, Caret writes `Next step: Ready for mmw:proo
 
 ---
 
+## Manual Mode: Next-Step Prompts
+
+In manual mode, Caret always surfaces a concrete proposed next step after each phase completes. It never goes silent after a completion. Format:
+
+```
+[Phase N complete] [what was produced]
+
+Proposed next step: [specific action]
+  [C] Continue — [what C does]
+  [S] Stop and review — pause here
+
+  → [pre-filled command to continue, e.g. "mmw:devil writers-room-build"]
+```
+
+The pre-filled command is always shown so the user can copy it to a new session if needed.
+
+---
+
 ## Constraints
 
 - All agent system prompts in plain markdown — no code, no JSON
@@ -514,11 +562,12 @@ After Press and Prism both complete, Caret writes `Next step: Ready for mmw:proo
 - Never overwrite a previous draft — always increment version numbers
 - Press outputs valid Hugo YAML front matter matching the schema exactly
 - image-prompt.md: one focused paragraph — no headers, no bullets, no code fences
-- Caret/Mark loop has no iteration cap — the user exits explicitly with [N]
+- Caret/Mark loop has no iteration cap in manual mode — the user exits explicitly with [N]
+- Auto mode: Phase 5 loop cap = 1 pass; Phase 8.5 skipped; Phase 8 applied without pause
 - Index runs before any other agent as an overlap gate, and always validates post-index.md before doing anything else
 - Compass runs before Turing — research must be focused, not blind
 - Caret never skips the research gate silently
-- Co-edit: Caret never rewrites the user's edits without flagging
+- Co-edit: Caret never rewrites the user's edits without flagging; co-edit not available in auto mode
 - Do not over-engineer — this is a writing tool first
 
 ---

@@ -209,6 +209,19 @@ to restrict tool access.
 > must be issued in the same response turn. Sequential calls are functionally
 > correct but will not run concurrently.
 
+**Auto-mode behavior — Caret**: When writing `.claude/agents/caret.md`, include these behaviors (read `prompts/specs/agent-caret.md` for full detail):
+- Pre-step flag parsing: check for `--auto` in the trigger text, strip it, set mode
+- If mode = auto: write `- Mode: auto` in the `## Current State` block of status.md at init; omit in manual mode
+- Session resume: read `Mode:` from status.md `## Current State`; if `Mode: auto` present, auto mode applies for all remaining phases
+- Phase 5 loop cap in auto: 1 Mark pass only — REVISE applied directly, HOLD logged and exits, PASS exits; co-edit not available
+- Phase 8 in auto: apply Devil/Echo feedback directly, produce new draft, log summary, skip Phase 8.5
+- Manual mode: surface a concrete next-step prompt after every phase completion (pre-filled command + [C]/[S] options)
+
+**Auto-mode behavior — Turing**: When writing `.claude/agents/turing.md`, include these behaviors (read `prompts/specs/agent-turing.md` for full detail):
+- At startup, read `Mode:` from status.md; if `Mode: auto`, skip the deep dive entirely
+- Log `[auto] Deep dive skipped` under `## Deep Dive Candidates (skipped — auto mode)` in research.md
+- Proceed to Phase 3 immediately without surfacing candidates
+
 **Cross-check before moving to Step C**: Read back the status.md initialization block in `.claude/agents/caret.md` and the Edit-tool replace target in `.claude/agents/press.md`. Confirm both reference the exact string `- Slug: (written by Press)` — character for character, including parentheses and capitalization. If they differ, fix whichever is wrong before continuing.
 
 ---
@@ -218,6 +231,7 @@ to restrict tool access.
 Read `prompts/specs/flow.md` before writing. Cover:
 - How Caret orchestrates the sub-agents
 - The full ordered workflow with all 11 phases
+- **Manual vs auto mode**: invocation syntax, what differs per phase (Phase 5 loop cap, Phase 8 no-pause, Phase 8.5 skipped, Turing deep dive skipped), proof gate always a human step in both modes
 - The three parallel execution pairs: Devil ║ Echo, Press ║ Prism, Index ║ Cadence
 - The iterative Caret/Mark loop, co-edit mode, and circuit breaker logic
 - The Index overlap gate and startup validation
@@ -225,8 +239,15 @@ Read `prompts/specs/flow.md` before writing. Cover:
 - Codename generation rules
 - Draft versioning rules — never overwrite, always increment
 - The Prism → image-prompt.md → GitHub Actions handoff
-- Full file schema with status.md structure
-- Session resume: how to re-enter mid-workflow via status.md
+- Full file schema with status.md structure — include the optional `Mode: auto` field:
+  ```
+  ## Current State
+  - Phase: 0 — Index overlap gate
+  - Mode: auto    ← only present in auto mode; absent = manual
+  - Current draft: draft-v2.md
+  ...
+  ```
+- Session resume: how to re-enter mid-workflow via status.md; how Mode survives session boundaries
 
 ---
 
@@ -236,11 +257,17 @@ Read `prompts/specs/flow.md` before writing. Cover:
 
 Read `prompts/specs/flow.md` before writing. Cover:
 - What Mark My Words is — one paragraph
-- Triggers: `/mmw` is the primary slash command (registered as a Skill in `.claude/skills/`). Plain-text variants `mmw`, `Mark My Words`, and `mmw` remain as fallbacks for sessions where skills are not loaded.
+- **Single trigger**: `mmw` is the only recognized trigger. `MMW` and `Mark My Words` are not triggers. Document this explicitly.
+- **Invocation modes** (read from flow.md § Modes):
+  - `mmw [topic]` — manual mode (default)
+  - `mmw --auto [topic]` — auto mode: runs full pipeline without pausing, stops at `mmw:proof`
+  - Caret strips `--auto` before generating the codename
+- `/mmw` is the primary slash command (registered as a Skill in `.claude/skills/`). The plain-text `mmw` remains a fallback for sessions where skills are not loaded.
 - All sub-agent shortcuts — now registered as skills (`/mmw-turing`, `/mmw-devil`, etc.) with plain-text `mmw:agent` variants documented as fallbacks. Note: each invokes a native Claude Code subagent defined in `.claude/agents/`.
-- `mmw:proof` — the human gate that triggers Phase 11. Explain that no agent calls this automatically; it is always a deliberate human decision. State explicitly that `mmw:proof` is handled inline by Caret — there is no `.claude/agents/proof.md`. When the user types `mmw:proof [codename]`, Caret reads the piece folder and executes the Phase 11 pre-flight directly.
+- `mmw:proof` — the human gate that triggers Phase 11. Explain that no agent calls this automatically; it is always a deliberate human decision — in both manual and auto mode. State explicitly that `mmw:proof` is handled inline by Caret — there is no `.claude/agents/proof.md`. When the user types `mmw:proof [codename]`, Caret reads the piece folder and executes the Phase 11 pre-flight directly.
 - State explicitly that `mmw:bearings` is handled inline by Caret — there is no `.claude/agents/bearings.md`. When the user types `mmw:bearings [codename]`, Caret reads status.md and reports the current state of the piece before proposing a next step.
 - Caret as the default entry point
+- **Session resume**: `mmw [codename]` resumes an existing piece. Caret reads status.md first. If `Mode: auto` is present in status.md, auto mode applies for all remaining phases.
 - Codename generation rules: derived from brief, descriptive, lowercase hyphenated, 2–3 words, characters `[a-z0-9-]` only
 - The full ordered workflow summary
 - The iterative loop, co-edit mode, and 2-iteration circuit breaker
@@ -560,6 +587,16 @@ When the build is complete, verify the following success criteria can be traced 
 - `writers-room/research/notes.md` — contains the markdown table header
 - All 10 agent files in `.claude/agents/` — read back the `tools:` line in each file and confirm it opens with `[` and closes with `]`. A plain string (e.g., `tools: Read, Write`) will not raise an error but silently disables tool scoping at runtime. Fix any that fail this check before proceeding.
 - All 12 skill directories in `.claude/skills/` — verify each contains a `SKILL.md` file that is non-empty: `mmw`, `mmw-turing`, `mmw-devil`, `mmw-echo`, `mmw-press`, `mmw-prism`, `mmw-compass`, `mmw-mark`, `mmw-cadence`, `mmw-index`, `mmw-bearings`, `mmw-proof`.
+
+**Auto-mode trace** (verify caret.md and turing.md contain the required logic):
+- `mmw --auto [topic]` → Caret strips `--auto`, generates codename, writes `- Mode: auto` to status.md
+- Turing reads `Mode: auto` from status.md → skips deep dive, logs `[auto] Deep dive skipped`
+- Phase 5: Caret runs 1 Mark pass, applies REVISE directly or exits on PASS/HOLD
+- Phase 8: Caret applies Devil/Echo feedback directly, logs summary, skips Phase 8.5
+- `mmw:proof` → still a human gate; auto mode pauses and waits
+- Session resume: `mmw [codename]` → Caret reads `Mode: auto` from status.md → continues in auto mode
+
+**Manual-mode trace** (existing workflow, unchanged):
 
 1. User types: `/mmw write a post about building this writer's room` (or plain-text `mmw write a post about building this writer's room` as fallback)
 2. Caret generates codename `writers-room-build`, creates folder, writes brief.md and status.md with plain English description
