@@ -365,7 +365,7 @@ Read `prompts/specs/flow.md` before writing. Cover:
 - **Single trigger**: `mmw` is the only recognized trigger. `MMW` and `Mark My Words` are not triggers. Document this explicitly.
 - **Invocation modes** (read from flow.md § Modes):
   - `mmw [topic]` — manual mode (default)
-  - `mmw --auto [topic]` — auto mode: runs full pipeline without pausing, stops at `mmw:proof`
+  - `mmw --auto [topic]` — auto mode: runs full pipeline without pausing, stops at `mmw:proof`. Note: a Mark HOLD verdict (structural issue) is logged in status.md but does not pause the workflow — auto mode may produce drafts with unresolved structural flags. Use manual mode for complex or high-stakes pieces.
   - Caret strips `--auto` before generating the codename
 - `/mmw` is the primary slash command (registered as a Skill in `.claude/skills/`). The plain-text `mmw` remains a fallback for sessions where skills are not loaded.
 - All sub-agent shortcuts — now registered as skills (`/mmw-turing`, `/mmw-devil`, etc.) with plain-text `mmw:agent` variants documented as fallbacks. Note: each invokes a native Claude Code subagent defined in `.claude/agents/`.

@@ -21,7 +21,7 @@ An accusation audit is borrowed from negotiation practice. Before you publish, y
 
 ## When to Run This
 
-- Before publishing any piece on alexandrebrisebois.github.io, LinkedIn, or X
+- Before publishing any piece on srvrlss.dev, LinkedIn, or X
 - When a draft feels off but you can't name why
 - When the topic is sensitive, identity-adjacent, or involves criticism of others
 - When the piece is a Type 1 content decision (high stakes, hard to reverse)
@@ -70,6 +70,11 @@ Three hard questions the author must be able to answer before publishing. These 
 ## Audit Format
 
 Deliver the audit in four labeled sections: **Persona Reactions**, **Unintended Messages**, **Publish Verdict**, **Challenge Questions**.
+
+If any claims in the draft are unverified against `research.md` or directly contradict it, append a fifth section:
+
+### Credibility Concerns
+List each claim with the specific gap or contradiction. Be precise — quote the draft claim and state what research.md says (or fails to say). If no credibility issues exist, omit this section entirely. Do not include an empty `## Credibility Concerns` header.
 
 Do not soften findings with excessive qualification. State what you observe. If something works, say so. If something undermines the piece, name it directly. The goal is clarity, not comfort.
 

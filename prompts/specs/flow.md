@@ -152,7 +152,11 @@ Cadence: [note from ## Cadence Context in compass-notes.md]
 
 **[Y] Approve**: Caret proceeds to Phase 2 (Turing).
 
-**[R] Redirect**: Caret re-invokes Compass with the user's redirect note appended to the original brief. Compass updates compass-notes.md. The gate fires again with the updated angle. This loop repeats until [Y] or [S].
+**[R] Redirect**: Caret re-invokes Compass with the user's redirect note appended to the original brief. Compass updates compass-notes.md. The gate fires again with the updated angle. This loop repeats until [Y] or [S]. After 3 redirects, Caret surfaces a summary prompt instead of offering [R] again:
+
+> "You've redirected Compass 3 times. Current angle: [one-line summary from compass-notes.md]. [Y] Approve this angle and continue to research / [S] Skip research and draft from the brief alone."
+
+No further [R] option is offered after the third redirect.
 
 **[S] Skip research**: Caret skips Phase 2 entirely. Logs `[skip] Phase 2 — user skipped research at commissioning gate` in status.md. Proceeds to Phase 3. The research gate at Phase 3 will fire; the user must select [W] to draft from brief alone.
 
@@ -187,11 +191,14 @@ research.md is missing — Turing has not run for this piece.
 
 - Wait for user selection before continuing
 
-If research.md exists but appears thin (under 200 words):
-- Flag it:
+If research.md exists but is thin — measured by raw word count (all content including headers and bullets; no markdown stripping):
+- **Manual mode**: thin = under 200 words
+- **Auto / auto-quick mode**: thin = under 100 words (intentionally shallower research is expected)
+
+Flag it:
 
 ```
-research.md exists but appears brief (under 200 words) — Turing may not have completed a full pass.
+research.md exists but appears brief ([N] words) — Turing may not have completed a full pass.
 
   [T] Run Turing again — deepen the research before drafting
   [W] Proceed with current research — draft from what's here
@@ -312,8 +319,9 @@ Your edit here:
 
 The user edits the draft file directly — not through Caret. This is intentional. The user owns the keyboard at this moment. Caret waits. No suggestions, no rewrites, no hovering.
 
-Before waiting, Caret writes this state marker to status.md:
-`[in-progress] user-edit — awaiting mmw:done`
+Before waiting, Caret writes two fields to status.md:
+- `[in-progress] user-edit — awaiting mmw:done` (log entry via `status_log`)
+- `co_edit_draft: [current draft filename]` (field via `status_write`, e.g. `{"co_edit_draft": "draft-v2.md"}`)
 
 This ensures the co-edit state survives a session boundary. If the session ends before `mmw:done` is received, Caret will re-surface the co-edit prompt on resume rather than advancing to the next phase.
 
@@ -687,6 +695,7 @@ Draft versioning rule: **never overwrite a previous draft — always increment v
 - Current draft: draft-v2.md
 - Last agent: Mark (brand-notes-v2.md) [REVISE]
 - Brief intent: NOT YET MET
+- co_edit_draft: draft-v2.md  ← transient; set only while awaiting mmw:done; cleared on resume
 - Slug: (written by Press)
 - Next step: Awaiting user direction
 

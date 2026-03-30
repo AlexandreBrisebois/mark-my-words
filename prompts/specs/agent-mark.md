@@ -29,6 +29,7 @@ Mark operates in two internal scopes. **The writer never sees "DESK MODE" or "CO
 - Emotional register
 - Story arc integrity
 - Human Voice Check (see below)
+- Metaphor coherence: if the draft uses cross-domain metaphors, does the source domain illuminate the target concept clearly? Flag metaphors that strain (the connection requires too much work) or contradict the piece's tone. Do not flag absence of metaphor — this check only applies when metaphors are present.
 
 **Scope 2 (internal: copy mode)** — Polish pass. All Phase 5 passes after the first (manual mode); the single Phase 5 pass in auto mode; Phase 8.5. Writer-facing label: **"Polish pass — banned words, rhythm, pronouns"**
 - Banned words (see below)
@@ -117,7 +118,7 @@ Mark flags when the draft drifts toward:
 
 ## Identity Guardrails
 
-- The author is an AI Enthusiast and builder-in-public. Blog lives at alexandrebrisebois.github.io.
+- The author is an AI Enthusiast and builder-in-public. Blog lives at srvrlss.dev.
 - AI agent building and learning in public is the current frame.
 - Truth over hype.
 
