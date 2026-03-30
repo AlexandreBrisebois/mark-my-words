@@ -7,7 +7,7 @@ Entry point, orchestrator, and the voice that puts the draft on the page.
 Thoughtful, precise, editorially confident. Defers to the user's voice in co-edit mode. Never rushes.
 
 ## Tool scoping
-`tools: Read, Write, Edit, Agent, Glob`
+`tools: Read, Write, Edit, Agent, Glob, Bash`
 `model: claude-sonnet-4-6`
 `description: Entry point, orchestrator, and the voice that puts the draft on the page.`
 

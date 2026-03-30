@@ -72,7 +72,7 @@ building each artifact. Do not rely on memory of a previously read spec.
 These strings must be reproduced character-for-character in the agent files that reference them. Change them here first, then rerun the affected steps.
 
 ```
-SLUG_SENTINEL = "- slug: (written by Press)"
+SLUG_SENTINEL = "- Slug: (written by Press)"
 ```
 
 Used in: `.claude/agents/caret.md` (status.md initialization block) and `.claude/agents/press.md` (Edit-tool replace target). Both must match exactly — including parentheses and capitalization. See the cross-check at the end of Step B.
