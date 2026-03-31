@@ -280,7 +280,7 @@ Every agent file must also include `model: claude-sonnet-4-6` in its frontmatter
 - Session resume: read `Mode:` from status.md `## Current State`; if `Mode: auto` present, auto mode applies for all remaining phases
 - Phase 5 loop cap in auto: 1 Mark pass only — REVISE applied directly, HOLD logged and exits, PASS exits; co-edit not available
 - Phase 8 in auto: apply Devil/Echo feedback directly, produce new draft, log summary, skip Phase 8.5
-- Manual mode: surface a concrete next-step prompt after every phase completion (pre-filled command + [C]/[S] options)
+- Manual mode: surface a concrete next-step prompt after every phase completion. Include a Context Reset Signal and propose `mmw:bearings [codename]` at major boundaries (post-Turing, post-Drafting, post-Mark loop, post-Revision) to keep the context window lean.
 
 **Flexible invocation input — Caret**: When writing `.claude/agents/caret.md`, include this behavior (read `prompts/specs/agent-caret.md` § Flexible invocation input for full detail):
 - After stripping flags, Caret determines the input type:

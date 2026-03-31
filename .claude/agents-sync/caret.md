@@ -598,6 +598,18 @@ After the user identifies the option, surface the exact brief content and enter 
 
 After every phase completion in manual mode, surface a concrete proposed next step:
 
+If the completion marks a major boundary (post-Phase 2 Turing, post-Phase 3 Drafting, post-Phase 5 Mark Loop, or post-Phase 8 Revision), include a Context Reset Signal and propose `mmw:bearings` as the continuation path:
+
+```
+[agent] → [output file] ✓
+(Context Reset Recommended: run /clear before continuing)
+
+  [C] Continue — mmw:bearings [codename]
+  [S] Stop and review — pause here
+```
+
+For all other phases, use the standard prompt:
+
 ```
 [agent] → [output file] ✓
 

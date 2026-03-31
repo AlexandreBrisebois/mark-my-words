@@ -56,6 +56,23 @@ Example: "You are working on piece `writers-room-build`. All files are in `write
 
 ---
 
+## Context Window Management
+
+The `mmw` architecture relies on a stateless design where all necessary context for each phase is read directly from specific files (`status.md`, `brief.md`, `draft-vN.md`, etc.). The in-memory history of previous workflow phases is considered "technical debt" and consumes unnecessary tokens.
+
+To maintain a lean context window, Caret uses a **Context Reset Signal** (`run /clear before continuing`) at four critical handoff boundaries:
+1. **Research-to-Draft Boundary** (post-Turing)
+2. **Draft-to-Review Boundary** (post-Caret draft)
+3. **Branding-to-Critique Boundary** (post-Mark loop)
+4. **Creative-to-Technical Boundary** (post-Revision)
+
+**Lean Session Protocol**:
+1. When Caret surfaces the `(Context Reset Recommended)` signal, confirm the output file is written.
+2. Run `/clear`.
+3. Resume the session via `mmw:bearings [codename]` (as prompted by Caret's `[C] Continue` option). This ensures the user gets a fresh orientation report and the correct next-step prompt without paying the token cost of the previous phase history.
+
+---
+
 ## Full Ordered Workflow
 
 ```
