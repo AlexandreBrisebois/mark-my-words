@@ -62,6 +62,7 @@ import sys
 from collections import Counter
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from typing import Optional
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -418,7 +419,7 @@ def overlap_check(brief_path: str, index_path: str) -> None:
 # Tool: slug_validate
 # ---------------------------------------------------------------------------
 
-def _extract_slug_from_status(content: str) -> str | None:
+def _extract_slug_from_status(content: str) -> Optional[str]:
     fields = _parse_current_state(content)
     slug = fields.get("slug")
     if not slug or slug == "(written by Press)":
@@ -426,11 +427,11 @@ def _extract_slug_from_status(content: str) -> str | None:
     return slug
 
 
-def _extract_slug_from_seo(content: str) -> str | None:
+def _extract_slug_from_seo(content: str) -> Optional[str]:
     # Look for "slug: <value>" in YAML front matter block
     m = re.search(r"^slug:\s*(.+)$", content, re.MULTILINE | re.IGNORECASE)
     if m:
-        return m.group(1).strip()
+        return m.group(1).strip().strip('"\'')
     return None
 
 
