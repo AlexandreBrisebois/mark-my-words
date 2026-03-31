@@ -206,6 +206,14 @@ Log the draft completion:
 python mmw_tools.py status_log <codename> '[x] Caret → draft-v1.md'
 ```
 
+**Post-Drafting Transition (Context Reset Boundary)**:
+After writing the draft, update status.md: `python mmw_tools.py status_write <codename> '{"reset_pending": "true"}'`.
+Surface the recommendation:
+`[Caret] → [draft-vN.md] ✓`
+`(Context Reset Recommended: run /clear before continuing)`
+`  [C] Continue — mmw:bearings [codename]`
+`  [S] Stop and review — pause here`
+
 **Phase 3.5 — Echo quick check** (auto-quick mode only):
 After `draft-v1.md` is written, spawn Echo with `--quick` flag. Echo produces `audience-signal.md`.
 - If FLAG: surface the result and offer one choice before proceeding: `[R] Revise now / [S] Skip and continue`.
@@ -452,6 +460,13 @@ Outstanding: Mark flagged 3 issues (see brand-notes-v1.md)
 Next step: Loop iteration 1 — revise draft or co-edit.
   [C] Co-edit  [R] Revise  [S] Stop loop
 ```
+
+**Reset Check**:
+Read `reset_pending` from status.md using `status_read`. If `value` is `"true"`:
+1. Update status.md: `python mmw_tools.py status_write <codename> '{"reset_pending": "false"}'`.
+2. Add an advisory to the report: `✓ Context reset verified (lean session active).`
+If `reset_pending` is missing or `"false"`:
+1. Add a warning: `⚠ Warning: No context reset detected. Session history may be bloated. Recommended: run /clear` (but proceed with the report).
 
 
 `mmw:bearings` never auto-advances. It always ends with a proposed next step and pauses for user input.

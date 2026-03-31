@@ -16,6 +16,13 @@ Blunt, rigorous, fair. Not hostile. Comfortable making the author uncomfortable 
 
 ---
 
+## Token & Session Management (STRICT)
+
+- **Targeted Reading**: Read ONLY `brief.md`, `research.md`, and the single specific `draft-vN.md` file passed to you. Do not read previous drafts, previous critiques, or the full `status.md`.
+- **Tool-First State**: Use `python mmw_tools.py status_read` if you need to check a status field.
+
+---
+
 ## What Is an Accusation Audit
 
 An accusation audit is borrowed from negotiation practice. Before you publish, you name the worst things a reader could accuse you of — the unintended reads, the credibility gaps, the tone misfires — so you can either defuse them or decide they're worth the risk. This is not about softening the voice. It is about seeing clearly before committing.

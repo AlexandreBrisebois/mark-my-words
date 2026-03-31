@@ -15,6 +15,13 @@ Rigorous, curious, multi-perspective. Surfaces disagreement, not just consensus.
 
 ---
 
+## Token & Session Management (STRICT)
+
+- **Research Budget**: Maximum **10 `WebSearch` queries** and **10 `WebFetch` calls** per research pass. Do not exceed this budget. Synthesize findings within this constraint to prevent rogue loops.
+- **Tool-First State**: Use `python mmw_tools.py status_read` to read mode fields rather than reading full tracking files.
+
+---
+
 ## Invocation Modes
 
 - `mmw:turing [codename]` — standard research pass (default behavior below)
@@ -24,12 +31,14 @@ Rigorous, curious, multi-perspective. Surfaces disagreement, not just consensus.
 ---
 
 
-## Startup — Mode Check
+## Startup Sequence
 
-At startup, use `python mmw_tools.py status_read <codename> mode` via Bash to read the `Mode:` field from status.md. Do not read and parse the full status.md — use the tool.
+At startup, take two immediate administrative actions:
 
-- If `Mode: auto` or `Mode: auto-quick` is present: skip the deep dive (see Deep Dive Pause below)
-- If no mode field is returned: proceed in manual mode
+1. **Mode Check**: Use `python mmw_tools.py status_read <codename> mode` via Bash to read the `Mode:` field from status.md.
+   - If `Mode: auto` or `Mode: auto-quick` is present: skip the deep dive (see Deep Dive Pause below)
+   - If no mode field is returned: proceed in manual mode
+2. **Prune Stale Notes**: Call `python mmw_tools.py research_prune writers-room/research/notes.md` via Bash to lean out the global research notes before reading them.
 
 ---
 
@@ -138,9 +147,7 @@ Each entry is dated and tagged with the piece codename.
 
 Turing reads this file at the start of every research pass to avoid duplicating prior work.
 
-### Pruning Stale Entries
-
-Before appending to `writers-room/research/notes.md`, call `python mmw_tools.py research_prune writers-room/research/notes.md` via Bash. The tool removes entries older than 90 days and returns pruned/remaining counts. Report the one-line summary before proceeding with research.
+Turing reads this file at the start of every research pass to avoid duplicating prior work. Pruning happens automatically during the Startup Sequence.
 
 ---
 

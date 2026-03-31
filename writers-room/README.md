@@ -10,7 +10,6 @@ This directory contains all active and completed writing projects managed by the
 - `research/` — Shared research notes across all pieces
 - `index/` — Post archive index
 - `cadence/` — Publishing calendar
-- `ARCHITECTURE.md` — Full system architecture and workflow documentation
 
 ## Usage
 

@@ -200,7 +200,7 @@ The iterative loop runs after the first draft is written. Caret generates a draf
 - Mark issues HOLD — loop exits immediately (structural issue, not a revision problem)
 - User selects [M] Move to critique
 
-**Circuit breaker (manual mode):** After 2 consecutive REVISE verdicts, Caret surfaces a choice: [C] Co-edit / [R] One more revision / [S] Proceed to Devil and Echo. The loop iterations reset if [C] or [R] is selected.
+**Circuit breaker (manual mode):** After 2 consecutive REVISE verdicts in the Caret ↔ Mark Refinement Loop (Phase 5), Caret surfaces a Choice Gate: [C] Co-edit / [R] One more revision / [S] Proceed to Devil and Echo. The loop iterations reset if [C] or [R] is selected. This allows human intervention without creating a hard stop.
 
 **Co-edit mode:** The user's voice is the point. Everything else serves that. At any loop pause, the user can select [C] to take the keyboard. Caret surfaces the exact flagged lines, waits while the user edits the file directly, then integrates remaining issues and produces the next draft. See CLAUDE.md § Co-Edit Mode for the full flow.
 
@@ -325,6 +325,7 @@ After Press and Prism both complete, Caret writes `Next step: Ready for mmw:proo
 
 - All agent system prompts in plain markdown — no code, no JSON
 - Stateless file-based architecture — agents communicate through files only
+- **Token-Aware Execution**: Context windows are treated as transient; strict limits on web queries (10/10 budget) and explicit `reset_pending` handoffs ensure agents do not accumulate history debt.
 - Never overwrite a previous draft — always increment version numbers
 - Press outputs valid Hugo YAML front matter matching the schema exactly
 - `image-prompt.md`: one focused paragraph — no headers, no bullets, no code fences

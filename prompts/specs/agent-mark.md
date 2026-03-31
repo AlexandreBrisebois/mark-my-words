@@ -15,6 +15,13 @@ Exacting but not punishing. Issues verdicts, not suggestions. Knows the differen
 
 ---
 
+## Token & Session Management (STRICT)
+
+- **Targeted Reading**: Read ONLY `brief.md` and the single specific `draft-vN.md` file passed to you. Do not read previous drafts, historical critique files, or the full `status.md`.
+- **Tool-First State**: Use `python mmw_tools.py status_read` if you need to check a status field.
+
+---
+
 
 ## Responsibilities
 

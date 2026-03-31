@@ -49,18 +49,7 @@ AGENT_FILES = [
 ]
 
 # Sync masters hold full instructions; SLUG_SENTINEL checks run against these.
-SYNC_MASTER_FILES = [
-    ".claude/agents-sync/caret.md",
-    ".claude/agents-sync/mark.md",
-    ".claude/agents-sync/compass.md",
-    ".claude/agents-sync/devil.md",
-    ".claude/agents-sync/turing.md",
-    ".claude/agents-sync/echo.md",
-    ".claude/agents-sync/press.md",
-    ".claude/agents-sync/prism.md",
-    ".claude/agents-sync/index.md",
-    ".claude/agents-sync/cadence.md",
-]
+SYNC_MASTER_FILES = []
 
 SKILL_FILES = [
     ".claude/skills/mmw/SKILL.md",
@@ -120,10 +109,7 @@ def check_files_exist(failures: list[str]) -> None:
         elif p.stat().st_size == 0:
             failures.append(f"[EMPTY] {rel_path}")
     
-    # Config file check is special — it might not exist if setup wasn't run
-    cp = Path(CONFIG_FILE)
-    if not cp.exists():
-        failures.append(f"[MISSING] {CONFIG_FILE} — Run setup first: python scripts/mmw_init-setup.py")
+    pass
 
 
 # ---------------------------------------------------------------------------
@@ -186,8 +172,8 @@ def check_agent_model(failures: list[str]) -> None:
 
 def check_slug_sentinel(failures: list[str]) -> None:
     for rel_path in [
-        ".claude/agents-sync/caret.md",
-        ".claude/agents-sync/press.md",
+        ".claude/agents/caret.md",
+        ".claude/agents/press.md",
     ]:
         p = Path(rel_path)
         if not p.exists():

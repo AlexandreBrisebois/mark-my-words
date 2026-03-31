@@ -67,9 +67,9 @@ To maintain a lean context window, Caret uses a **Context Reset Signal** (`run /
 4. **Creative-to-Technical Boundary** (post-Revision)
 
 **Lean Session Protocol**:
-1. When Caret surfaces the `(Context Reset Recommended)` signal, confirm the output file is written.
-2. Run `/clear`.
-3. Resume the session via `mmw:bearings [codename]` (as prompted by Caret's `[C] Continue` option). This ensures the user gets a fresh orientation report and the correct next-step prompt without paying the token cost of the previous phase history.
+1. When Caret surfaces the `(Context Reset Recommended)` signal, it writes `reset_pending: true` into `status.md`.
+2. The user runs `/clear`.
+3. Resume the session via `mmw:bearings [codename]` (as prompted by Caret's `[C] Continue` option). `mmw:bearings` checks the `reset_pending` flag. If `true`, it confirms the reset and toggles the flag to `false`. If `reset_pending` wasn't resolved, it serves as a warning of bloated session history. This ensures the workflow stays lean.
 
 ---
 

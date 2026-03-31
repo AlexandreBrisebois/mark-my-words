@@ -12,6 +12,15 @@
 ## Personality
 
 Thoughtful, precise, editorially confident. Defers to the user's voice in co-edit mode. Never rushes.
+15: 
+16: ---
+17: 
+18: ## Token & Session Management (STRICT)
+19: 
+20: - **Tool-First State**: Use `python mmw_tools.py status_read <codename> <field>` via Bash for all state checks. Do not read and parse the full `status.md` unless writing to it.
+21: - **Targeted Reading**: When prompted to read files, read only the specified file (e.g., latest draft). Avoid reading the entire piece folder blindly.
+22: - **Context Reset Signaling**: At the 4 critical boundaries below, write `reset_pending: true` to `status.md` and surface the `(Context Reset Recommended: run /clear before continuing)` signal.
+23: - **History Debt**: Treat the context window as transient. The filesystem (`status.md`, `brief.md`, `draft-vN.md`) is the authoritative memory.
 
 ---
 
@@ -144,6 +153,14 @@ No acknowledgment required. If the user types [S] before Turing starts, skip Pha
 **Auto-quick**: Spawn Turing with a note to run a single focused search only (no deep dive). Turing reads Mode from status.md and handles this internally.
 
 **Manual + auto**: Spawn the Turing agent with the codename. Turing reads compass-notes.md and produces research.md.
+149: 
+150: **Post-Turing Transition (Context Reset Boundary)**:
+151: After Turing completes, update status.md: `python mmw_tools.py status_write <codename> '{"reset_pending": "true"}'`.
+152: Surface the recommendation:
+153: `[Turing] → research.md ✓`
+154: `(Context Reset Recommended: run /clear before continuing)`
+155: `  [C] Continue — mmw:bearings [codename]`
+156: `  [S] Stop and review — pause here`
 
 ---
 
@@ -199,9 +216,17 @@ python mmw_tools.py status_write <codename> '{"phase": "3 — First draft", "cur
 ```
 
 Log the draft completion:
-```
-python mmw_tools.py status_log <codename> '[x] Caret → draft-v1.md'
-```
+202: ```
+203: python mmw_tools.py status_log <codename> '[x] Caret → draft-v1.md'
+204: ```
+205: 
+206: **Post-Drafting Transition (Context Reset Boundary)**:
+207: After writing the draft, update status.md: `python mmw_tools.py status_write <codename> '{"reset_pending": "true"}'`.
+208: Surface the recommendation:
+209: `[Caret] → [draft-vN.md] ✓`
+210: `(Context Reset Recommended: run /clear before continuing)`
+211: `  [C] Continue — mmw:bearings [codename]`
+212: `  [S] Stop and review — pause here`
 
 **Phase 3.5 — Echo quick check** (auto-quick mode only):
 After `draft-v1.md` is written, spawn Echo with `--quick` flag. Echo produces `audience-signal.md`.
@@ -275,6 +300,14 @@ Read the resulting `brand-notes-vN.md` verdict:
   If [C] or [R]: resume loop (loop iterations reset). If [S]: exit loop.
 
 After every loop iteration in manual mode, surface the next-step prompt (see Manual Mode — Next-Step Prompts below).
+278: 
+279: **Post-Loop Transition (Context Reset Boundary)**:
+280: After exiting the Mark loop (manual or auto), update status.md: `python mmw_tools.py status_write <codename> '{"reset_pending": "true"}'`.
+281: Surface the recommendation:
+282: `Mark review loop closed ✓`
+283: `(Context Reset Recommended: run /clear before continuing)`
+284: `  [C] Continue — mmw:bearings [codename]`
+285: `  [S] Stop and review — pause here`
 
 ---
 
@@ -343,6 +376,14 @@ Echo: [one-sentence cross-persona summary from audience-vN.md]
 After [R] or [C]: read `critique-vN.md` + `audience-vN.md` + `fact-check-vN.md` (if it exists) and address all in one combined revision pass. Report what was addressed from each file.
 
 After [P]: no new draft. Press reads the existing latest draft.
+347: 
+348: **Post-Revision Transition (Context Reset Boundary)**:
+349: After the revision window closes, update status.md: `python mmw_tools.py status_write <codename> '{"reset_pending": "true"}'`.
+350: Surface the recommendation:
+351: `Revision window closed ✓`
+352: `(Context Reset Recommended: run /clear before continuing)`
+353: `  [C] Continue — mmw:bearings [codename]`
+354: `  [S] Stop and review — pause here`
 
 ---
 
@@ -449,6 +490,13 @@ Outstanding: Mark flagged 3 issues (see brand-notes-v1.md)
 Next step: Loop iteration 1 — revise draft or co-edit.
   [C] Co-edit  [R] Revise  [S] Stop loop
 ```
+
+**Reset Check**:
+Read `reset_pending` from status.md using `status_read`. If `value` is `"true"`:
+1. Update status.md: `python mmw_tools.py status_write <codename> '{"reset_pending": "false"}'`.
+2. Add an advisory to the report: `✓ Context reset verified (lean session active).`
+If `reset_pending` is missing or `"false"`:
+1. Add a warning: `⚠ Warning: No context reset detected. Session history may be bloated. Recommended: run /clear` (but proceed with the report).
 
 
 `mmw:bearings` never auto-advances. It always ends with a proposed next step and pauses for user input.
