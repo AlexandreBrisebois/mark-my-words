@@ -149,7 +149,19 @@ Create `writers-room/task.md` first. Then create this full directory structure:
     ├── cadence/
     │   └── calendar.md
 
-.claude/agents/
+.claude/agents/                ← Local Stubs (thin — redirect to Sync Masters)
+    ├── caret.md
+    ├── mark.md
+    ├── compass.md
+    ├── devil.md
+    ├── turing.md
+    ├── echo.md
+    ├── press.md
+    ├── index.md
+    ├── cadence.md
+    └── prism.md
+
+.claude/agents-sync/           ← Sync Masters (full — synced to Claude Project Knowledge)
     ├── caret.md
     ├── mark.md
     ├── compass.md
@@ -208,7 +220,9 @@ in `writers-room/agents/` will not be auto-discovered.
 
 ---
 
-### Step B — Agent System Prompts (`.claude/agents/`)
+### Step B — Agent Stubs (`.claude/agents/`)
+
+> **Dual-output architecture**: `.claude/agents/` holds **Local Stubs** — thin files that Claude Code reads to register each agent (name, model, tools). The full operating instructions live in **Sync Masters** at `.claude/agents-sync/`, which are uploaded to Claude Project Knowledge. Step H generates the Sync Masters.
 
 **Build order: build all agents except Caret first. Build Caret last.**
 Caret's spec cross-references behavior defined in Index, Press, and co-edit.
@@ -545,3 +559,63 @@ If `mmw_validate.py` has not been built yet, perform these checks manually:
 27. Index ║ Cadence run in parallel:
     - Index updates post-index.md with new entry
     - Cadence logs codename, description, and target publish date in calendar.md
+
+---
+
+### Step H — Sync Masters (`.claude/agents-sync/`)
+
+**Build order: same as Step B — all agents except Caret first, Caret last.**
+
+The Sync Masters are the authoritative, full-spec instruction files for each agent. They live in `.claude/agents-sync/` and are uploaded to Claude Project Knowledge via `claudesync push`. Agents running inside a Claude Project session load these files automatically as ambient context — they do not need to read them via a tool call.
+
+Create `.claude/agents-sync/` if it does not exist. For each agent:
+
+1. Read `prompts/specs/agent-[name].md` — same source spec as Step B
+2. Write the full agent file to `.claude/agents-sync/[name].md` — **identical to what you would have written in `.claude/agents/` before the dual-output model was introduced**
+3. Each Sync Master must include:
+   - **YAML frontmatter** (same as the stub) — name, description, model, tools
+   - Full personality, responsibilities, and all behavioral rules
+   - **`## Sync Protocol` section** (immediately after Personality, before Responsibilities) with this exact content:
+
+```markdown
+## Sync Protocol
+
+When invoked directly (e.g. `mmw:[name] [codename]`), the codename is passed in your invocation context.
+
+Before reading any input files, run via Bash:
+```
+python mmw_tools.py sync_pull <codename>
+```
+
+After writing all output files, run via Bash:
+```
+python mmw_tools.py sync_push <codename>
+```
+
+If either call fails, log `[sync-warn] sync_pull failed — using local files` or `[sync-warn] sync_push failed — <error>` in status.md and continue. Never block work for a sync failure.
+```
+
+4. Verify each file exists and is non-empty before moving to the next agent
+
+**Stub vs. Sync Master distinction**:
+
+| File | Location | Contains | Purpose |
+|---|---|---|---|
+| Local Stub | `.claude/agents/[name].md` | YAML frontmatter + redirect line + sync block | Claude Code agent registration |
+| Sync Master | `.claude/agents-sync/[name].md` | Full instructions (all phases, logic, constraints) | Claude Project Knowledge source |
+
+**After all Sync Masters are written**, print this instruction for the user:
+
+```
+Step H complete. To seed the Claude Project with agent instructions:
+  claudesync push
+
+This uploads .claude/agents-sync/ to your Claude Project Knowledge, making
+full agent instructions available as ambient context in every Project session.
+
+If claudesync is not yet configured, run:
+  python mmw-init-setup.py
+```
+
+> **Do not mark Step H `[x]` until all 10 Sync Master files exist and are non-empty.**
+

@@ -2,6 +2,61 @@
 
 Mark My Words (mmw) is a multi-agent writing system built on Claude Code. It orchestrates a set of specialized agents — researcher, strategist, writer, critic, publisher — through a structured workflow to produce blog posts for [srvrlss.dev](srvrlss.dev).
 
+## Setup
+
+Mark My Words uses a **Claude Project** as its canonical state store. Local files are the editor surface; the Project is the source of truth.
+
+### 1. Configure Sync Layer
+
+Run the guided setup script first. It handles the installation of `claudesync`, guides you through retrieving your `sessionKey`, and links this folder to your Claude Project.
+
+```bash
+python mmw-init-setup.py
+```
+
+> [!CAUTION]
+> **Keep your `sessionKey` private.** It grants full access to your Claude account. The `.claudesync/` config folder is automatically added to `.gitignore` by the setup script.
+
+### 2. Validate the Build
+
+Confirm that all agent stubs, sync masters, skills, and seed files are present and correctly formed:
+
+```bash
+python mmw_validate.py
+```
+
+### 3. Seed the Claude Project
+
+Push the full agent sync masters and global context files to your Claude Project Knowledge:
+
+```bash
+claudesync push
+```
+
+This seeds the project with everything in `.claude/agents-sync/` plus the four global context files (`guidelines.md`, `calendar.md`, `post-index.md`, and `research/notes.md`). Agent instructions are now ambient context.
+
+### How sync works in practice
+
+Caret manages sync automatically during each workflow run:
+
+- **Session start**: pulls `guidelines.md`, `calendar.md`, `post-index.md`, and `research/notes.md` (global context).
+- **Pre-spawn**: pulls the input files required by the next agent before spawning it.
+- **Post-spawn**: pushes the output files produced by the agent after it completes.
+- **Post co-edit (`mmw:done`)**: triggers an immediate push of the edited draft.
+- **After proof (`mmw:proof`)**: calls `sync_clean` to remove the piece folder from the project, keeping cloud context lean.
+- **Bearings resume**: if `mmw:bearings [codename]` is called for a published piece missing from the project, Caret re-syncs it on demand.
+
+Sync tools are available as direct CLI calls for manual use:
+
+```
+python mmw_tools.py sync_pull <codename>       # pull global + piece files
+python mmw_tools.py sync_push <codename>       # push global + piece files
+python mmw_tools.py sync_clean <codename>      # remove piece from cloud (post-publish)
+python mmw_tools.py sync_targets <agent_name>  # inspect what an agent needs to sync
+```
+
+---
+
 ## How to use
 
 ### Start a new piece

@@ -319,6 +319,91 @@ After Press and Prism both complete, Caret writes `Next step: Ready for mmw:proo
 
 ---
 
+## Sync Layer — Claude Project Sync
+
+Mark My Words uses a **Claude Project** as its canonical state store. The local filesystem is the editor surface; the Project holds the authoritative copy that persists across sessions and devices.
+
+### Hybrid Model
+
+| Layer | Role |
+|---|---|
+| **Claude Project** | Canonical state store — source of truth |
+| **Local FS** | Editor surface — where files are created and edited |
+| **claudesync** | Bridge — community CLI tool that syncs files bidirectionally |
+
+### Dual-Output Agent Architecture (Stub + Project Knowledge)
+
+Agent files are split into two tiers to maintain both standalone local functionality and token-efficient Project sessions:
+
+| Tier | Location | Contents | Purpose |
+|---|---|---|---|
+| **Local Stub** | `.claude/agents/[name].md` | YAML frontmatter + redirect + sync block | Claude Code reads this to register the agent: name, model, tools. Redirects to Sync Master. |
+| **Sync Master** | `.claude/agents-sync/[name].md` | Full instructions: all phases, behaviors, constraints, sync protocol | Uploaded to Claude Project Knowledge as ambient context |
+
+**How the stubs work**:
+- Claude Code scans `.claude/agents/` to discover agents and read their YAML frontmatter (name, model, tools).
+- When an agent is spawned, Claude Code loads the stub into the subagent's context.
+- The stub's first instruction is: "Read `.claude/agents-sync/[name].md` before doing anything else."
+- In a Claude Project session, the Sync Master is already loaded as ambient Project Knowledge — the agent "knows" it without a tool call.
+- Outside a Project session, the agent reads the Sync Master via the Read tool from the local filesystem. This preserves full standalone functionality.
+
+**How agents are identified**:
+- **Locally** (Claude Code): agents are identified via the YAML frontmatter in `.claude/agents/`. The stub retains the required `name:`, `model:`, and `tools:` fields.
+- **In the Project**: Claude uses the full Sync Master content synced to Project Knowledge as the authoritative instruction set.
+
+**Build system**:
+- `mmw-build-prompt.md` Step B generates Local Stubs.
+- `mmw-build-prompt.md` Step H generates Sync Masters.
+- The specs in `prompts/specs/agent-[name].md` remain the "God Source" — both tiers are derived from them.
+
+
+
+### Global Context (always synced)
+
+Four files are pulled at the start of every session and pushed when changed:
+
+- `writers-room/brand/guidelines.md`
+- `writers-room/cadence/calendar.md`
+- `writers-room/index/post-index.md`
+- `writers-room/research/notes.md`
+
+### Phase-Targeted Sync Protocol
+
+Caret syncs in two targeted moments per phase:
+
+1. **Pre-spawn pull**: Caret pulls the specific input files required by the next agent before spawning it. Input files per agent are defined in `mmw_tools.py sync_targets`.
+2. **Post-spawn push**: Caret pushes the output files produced by the agent immediately after verifying completion.
+
+This keeps the Project's context window focused — only active, relevant files are loaded at any point.
+
+### Co-edit Sync
+
+When the user completes a co-edit pass and sends `mmw:done`, Caret immediately triggers `sync_push` on the piece folder before integrating remaining issues. This ensures the edited draft is in the cloud before the next agent sees it.
+
+### Publish and Prune
+
+After `mmw_tools.py publish` succeeds and Phase 11 handoff is complete, Caret calls `mmw_tools.py sync_clean [codename]` to remove the piece folder from the Claude Project. This keeps the project context lean and prevents published pieces from consuming the Project's knowledge quota.
+
+The local piece folder is preserved. To restore a cleaned piece to the cloud (e.g. for post-publish revision), Caret detects the missing cloud state on `mmw:bearings` and re-syncs it on demand.
+
+### Bearings Resume Flow
+
+When `mmw:bearings [codename]` is triggered:
+1. Caret reads `status.md` locally.
+2. If `Phase: 11 — Published` and the piece folder is absent from the cloud, Caret calls `sync_push [codename]` to restore it.
+3. Caret produces the orientation report from local state — the cloud copy is a restoration for future Project sessions, not a prerequisite for `bearings`.
+
+### Sync Tool Reference
+
+| Tool | Signature | When Caret calls it |
+|---|---|---|
+| `sync_targets` | `<agent_name>` | Before any spawn — to determine what to pull/push |
+| `sync_pull` | `<codename> [files...]` | Every session start + pre-spawn |
+| `sync_push` | `<codename> [files...]` | Post-spawn + post co-edit (`mmw:done`) |
+| `sync_clean` | `<codename>` | After successful Phase 11 handoff |
+
+---
+
 ## Constraints
 
 - All agent system prompts in plain markdown — no code, no JSON
