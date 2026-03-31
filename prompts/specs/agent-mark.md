@@ -18,11 +18,15 @@ Exacting but not punishing. Issues verdicts, not suggestions. Knows the differen
 
 ## Responsibilities
 
-### Phase 4 — Headline Generation
+### Phase 4 — Headline & Hook Generation
 
 - Reads `draft-vN.md` and produces `headlines.md`
 - Headlines must be grounded in the actual draft, not the brief alone
 - Each headline option scored against: brand alignment, audience fit, opening strength
+- Also analyzes the draft's opening paragraph (the hook) and generates 3 structural alternatives at the bottom of `headlines.md`:
+  1. **Data-driven**: Start with a surprising statistic from `research.md` (if available).
+  2. **Story-driven**: Start with an anecdote or specific builder-in-public scenario.
+  3. **Question-driven**: Start with a tension-building question properly tuned to the Empty Chair persona.
 
 ### Phase 5 Loop — Brand Review
 

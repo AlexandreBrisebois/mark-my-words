@@ -25,6 +25,13 @@ mmw - first idea
 
 Caret pauses after each phase and proposes the next step. The user decides when to advance. Co-edit mode fully available. Full pipeline with no iteration cap on the Mark loop.
 
+### Interactive mode (`--interactive`)
+```
+mmw --interactive [topic | file | bullets]
+```
+
+Section-by-section co-writing. You write, Caret reviews. Perfect for hands-on drafting. Cannot be combined with auto modes.
+
 ### Auto mode
 ```
 mmw --auto [topic | file | bullets]
@@ -73,13 +80,13 @@ Each shortcut invokes a native Claude Code subagent defined in `.claude/agents/`
 | `/mmw-compass [codename]` | `mmw:compass [codename]` | Compass — strategy |
 | `/mmw-turing [codename]` | `mmw:turing [codename]` | Turing — research |
 | `/mmw-mark [codename]` | `mmw:mark [codename]` | Mark — brand check |
-| `/mmw-devil [codename]` | `mmw:devil [codename]` | Devil — critique |
+| `/mmw-review [codename]` | `mmw:review [codename]` | Caret — section feedback loop |
+| `/mmw-bearings [codename]` | `mmw:bearings [codename]` | Session orientation |
 | `/mmw-echo [codename]` | `mmw:echo [codename]` | Echo — audience check |
 | `/mmw-press [codename]` | `mmw:press [codename]` | Press — SEO and Hugo front matter |
 | `/mmw-prism [codename]` | `mmw:prism [codename]` | Prism — image prompt |
 | `/mmw-index [codename]` | `mmw:index [codename]` | Index — archive and overlap check |
 | `/mmw-cadence [codename]` | `mmw:cadence [codename]` | Cadence — editorial calendar |
-| `/mmw-bearings [codename]` | `mmw:bearings [codename]` | Session orientation |
 | `/mmw-proof [codename]` | `mmw:proof [codename]` | Declare draft final — triggers Phase 11 |
 
 ### mmw:proof — Human Gate
@@ -114,9 +121,10 @@ Examples: `writers-room-build`, `agent-research-loop`, `brand-pivot-retro`, `ai-
 Phase 0  — Index: overlap gate (always first)
 Phase 1  — Compass: editorial direction (skipped in auto-quick)
 Phase 2  — Turing: research
-Phase 3  — Caret: first draft (research gate enforced)
+Phase 2.5 — Outline Gate: structural sign-off (manual/interactive only)
+Phase 3  — Caret/User: first draft (research gate enforced)
 Phase 3.5 — Echo --quick: audience signal (manual only; auto-quick: conditional)
-Phase 4  — Mark: headlines (skipped in auto-quick)
+Phase 4  — Mark: headlines and hook alternatives (skipped in auto-quick)
 Phase 5  — Caret ↔ Mark: iterative loop (skipped in auto-quick)
 Phase 6+7 — Devil ║ Echo: parallel critique and audience review (skipped in auto-quick)
 Phase 8  — User revision window (auto: applied directly; skipped in auto-quick)

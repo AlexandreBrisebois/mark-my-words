@@ -87,6 +87,8 @@ Before generating a codename or processing the input, check the trigger text for
 
 **Flag combinations and resulting modes:**
 - `--discovery` + `--quick` together → reject immediately: `"--discovery requires deliberate editorial choice and cannot run with --quick."` Do not proceed.
+- `--interactive` + any of (`--auto`, `--quick`, `--discovery`) → reject immediately: `"--interactive requires manual co-writing and cannot be combined with automation or discovery modes."` Do not proceed.
+- `--interactive` alone → mode = interactive
 - `--discovery` alone → mode = discovery
 - `--discovery` + `--auto` → mode = discovery (auto mode activates after selection)
 - `--auto` alone → mode = auto
@@ -165,6 +167,7 @@ Wait for the user to supply one. Never surface `[A] Abandon` for a slug collisio
 - `- Mode: auto` if mode = auto
 - `- Mode: auto-quick` if mode = auto-quick
 - `- Mode: discovery` if mode = discovery (overwritten on selection)
+- `- Mode: interactive` if mode = interactive
 - Omit this line entirely in manual mode
 
 ---
@@ -210,7 +213,25 @@ No acknowledgment required. If the user types [S] before Turing starts, skip Pha
 
 ---
 
-## Phase 3 — Caret Drafts
+## Phase 2.5 — Outline Gate (skip in auto-quick)
+
+**Auto-quick**: log `[skip] Phase 2.5 — auto-quick mode` in status.md and proceed to Phase 3.
+
+**Auto mode**: Caret generates `outline.md` using `brief.md`, `compass-notes.md` and `research.md`. It logs the output and immediately proceeds to Phase 3. No pause.
+
+**Manual / Interactive mode**: Caret reads `brief.md`, `compass-notes.md` and `research.md` completely, and generates an `outline.md` structing the narrative arcs, hooks, required sections, and where specific research from Turing fits.
+Wait and present the user with:
+```
+Outline ready (outline.md).
+  [C] Co-edit outline — you tweak the structure, I'll adapt the draft
+  [P] Proceed to Draft — Caret writes draft-v1.md based on the outline
+```
+
+If user selects [C], pause until `mmw:done` is received before proceeding to draft.
+
+---
+
+## Phase 3 — Caret Drafts & Interactive Review
 
 **Research gate (enforced before every draft)**:
 - Read status.md to check if `research.md` exists and is non-empty in the piece folder
@@ -224,7 +245,15 @@ No acknowledgment required. If the user types [S] before Turing starts, skip Pha
   ```
   Wait for user choice. Do not draft until cleared.
 
-**Drafting**: Read brief.md, compass-notes.md (if exists), and research.md, then produce `draft-v1.md` following the Story Arc and Core Writing Rules below.
+**Drafting (Manual / Auto)**: Read `outline.md` (or `brief.md`+`research.md` in auto-quick), and produce `draft-v1.md` following the Story Arc and Core Writing Rules below.
+- **Citation formatting**: Use inline numbering brackets (e.g. `[1]`) for any fact sourced from `research.md`, and append a formatted `## References` appendix at the end mapping the numbers to the research sources.
+
+**Drafting (Interactive Mode)**: Instead of generating `draft-v1.md`, Caret pauses and creates an empty numbered `draft-v1.md`. You instruct the user to write section by section using the outline.
+- **Section Review Command (`mmw:review`)**: When the user calls `mmw:review`, Caret reads the current text of `draft-v1.md` and provides immediate *Section Feedback*. Focus only on what changed since the last review:
+  - What Works Well ✓
+  - Suggestions for Clarity, Flow, Style, and Evidence integration.
+  - Specific Line Edits (Original -> Suggested).
+- Do not auto-advance to Mark. Wait for user to trigger `mmw:press` or `mmw:done` to signify the completed draft. Use the exact tool versions as normal below when done.
 
 In auto-quick mode, no compass-notes.md is available — draft from brief.md and research.md only.
 

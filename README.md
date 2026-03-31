@@ -67,6 +67,12 @@ Caret generates a codename, creates a piece folder, and writes `brief.md` from y
 
 **Manual (default)** — full control. Caret pauses at every decision point.
 
+**Interactive (`--interactive`)** — section-by-section co-writing. You write, Caret reviews. Perfect for hands-on drafting where you want a real-time editor. Cannot be combined with auto modes.
+
+```
+mmw --interactive write a post about multi-agent observability
+```
+
 **Auto** — unattended. Caret runs the full pipeline and stops only at the human proof gate:
 
 ```
@@ -92,20 +98,37 @@ Before anything else, Index checks your archive for overlapping topics and produ
 - **[P] Proceed** — no meaningful overlap, carry on
 - **[A] Abandon** — discard this piece (you'll be asked to type the codename to confirm)
 
-### After Compass (manual only)
-
-After Compass sets direction, Caret surfaces a one-line notice and immediately starts Turing:
-
-```
-Compass has set the direction: [one-sentence angle]
-Starting Turing — [S] to skip research.
-```
-
 On [S]: Turing is skipped and Caret drafts from the brief and compass-notes alone. To adjust the angle after Compass has run, use `mmw:compass [codename]` directly.
 
-### The Mark loop
+### The Outline Gate (Phase 2.5) — manual/interactive only
 
-After the first draft, Mark reviews voice and brand alignment. The first pass is a **voice check** ("is this piece distinctly yours?"). Subsequent passes are **polish passes** (banned words, rhythm, pronouns). After each pass:
+Before the first draft is written, Caret synthesizes `brief.md`, `compass-notes.md`, and `research.md` into an `outline.md`. This is your structural sign-off point.
+
+- **[C] Co-edit outline** — tweak the narrative arc or move sections around yourself.
+- **[P] Proceed to Draft** — use the current outline to build the first full draft.
+
+### Drafting and Section Reviews
+
+**Automatic Citations**: During drafting, Caret and Turing manage citations automatically. All research data used is mapped to inline brackets `[N]` and a formal `## References` section is appended to your draft.
+
+**Interactive Mode workflow**:
+If running with `--interactive`, Caret creates an empty `draft-v1.md`. You write a section, then call:
+
+```
+mmw:review [codename]
+```
+
+Caret provides immediate **Section Feedback** (Clarity, Flow, Style, and Evidence) and suggests specific line edits for just that section before you move to the next.
+
+### The Mark loop & Hook Refinement
+
+After a full draft is ready, Mark reviews voice and brand alignment. In addition to the standard review, Phase 4 now generates **Hook Alternatives** at the bottom of `headlines.md`:
+
+1. **Data-driven**: A hook anchored in a surprising statistic from your research.
+2. **Story-driven**: A specific builder-in-public anecdote.
+3. **Question-driven**: A tension-building question tuned to your target persona.
+
+The first pass is a **voice check** ("is this piece distinctly yours?"). Subsequent passes are **polish passes** (banned words, rhythm, pronouns). After each pass:
 
 - **[C] Co-edit** — Caret surfaces the exact lines that need attention, you edit the draft file directly, then type `mmw:done` to hand it back
 - **[R] Revise** — Caret revises based on Mark's notes without your direct edits
@@ -193,6 +216,7 @@ Each shortcut bypasses Caret and goes directly to the named agent:
 | `mmw:prism [codename]` | Prism | Image prompt for the latest draft |
 | `mmw:compass [codename]` | Compass | Strategic direction (or next post ideas if no codename) |
 | `mmw:mark [codename]` | Mark | Brand review on the latest draft |
+| `mmw:review [codename]` | Caret | Section feedback loop (interactive mode) |
 | `mmw:cadence` | Cadence | Editorial calendar state and cadence suggestions |
 | `mmw:index [codename]` | Index | Overlap check (or portfolio SEO audit if no codename) |
 | `mmw:bearings [codename]` | Caret inline | Session orientation — handled inline by Caret |

@@ -100,13 +100,30 @@ CALENDAR = WRITERS_ROOM / "cadence" / "calendar.md"
 RESEARCH_NOTES = WRITERS_ROOM / "research" / "notes.md"
 GUIDELINES = WRITERS_ROOM / "brand" / "guidelines.md"
 
-# Global context files always synced to/from the Claude Project.
-SYNC_GLOBAL_FILES: list[str] = [
-    str(WRITERS_ROOM / "brand" / "guidelines.md"),
-    str(WRITERS_ROOM / "cadence" / "calendar.md"),
-    str(WRITERS_ROOM / "index" / "post-index.md"),
-    str(WRITERS_ROOM / "research" / "notes.md"),
-]
+# Always synced to/from the Claude Project (seed files + runtime specs).
+def _get_sync_global_files() -> list[str]:
+    # 1. Seed Files (Guidelines, Calendar, etc.)
+    files = [
+        str(WRITERS_ROOM / "brand" / "guidelines.md"),
+        str(WRITERS_ROOM / "cadence" / "calendar.md"),
+        str(WRITERS_ROOM / "index" / "post-index.md"),
+        str(WRITERS_ROOM / "research" / "notes.md"),
+    ]
+    
+    # 2. Agent Specs (.claude/agents-sync/*.md)
+    agents_sync_dir = Path(".claude") / "agents-sync"
+    if agents_sync_dir.exists():
+        for f in agents_sync_dir.glob("*.md"):
+            files.append(str(f))
+            
+    # 3. Skills (.claude/skills/*/SKILL.md)
+    skills_dir = Path(".claude") / "skills"
+    if skills_dir.exists():
+        for f in skills_dir.glob("**/SKILL.md"):
+            files.append(str(f))
+            
+    # Deduplicate while preserving order if needed
+    return list(dict.fromkeys(files))
 
 # Per-agent input/output file mapping (relative to the piece folder root).
 # Paths use {codename} as a placeholder — callers substitute the real codename.
@@ -747,7 +764,7 @@ def sync_pull(codename: str, *extra_files: str) -> None:
     """
     Pull files from the Claude Project via mmw_sync.
 
-    Always pulls SYNC_GLOBAL_FILES. Also pulls all files in the piece folder
+    Always pulls the dynamic global sync set (Guidelines, Calendar, Agents, etc.).
     for [codename]. Additional relative paths may be passed as extra_files.
     """
     config = load_config()
@@ -761,7 +778,7 @@ def sync_pull(codename: str, *extra_files: str) -> None:
         project_id=config.get("project_id")
     )
 
-    targets: list[str] = list(SYNC_GLOBAL_FILES)
+    targets: list[str] = _get_sync_global_files()
     piece_files = _resolve_piece_files(codename)
     targets.extend(piece_files)
     if extra_files:
@@ -791,7 +808,7 @@ def sync_push(codename: str, *extra_files: str) -> None:
     """
     Push files to the Claude Project via mmw_sync.
 
-    Always includes SYNC_GLOBAL_FILES. Also includes all files in the piece folder
+    Always includes the dynamic global sync set (Guidelines, Calendar, Agents, etc.).
     for [codename]. Additional relative paths may be passed as extra_files.
     """
     config = load_config()
@@ -805,7 +822,7 @@ def sync_push(codename: str, *extra_files: str) -> None:
         project_id=config.get("project_id")
     )
 
-    targets: list[str] = list(SYNC_GLOBAL_FILES)
+    targets: list[str] = _get_sync_global_files()
     piece_files = _resolve_piece_files(codename)
     targets.extend(piece_files)
     if extra_files:

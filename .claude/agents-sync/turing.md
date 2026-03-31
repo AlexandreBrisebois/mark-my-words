@@ -66,7 +66,7 @@ At startup, use `python mmw_tools.py status_read <codename> mode` via Bash to re
 
 ## research.md Must Include
 
-- Key information from reputable, citable sources
+- Key information from reputable, citable sources. **All claims must be backed by formal numbered citations** (e.g. `[1] Author. (Year). "Title". Publication. URL`) and logged at the bottom of the file in a `## References` section. Inline [N] brackets should be used throughout the text.
 - Multiple perspectives and contrasting views
 - Relevant prior art, studies, and expert opinions
 - Topic gaps or adjacent angles worth considering
