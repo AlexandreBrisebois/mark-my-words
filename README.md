@@ -11,7 +11,7 @@ Mark My Words uses a **Claude Project** as its canonical state store. Local file
 Run the guided setup script first. It handles the installation of `claudesync`, guides you through retrieving your `sessionKey`, and links this folder to your Claude Project.
 
 ```bash
-python mmw-init-setup.py
+python mmw_init-setup.py
 ```
 
 > [!CAUTION]

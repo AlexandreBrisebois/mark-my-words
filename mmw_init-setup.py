@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mmw-init-setup.py — Guided setup for the Mark My Words Claude Project Sync Layer.
+mmw_init-setup.py — Guided setup for the Mark My Words Claude Project Sync Layer.
 
 This script:
   1. Checks for an existing claudesync installation (or installs it).
@@ -12,7 +12,7 @@ This script:
 Run once during initial setup. Re-run only if you need to re-link to a different project.
 
 Usage:
-    python mmw-init-setup.py
+    python mmw_init-setup.py
 """
 
 import subprocess
@@ -336,7 +336,7 @@ def summary() -> None:
 
   {BOLD}If you need to re-link to a different project later:{RESET}
 
-      {CYAN}python mmw-init-setup.py{RESET}
+      {CYAN}python mmw_init-setup.py{RESET}
 
   {DIM}See README.md § Cloud Sync Setup for the full reference.{RESET}
     """)
