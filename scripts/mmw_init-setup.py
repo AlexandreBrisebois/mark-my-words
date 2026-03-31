@@ -174,8 +174,12 @@ def step_select_project(total: int, client: ClaudeClient) -> str:
             if 1 <= choice <= len(projects):
                 return projects[choice-1]['uuid']
             if choice == len(projects) + 1:
-                name = input("\n  Enter name for new project [mark-my-words]: ").strip() or "mark-my-words"
-                desc = input("  Enter a brief description: ").strip()
+                default_name = "mark-my-words"
+                default_desc = "Mark My Words (mmw) is a multi-agent writing system built on Claude Code. It orchestrates a set of specialized agents — researcher, strategist, writer, critic, publisher — through a structured workflow to produce blog posts."
+                
+                name = input(f"\n  Enter name for new project [{default_name}]: ").strip() or default_name
+                desc = input(f"  Enter a brief description [{default_desc[:30]}…]: ").strip() or default_desc
+                
                 new_p = client.create_project(name, desc)
                 _ok(f"Created project: {new_p.get('name')}")
                 return new_p['uuid']
