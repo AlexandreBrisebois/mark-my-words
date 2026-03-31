@@ -5,7 +5,7 @@ mmw_validate.py — Build validation script for the Mark My Words multi-agent sy
 Exits 0 if all checks pass. Exits 1 with a failure summary if any check fails.
 
 Run from the project root:
-    python mmw_validate.py
+    python scripts/mmw_validate.py
 """
 
 import re
@@ -25,6 +25,8 @@ except ImportError:
 # ---------------------------------------------------------------------------
 # Required file lists
 # ---------------------------------------------------------------------------
+
+CONFIG_FILE = ".claude/config.json"
 
 SEED_FILES = [
     "writers-room/brand/guidelines.md",
@@ -117,6 +119,11 @@ def check_files_exist(failures: list[str]) -> None:
             failures.append(f"[MISSING] {rel_path}")
         elif p.stat().st_size == 0:
             failures.append(f"[EMPTY] {rel_path}")
+    
+    # Config file check is special — it might not exist if setup wasn't run
+    cp = Path(CONFIG_FILE)
+    if not cp.exists():
+        failures.append(f"[MISSING] {CONFIG_FILE} — Run setup first: python scripts/mmw_init-setup.py")
 
 
 # ---------------------------------------------------------------------------

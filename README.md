@@ -8,21 +8,25 @@ Mark My Words uses a **Claude Project** as its canonical state store. Local file
 
 ### 1. Configure Sync Layer
 
-Run the guided setup script first. It handles the installation of `claudesync`, guides you through retrieving your `sessionKey`, and links this folder to your Claude Project.
+To ensure **Claude Code** and its agents have immediate access to the necessary tools, we install dependencies globally. 
 
 ```bash
-python mmw_init-setup.py
+# Install required dependencies globally
+pip install --break-system-packages -r requirements.txt
+
+# Run the guided setup script
+python3 scripts/mmw_init-setup.py
 ```
 
 > [!CAUTION]
-> **Keep your `sessionKey` private.** It grants full access to your Claude account. The `.claudesync/` config folder is automatically added to `.gitignore` by the setup script.
+> **Keep your `sessionKey` private.** It grants full access to your Claude account. The `.claude/config.json` file is automatically added to `.gitignore` by the setup script.
 
 ### 2. Validate the Build
 
 Confirm that all agent stubs, sync masters, skills, and seed files are present and correctly formed:
 
 ```bash
-python mmw_validate.py
+python scripts/mmw_validate.py
 ```
 
 ### 3. Seed the Claude Project
@@ -30,7 +34,7 @@ python mmw_validate.py
 Push the full agent sync masters and global context files to your Claude Project Knowledge:
 
 ```bash
-claudesync push
+python scripts/mmw_tools.py sync_push init
 ```
 
 This seeds the project with everything in `.claude/agents-sync/` plus the four global context files (`guidelines.md`, `calendar.md`, `post-index.md`, and `research/notes.md`). Agent instructions are now ambient context.
@@ -49,10 +53,10 @@ Caret manages sync automatically during each workflow run:
 Sync tools are available as direct CLI calls for manual use:
 
 ```
-python mmw_tools.py sync_pull <codename>       # pull global + piece files
-python mmw_tools.py sync_push <codename>       # push global + piece files
-python mmw_tools.py sync_clean <codename>      # remove piece from cloud (post-publish)
-python mmw_tools.py sync_targets <agent_name>  # inspect what an agent needs to sync
+python scripts/mmw_tools.py sync_pull <codename>       # pull global + piece files
+python scripts/mmw_tools.py sync_push <codename>       # push global + piece files
+python scripts/mmw_tools.py sync_clean <codename>      # remove piece from cloud (post-publish)
+python scripts/mmw_tools.py sync_targets <agent_name>  # inspect what an agent needs to sync
 ```
 
 ---

@@ -85,6 +85,9 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
+# Internal sync module
+from mmw_sync import ClaudeClient, load_config, ClaudeSyncError
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -742,24 +745,28 @@ def _claudesync_available() -> bool:
 
 def sync_pull(codename: str, *extra_files: str) -> None:
     """
-    Pull files from the Claude Project via claudesync.
+    Pull files from the Claude Project via mmw_sync.
 
     Always pulls SYNC_GLOBAL_FILES. Also pulls all files in the piece folder
     for [codename]. Additional relative paths may be passed as extra_files.
     """
-    if not _claudesync_available():
-        _fail(
-            "sync_pull: claudesync not found. "
-            "Run `python mmw-init-setup.py` to install and configure it."
-        )
+    config = load_config()
+    session_key = config.get("session_key")
+    if not session_key:
+        _fail("sync_pull: No session_key found in .claude/config.json. Run setup first.")
 
-    import subprocess
+    client = ClaudeClient(
+        session_key=session_key,
+        org_id=config.get("org_id"),
+        project_id=config.get("project_id")
+    )
 
     targets: list[str] = list(SYNC_GLOBAL_FILES)
     piece_files = _resolve_piece_files(codename)
     targets.extend(piece_files)
     if extra_files:
         targets.extend(extra_files)
+    
     # Deduplicate while preserving order
     seen: set[str] = set()
     unique: list[str] = []
@@ -768,22 +775,11 @@ def sync_pull(codename: str, *extra_files: str) -> None:
             seen.add(f)
             unique.append(f)
 
-    # claudesync pull syncs the whole project by default; targeted file pull
-    # is done by running a project-scoped pull (claudesync pull command).
-    # For maximum compatibility across claudesync versions we run the generic pull.
-    result = subprocess.run(
-        ["claudesync", "pull"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        _fail(
-            f"sync_pull: claudesync pull failed.\n"
-            f"stdout: {result.stdout.strip()}\n"
-            f"stderr: {result.stderr.strip()}"
-        )
-
-    _ok({"pulled": True, "files": unique, "claudesync_output": result.stdout.strip()})
+    try:
+        pulled = client.pull_files(unique)
+        _ok({"pulled": True, "files": pulled})
+    except ClaudeSyncError as e:
+        _fail(f"sync_pull: {str(e)}")
 
 
 # ---------------------------------------------------------------------------
@@ -793,24 +789,29 @@ def sync_pull(codename: str, *extra_files: str) -> None:
 
 def sync_push(codename: str, *extra_files: str) -> None:
     """
-    Push files to the Claude Project via claudesync.
+    Push files to the Claude Project via mmw_sync.
 
     Always includes SYNC_GLOBAL_FILES. Also includes all files in the piece folder
     for [codename]. Additional relative paths may be passed as extra_files.
     """
-    if not _claudesync_available():
-        _fail(
-            "sync_push: claudesync not found. "
-            "Run `python mmw-init-setup.py` to install and configure it."
-        )
+    config = load_config()
+    session_key = config.get("session_key")
+    if not session_key:
+        _fail("sync_push: No session_key found in .claude/config.json. Run setup first.")
 
-    import subprocess
+    client = ClaudeClient(
+        session_key=session_key,
+        org_id=config.get("org_id"),
+        project_id=config.get("project_id")
+    )
 
     targets: list[str] = list(SYNC_GLOBAL_FILES)
     piece_files = _resolve_piece_files(codename)
     targets.extend(piece_files)
     if extra_files:
         targets.extend(extra_files)
+    
+    # Deduplicate while preserving order
     seen: set[str] = set()
     unique: list[str] = []
     for f in targets:
@@ -818,19 +819,11 @@ def sync_push(codename: str, *extra_files: str) -> None:
             seen.add(f)
             unique.append(f)
 
-    result = subprocess.run(
-        ["claudesync", "push"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        _fail(
-            f"sync_push: claudesync push failed.\n"
-            f"stdout: {result.stdout.strip()}\n"
-            f"stderr: {result.stderr.strip()}"
-        )
-
-    _ok({"pushed": True, "files": unique, "claudesync_output": result.stdout.strip()})
+    try:
+        uploaded = client.push_files(unique)
+        _ok({"pushed": True, "files": uploaded})
+    except ClaudeSyncError as e:
+        _fail(f"sync_push: {str(e)}")
 
 
 # ---------------------------------------------------------------------------
@@ -840,13 +833,6 @@ def sync_push(codename: str, *extra_files: str) -> None:
 
 def sync_clean(codename: str) -> None:
     """
-    Remove a published piece's folder from the Claude Project.
-
-    Guards:
-    - Verifies writers-room/published/[slug].md exists locally (publish must have run).
-    - Verifies the piece folder exists before attempting delete.
-
-    After cleanup the piece folder remains on disk — only the cloud copy is removed.
     To restore: run `python mmw_tools.py sync_push <codename>`.
     """
     if not _claudesync_available():

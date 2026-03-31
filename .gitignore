@@ -1,1 +1,7 @@
 .DS_Store
+.venv
+.claude/config.json
+__pycache__/
+*.pyc
+
+.claudesync/
