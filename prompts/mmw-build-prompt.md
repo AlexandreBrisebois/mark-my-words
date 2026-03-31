@@ -232,15 +232,13 @@ Read each agent spec from `prompts/specs/agent-[name].md` and create the
 corresponding file in `.claude/agents/`. Build one agent at a time. Verify
 the file exists and is non-empty before moving to the next.
 
-Each agent file must:
-- **Begin with YAML frontmatter** that declares the agent's name and permitted tools
-- Open with agent name, role, and one-line purpose
-- Define personality and communication style
-- List all responsibilities explicitly
-- Define inputs (exact filenames) and outputs (exact filenames)
-- Specify handoff targets
+Each agent file must **ONLY** contain:
+1. The **YAML frontmatter** that declares the agent's name and permitted tools
+2. A required redirect message pointing back to the Sync Master
 
-**Each agent file must open with this frontmatter structure:**
+Do **not** include personality, responsibilities, or execution logic in the local stub. Wait for Step H to write those full instructions.
+
+**Each agent file must look exactly like this snippet:**
 
 ```yaml
 ---
@@ -249,6 +247,12 @@ description: One-line purpose of this agent (use the "One-line purpose" from the
 model: claude-sonnet-4-6
 tools: [Read, Write, Edit]
 ---
+
+# [Agent Name] — Stub
+
+Your full operating instructions are in `.claude/agents-sync/[agent-name].md`. Read that file before doing anything else.
+
+> This stub exists so Claude Code can identify and register this agent. All behaviour, protocols, and phase logic live in the Sync Master.
 ```
 
 The `tools` value must be a YAML inline sequence (bracketed, comma-separated). This is the format Claude Code parses to enforce tool scoping. Do not write it as a plain string (`tools: Read, Write` is wrong — it will not be parsed as a list). After writing each agent file, read back the `tools:` line and confirm it opens with `[` and closes with `]`. If it is a plain string, rewrite the file before moving to the next agent.
@@ -345,28 +349,8 @@ All three file writes happen in one atomic operation. Both published/ files must
 
 ### Step C — ARCHITECTURE.md
 
-Read `prompts/specs/flow.md` before writing. Cover:
-- How Caret orchestrates the sub-agents
-- The full ordered workflow with all 11 phases
-- **All three modes**: manual, auto (`--auto`), and auto-quick (`--auto --quick`) — invocation syntax and what each skips or changes per phase. Include: Phase 5 loop cap (auto), Phase 8 no-pause (auto), Phase 8.5 skipped (auto), Turing deep dive skipped (auto + auto-quick), phases skipped entirely in auto-quick (Compass, Mark, Devil, Echo, revision window), proof gate always a human step in all modes
-- **Deadline-constrained auto**: if calendar.md has a target date <3 days away, auto mode upgrades to auto-quick at startup; Caret logs the reason
-- **Phase 11 handoff**: `mmw_tools.py publish` atomically writes final.md + two files to `writers-room/published/` — `[slug].md` (final.md) and `[slug]-image-prompt.md` (image-prompt.md)
-- The three parallel execution pairs: Devil ║ Echo, Press ║ Prism, Index ║ Cadence
-- The iterative Caret/Mark loop, co-edit mode, and circuit breaker logic
-- The Index overlap gate and startup validation
-- The research gate in Caret
-- Codename generation rules
-- Draft versioning rules — never overwrite, always increment
-- The Prism → image-prompt.md → GitHub Actions handoff
-- Full file schema with status.md structure — include the optional `Mode: auto` field:
-  ```
-  ## Current State
-  - Phase: 0 — Index overlap gate
-  - Mode: auto    ← only present in auto mode; absent = manual
-  - Current draft: draft-v2.md
-  ...
-  ```
-- Session resume: how to re-enter mid-workflow via status.md; how Mode survives session boundaries
+Read `prompts/specs/ARCHITECTURE.md` and copy it perfectly into `writers-room/ARCHITECTURE.md`.
+Do not summarize or synthesize it. Ensure it is written exactly character-for-character as it appears in the spec.
 
 ---
 
@@ -574,8 +558,8 @@ Create `.claude/agents-sync/` if it does not exist. For each agent:
 2. Write the full agent file to `.claude/agents-sync/[name].md` — **identical to what you would have written in `.claude/agents/` before the dual-output model was introduced**
 3. Each Sync Master must include:
    - **YAML frontmatter** (same as the stub) — name, description, model, tools
-   - Full personality, responsibilities, and all behavioral rules
-   - **`## Sync Protocol` section** (immediately after Personality, before Responsibilities) with this exact content:
+   - Full personality, responsibilities, and all behavioral rules (these are now fully consolidated in the agent specs and must be copied verbatim without summarizing)
+   - **`## Sync Protocol` section** (immediately after Personality, before Responsibilities) with this exact content for all agents **EXCEPT Caret**:
 
 ```markdown
 ## Sync Protocol
@@ -594,6 +578,8 @@ python mmw_tools.py sync_push <codename>
 
 If either call fails, log `[sync-warn] sync_pull failed — using local files` or `[sync-warn] sync_push failed — <error>` in status.md and continue. Never block work for a sync failure.
 ```
+
+> **For Caret Only**: Do **not** inject the generic `## Sync Protocol` section. Caret's spec (`prompts/specs/agent-caret.md`) already contains a complex, specialized `## Cloud Project Sync Protocol` block. Just copy Caret's spec verbatim.
 
 4. Verify each file exists and is non-empty before moving to the next agent
 
