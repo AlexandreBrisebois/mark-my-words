@@ -54,26 +54,6 @@ Tools:
         Appends an entry to calendar.md.
         Returns {"appended": true}
 
-    sync_targets <agent_name>
-        Returns the input and output files for a named agent.
-        Returns {"agent": "...", "inputs": [...], "outputs": [...]}
-        Agent names: caret, compass, turing, mark, devil, echo, press, prism, index, cadence
-
-    sync_pull <codename> [files...]
-        Pulls files from the Claude Project using claudesync.
-        Always pulls global context files. Additionally pulls piece-specific files if codename is active.
-        Optional files: override list of relative paths to pull (space-separated).
-        Returns {"pulled": true, "files": [...]}
-
-    sync_push <codename> [files...]
-        Pushes files to the Claude Project using claudesync.
-        Optional files: override list of relative paths to push (space-separated).
-        Returns {"pushed": true, "files": [...]}
-
-    sync_clean <codename>
-        Removes a published piece's folder from the Claude Project.
-        Safe to call only after mmw_tools.py publish has succeeded.
-        Returns {"cleaned": true, "codename": "..."}
 """
 
 import json
@@ -85,8 +65,6 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-# Internal sync module
-from mmw_sync import ClaudeClient, load_config, ClaudeSyncError
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -99,80 +77,6 @@ POST_INDEX = WRITERS_ROOM / "index" / "post-index.md"
 CALENDAR = WRITERS_ROOM / "cadence" / "calendar.md"
 RESEARCH_NOTES = WRITERS_ROOM / "research" / "notes.md"
 GUIDELINES = WRITERS_ROOM / "brand" / "guidelines.md"
-
-# System-level files (Guidelines, Agent Specs, Skills) - only pushed on sync_system.
-def _get_sync_system_files() -> list[str]:
-    files = [
-        str(WRITERS_ROOM / "brand" / "guidelines.md"),
-    ]
-    
-    # Agent Specs (.claude/agents-sync/*.md)
-    agents_sync_dir = Path(".claude") / "agents-sync"
-    if agents_sync_dir.exists():
-        for f in agents_sync_dir.glob("*.md"):
-            files.append(str(f))
-            
-    # Skills (.claude/skills/*/SKILL.md)
-    skills_dir = Path(".claude") / "skills"
-    if skills_dir.exists():
-        for f in skills_dir.glob("**/SKILL.md"):
-            files.append(str(f))
-    return list(dict.fromkeys(files))
-
-
-# Dynamic runtime files (Calendar, Index, Research Notes) - synced on every push/pull.
-def _get_sync_runtime_files() -> list[str]:
-    files = [
-        str(WRITERS_ROOM / "cadence" / "calendar.md"),
-        str(WRITERS_ROOM / "index" / "post-index.md"),
-        str(WRITERS_ROOM / "research" / "notes.md"),
-    ]
-    return list(dict.fromkeys(files))
-
-# Per-agent input/output file mapping (relative to the piece folder root).
-# Paths use {codename} as a placeholder — callers substitute the real codename.
-_SYNC_TARGETS: dict[str, dict[str, list[str]]] = {
-    "caret": {
-        "inputs": ["brief.md", "status.md"],
-        "outputs": ["brief.md", "status.md", "draft-vN.md"],
-    },
-    "compass": {
-        "inputs": ["brief.md", "status.md"],
-        "outputs": ["compass-notes.md", "status.md"],
-    },
-    "turing": {
-        "inputs": ["brief.md", "compass-notes.md", "status.md", "research.md"],
-        "outputs": ["research.md", "status.md"],
-    },
-    "mark": {
-        "inputs": ["brief.md", "draft-vN.md", "status.md"],
-        "outputs": ["brand-notes-vN.md", "headlines.md", "status.md"],
-    },
-    "devil": {
-        "inputs": ["brief.md", "research.md", "draft-vN.md"],
-        "outputs": ["critique-vN.md"],
-    },
-    "echo": {
-        "inputs": ["brief.md", "draft-vN.md"],
-        "outputs": ["audience-vN.md", "audience-signal.md"],
-    },
-    "press": {
-        "inputs": ["draft-vN.md", "status.md"],
-        "outputs": ["seo.md", "status.md"],
-    },
-    "prism": {
-        "inputs": ["draft-vN.md"],
-        "outputs": ["image-prompt.md"],
-    },
-    "index": {
-        "inputs": ["brief.md", "status.md"],
-        "outputs": ["status.md"],
-    },
-    "cadence": {
-        "inputs": ["status.md"],
-        "outputs": ["status.md"],
-    },
-}
 
 
 # ---------------------------------------------------------------------------
@@ -721,257 +625,6 @@ def calendar_log(codename: str, description: str, target_date: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Tool: sync_targets
-# ---------------------------------------------------------------------------
-
-
-def sync_targets(agent_name: str) -> None:
-    """Return input/output file mapping for a named agent."""
-    key = agent_name.lower().strip()
-    if key not in _SYNC_TARGETS:
-        _fail(
-            f"sync_targets: unknown agent '{agent_name}'. "
-            f"Known agents: {', '.join(sorted(_SYNC_TARGETS))}"
-        )
-    entry = _SYNC_TARGETS[key]
-    _ok({
-        "agent": key,
-        "inputs": entry["inputs"],
-        "outputs": entry["outputs"],
-        "note": "Paths are relative to the piece folder. 'vN' is the current draft version.",
-    })
-
-
-# ---------------------------------------------------------------------------
-# Tool: sync_pull
-# ---------------------------------------------------------------------------
-
-
-def _resolve_piece_files(codename: str) -> list[str]:
-    """Return all files that exist in a piece folder as relative paths."""
-    piece_dir = _piece_dir(codename)
-    if not piece_dir.exists():
-        return []
-    return [
-        str(f.relative_to(Path(".")))
-        for f in piece_dir.iterdir()
-        if f.is_file()
-    ]
-
-
-def _claudesync_available() -> bool:
-    import shutil
-    return shutil.which("claudesync") is not None
-
-
-def sync_pull(codename: str, *extra_files: str) -> None:
-    """
-    Pull files from the Claude Project via mmw_sync.
-
-    Always pulls the dynamic global sync set (Guidelines, Calendar, Agents, etc.).
-    for [codename]. Additional relative paths may be passed as extra_files.
-    """
-    config = load_config()
-    session_key = config.get("session_key")
-    if not session_key:
-        _fail("sync_pull: No session_key found in .claude/config.json. Run setup first.")
-
-    client = ClaudeClient(
-        session_key=session_key,
-        org_id=config.get("org_id"),
-        project_id=config.get("project_id")
-    )
-
-    targets: list[str] = _get_sync_runtime_files()
-    piece_files = _resolve_piece_files(codename)
-    targets.extend(piece_files)
-    if extra_files:
-        targets.extend(extra_files)
-    
-    # Deduplicate while preserving order
-    seen: set[str] = set()
-    unique: list[str] = []
-    for f in targets:
-        if f not in seen:
-            seen.add(f)
-            unique.append(f)
-
-    try:
-        pulled = client.pull_files(unique)
-        _ok({"pulled": True, "files": pulled})
-    except ClaudeSyncError as e:
-        _fail(f"sync_pull: {str(e)}")
-
-
-# ---------------------------------------------------------------------------
-# Tool: sync_push
-# ---------------------------------------------------------------------------
-
-
-def sync_push(codename: str, *extra_files: str) -> None:
-    """
-    Push files to the Claude Project via mmw_sync.
-
-    Always includes the dynamic global sync set (Guidelines, Calendar, Agents, etc.).
-    for [codename]. Additional relative paths may be passed as extra_files.
-    """
-    config = load_config()
-    session_key = config.get("session_key")
-    if not session_key:
-        _fail("sync_push: No session_key found in .claude/config.json. Run setup first.")
-
-    client = ClaudeClient(
-        session_key=session_key,
-        org_id=config.get("org_id"),
-        project_id=config.get("project_id")
-    )
-
-    targets: list[str] = _get_sync_runtime_files()
-    piece_files = _resolve_piece_files(codename)
-    targets.extend(piece_files)
-    if extra_files:
-        targets.extend(extra_files)
-    
-    # Deduplicate while preserving order
-    seen: set[str] = set()
-    unique: list[str] = []
-    for f in targets:
-        if f not in seen:
-            seen.add(f)
-            unique.append(f)
-
-    try:
-        uploaded = client.push_files(unique)
-        _ok({"pushed": True, "files": uploaded})
-    except ClaudeSyncError as e:
-        _fail(f"sync_push: {str(e)}")
-
-
-# ---------------------------------------------------------------------------
-# Tool: sync_system
-# ---------------------------------------------------------------------------
-
-
-def sync_system(codename: str, *extra_files: str) -> None:
-    """
-    Perform a full sync including both System Specs and Runtime Files.
-    Use this on first run or after modifying agent specs/skills.
-    """
-    config = load_config()
-    session_key = config.get("session_key")
-    if not session_key:
-        _fail("sync_system: No session_key found. Run setup first.")
-
-    client = ClaudeClient(
-        session_key=session_key,
-        org_id=config.get("org_id"),
-        project_id=config.get("project_id")
-    )
-
-    # Combine System + Runtime + Piece Files
-    targets: list[str] = _get_sync_system_files()
-    targets.extend(_get_sync_runtime_files())
-    targets.extend(_resolve_piece_files(codename))
-    
-    if extra_files:
-        targets.extend(extra_files)
-    
-    # Deduplicate while preserving order
-    seen: set[str] = set()
-    unique: list[str] = []
-    for f in targets:
-        if f not in seen:
-            seen.add(f)
-            unique.append(f)
-
-    try:
-        uploaded = client.push_files(unique)
-        _ok({"synced_system": True, "files": uploaded})
-    except ClaudeSyncError as e:
-        _fail(f"sync_system: {str(e)}")
-
-
-# ---------------------------------------------------------------------------
-# Tool: sync_clean
-# ---------------------------------------------------------------------------
-
-
-def sync_clean(codename: str) -> None:
-    """
-    To restore: run `python mmw_tools.py sync_push <codename>`.
-    """
-    if not _claudesync_available():
-        _fail(
-            "sync_clean: claudesync not found. "
-            "Run `python mmw-init-setup.py` to install and configure it."
-        )
-
-    import subprocess
-
-    # Guard: publish must have completed — check for slug in status.md
-    status_path = _status_path(codename)
-    if not status_path.exists():
-        _fail(f"sync_clean: status.md not found for piece '{codename}'.")
-
-    status_content = _read(status_path)
-    slug = _extract_slug_from_status(status_content)
-    if not slug:
-        _fail(
-            f"sync_clean: slug is not set in status.md for '{codename}'. "
-            "Run mmw:proof first — sync_clean should only be called after publish."
-        )
-
-    # Guard: published file must exist
-    pub_file = PUBLISHED / f"{slug}.md"
-    if not pub_file.exists():
-        _fail(
-            f"sync_clean: {pub_file} does not exist. "
-            "publish must complete successfully before sync_clean."
-        )
-
-    # Attempt to remove the piece folder from the cloud project.
-    # claudesync does not expose a per-folder delete in all versions;
-    # we use `claudesync rm` on individual files if available, otherwise log guidance.
-    piece_dir = _piece_dir(codename)
-    if not piece_dir.exists():
-        _ok({"cleaned": True, "codename": codename, "note": "Piece folder not found locally — nothing to clean from cloud."})
-        return
-
-    files_removed: list[str] = []
-    errors: list[str] = []
-
-    for f in piece_dir.iterdir():
-        if not f.is_file():
-            continue
-        remote_path = str(f.relative_to(Path(".")))
-        result = subprocess.run(
-            ["claudesync", "rm", remote_path],
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode == 0:
-            files_removed.append(remote_path)
-        else:
-            errors.append(f"{remote_path}: {result.stderr.strip() or result.stdout.strip()}")
-
-    if errors:
-        # Non-fatal: report partial success. Older claudesync may not have `rm`.
-        _ok({
-            "cleaned": False,
-            "codename": codename,
-            "files_removed": files_removed,
-            "errors": errors,
-            "note": (
-                "Some files could not be removed. If your claudesync version does not "
-                "support `rm`, manually delete the piece folder from the Claude Project "
-                "UI under Project Knowledge."
-            ),
-        })
-        return
-
-    _ok({"cleaned": True, "codename": codename, "files_removed": files_removed})
-
-
 # ---------------------------------------------------------------------------
 # CLI dispatch
 # ---------------------------------------------------------------------------
@@ -988,11 +641,6 @@ _TOOLS = {
     "publish": (publish, ["codename"]),
     "index_update": (index_update, ["codename"]),
     "calendar_log": (calendar_log, ["codename", "description", "target_date"]),
-    "sync_targets": (sync_targets, ["agent_name"]),
-    "sync_pull": (sync_pull, ["codename"]),
-    "sync_push": (sync_push, ["codename"]),
-    "sync_system": (sync_system, ["codename"]),
-    "sync_clean": (sync_clean, ["codename"]),
 }
 
 
@@ -1022,18 +670,6 @@ def main() -> None:
                 _fail(f"research_prune: max_age_days must be an integer, got '{args[1]}'")
         return
 
-    # Special case: sync_pull, sync_push, sync_system accept optional extra file args
-    if tool_name in ("sync_pull", "sync_push", "sync_system"):
-        if len(args) == 0:
-            _fail(f"{tool_name} requires at least <codename>")
-        if tool_name == "sync_pull":
-            fn = sync_pull
-        elif tool_name == "sync_push":
-            fn = sync_push
-        else:
-            fn = sync_system
-        fn(args[0], *args[1:])
-        return
 
     if len(args) != len(param_names):
         _fail(

@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-mmw_sync.py — Embedded Claude Project Sync Client for Mark My Words.
+claude_sync.py — Embedded Claude Project Sync Client.
 
-This module provides a direct Python client for Anthropic's internal Claude Project API,
-eliminating the dependency on the 'claudesync' CLI.
+This module provides a direct Python client for Anthropic's internal Claude Project API.
 """
 
 import json
@@ -163,7 +162,7 @@ class ClaudeClient:
             raise ClaudeSyncError("Organization or Project ID not set.")
         self._request("DELETE", f"/organizations/{self.org_id}/projects/{self.project_id}/docs/{doc_uuid}")
 
-    def push_files(self, file_paths: List[str], base_dir: Path = Path(".")) -> List[str]:
+    def push_files(self, file_paths: List[str], base_dir: Path = Path("project")) -> List[str]:
         """Push multiple local files to the Claude Project."""
         uploaded = []
         for path_str in file_paths:
@@ -189,15 +188,16 @@ class ClaudeClient:
             uploaded.append(file_name)
         return uploaded
 
-    def pull_files(self, targets: List[str], base_dir: Path = Path(".")) -> List[str]:
+    def pull_files(self, targets: List[str], base_dir: Path = Path("project")) -> List[str]:
         """
         Pull specific files from the Claude Project to the local filesystem.
-        'targets' are relative paths (e.g. 'writers-room/pieces/my-codename/status.md')
+        'targets' are relative paths (e.g. 'test.txt')
         """
         docs = self.list_docs()
         doc_map = {doc["file_name"]: doc for doc in docs}
         
         pulled = []
+        base_dir.mkdir(parents=True, exist_ok=True)
         for target in targets:
             normalized_target = target.replace(os.path.sep, "/")
             if normalized_target in doc_map:
@@ -216,7 +216,7 @@ class ClaudeClient:
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="mmw internal sync tool")
+    parser = argparse.ArgumentParser(description="claude internal sync tool")
     subparsers = parser.add_subparsers(dest="command")
 
     # Push

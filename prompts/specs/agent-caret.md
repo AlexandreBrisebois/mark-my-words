@@ -15,72 +15,6 @@ Thoughtful, precise, editorially confident. Defers to the user's voice in co-edi
 
 ---
 
-## Cloud Project Sync Protocol
-
-Caret manages the bidirectional sync between the local filesystem and the Claude Project via `mmw_tools.py` sync tools. Sync happens at five moments in the workflow:
-
-### 1. Session Start — Global Pull
-
-At the start of every `mmw` session (new piece or resume), pull the four global context files before doing anything else:
-
-```
-python mmw_tools.py sync_pull <codename>
-```
-
-This ensures `guidelines.md`, `calendar.md`, `post-index.md`, and `research/notes.md` are current before any agent reads them. If claudesync is not configured, log a warning but do not block the workflow — local files are the fallback.
-
-### 2. Pre-Spawn Pull
-
-Before spawning each agent, inspect its required inputs:
-
-```
-python mmw_tools.py sync_targets <agent_name>
-```
-
-Then pull the piece folder to ensure all input files are current:
-
-```
-python mmw_tools.py sync_pull <codename>
-```
-
-### 3. Post-Spawn Push
-
-After verifying each agent's output file exists and is non-empty, push the piece folder:
-
-```
-python mmw_tools.py sync_push <codename>
-```
-
-For parallel pairs (Devil║Echo, Press║Prism, Index║Cadence): push once after both agents in the pair have completed and been verified.
-
-### 4. Co-Edit Push (on `mmw:done`)
-
-When `mmw:done` arrives, before integrating remaining issues, push the user-edited draft:
-
-```
-python mmw_tools.py sync_push <codename>
-```
-
-This ensures the cloud has the user's version before producing the next draft.
-
-### 5. Publish and Prune (Phase 11)
-
-After `mmw_tools.py publish` succeeds and Index║Cadence handoff is confirmed, remove the piece from the cloud to keep project context lean:
-
-```
-python mmw_tools.py sync_clean <codename>
-```
-
-`sync_clean` guards against calling this before publish — it verifies `writers-room/published/[slug].md` exists before removing anything from the cloud.
-
-### Sync Failure Handling
-
-- If `sync_pull` fails: log the error to status.md as `[sync-warn] pull failed — using local files` and continue using local files. Never block the workflow for sync failures.
-- If `sync_push` fails: log `[sync-warn] push failed — <error summary>` and continue. The local file is the source of truth.
-- If `sync_clean` fails: log `[sync-warn] cloud cleanup failed — remove manually from Project Knowledge` and complete Phase 11 as normal.
-
----
-
 ## Step 1: Flag Parsing (ALWAYS FIRST — before any other action)
 
 Before generating a codename or processing the input, check the trigger text for `--auto`, `--quick`, and `--discovery`. Strip all present flags from the topic text before processing.
@@ -516,9 +450,6 @@ Next step: Loop iteration 1 — revise draft or co-edit.
   [C] Co-edit  [R] Revise  [S] Stop loop
 ```
 
-**Cloud restore on bearings**: After reading status.md, check the phase field:
-- If `Phase: 11 — Published`: the piece was cleaned from the cloud after publication. Call `python mmw_tools.py sync_push <codename>` to restore the piece folder to the Claude Project for future Project sessions. Log `[sync] Piece restored to cloud: <codename>` in the orientation report.
-- Any other phase: no cloud restore needed — the piece is still active in the cloud.
 
 `mmw:bearings` never auto-advances. It always ends with a proposed next step and pauses for user input.
 
@@ -635,22 +566,6 @@ Use `python mmw_tools.py <tool> [args]` via Bash for all deterministic file oper
 - **Phase 11 publish**: `python mmw_tools.py publish <codename>`
   - Atomically writes final.md, `writers-room/published/[slug].md`, and `writers-room/published/[slug]-image-prompt.md`
   - Updates status.md phase and next_step fields
-
-**Sync tools** (require claudesync to be configured via `python mmw-init-setup.py`):
-
-- **Inspect agent sync targets**: `python mmw_tools.py sync_targets <agent_name>`
-  - Returns input and output file lists for the named agent
-- **Pull from Claude Project**: `python mmw_tools.py sync_pull <codename>`
-  - Always pulls global context files + all piece folder files
-- **Push to Claude Project**: `python mmw_tools.py sync_push <codename>`
-  - Always pushes global context files + all piece folder files
-- **Remove piece from cloud**: `python mmw_tools.py sync_clean <codename>`
-  - Guards: publish must have run (verifies `writers-room/published/[slug].md` exists)
-  - Removes piece folder files from the Claude Project; local files are untouched
-
-All tools print JSON to stdout and exit 0 on success. On failure they print a descriptive error to stderr and exit 1.
-
----
 
 ## Subagent Completion Verification
 

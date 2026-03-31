@@ -4,54 +4,21 @@ Mark My Words (mmw) is a multi-agent writing system built on Claude Code. It orc
 
 ## Setup
 
-Mark My Words uses a **Claude Project** as its canonical state store. Local files are the editor surface; the Project is the source of truth.
+Mark My Words is a local-only CLI tool running on your filesystem. 
 
-### 1. Initialize Project
+### 1. Installation
 
-To ensure **Claude Code** and its agents have immediate access to the necessary tools, we install dependencies globally. 
+To ensure **Claude Code** and its agents have immediate access to the necessary tools, install dependencies.
 
 ```bash
 # Install required dependencies globally
 pip install --break-system-packages -r requirements.txt
-
-# Run the guided setup script (Automates Validation & Seeding)
-python3 scripts/mmw_init-setup.py
 ```
 
-This script:
-1. Guides you through the **claude.ai sessionKey** retrieval.
-2. Links your local folder to a **Claude Project**.
-3. **Validates the build** (agent stubs, sync masters, skills, seed files).
-4. **Seeds the project** with everything in `.claude/agents-sync/` and critical global context files (`guidelines.md`, `calendar.md`, etc.).
+> [!NOTE]
+> By default, `mmw` runs entirely locally. If you wish to use the experimental Claude Project sync tools, see `scripts/claude-project-tools/README.md`.
 
-> [!CAUTION]
-> **Keep your `sessionKey` private.** It grants full access to your Claude account. The `.claude/config.json` file is automatically added to `.gitignore` by the setup script.
 
-### How sync works in practice
-
-Mark My Words uses a **System vs. Runtime** synchronization strategy to minimize token usage and keep the Claude Project knowledge relevant:
-
-- **System Context**: Agent Specs (`.claude/agents-sync/`), Skills (`.claude/skills/`), and Brand Guidelines are static. They are pushed once during initiation or manually via `sync_system`.
-- **Runtime Context**: `calendar.md`, `post-index.md`, and `research/notes.md` are dynamic and synced on every agent transition.
-- **Piece Context**: Only the files within the active piece folder (e.g., `pieces/codename/*`) are synced during the drafting process.
-
-Caret manages sync automatically during each workflow run:
-
-- **Session start**: pulls the **Runtime Context** and the active piece folder.
-- **Pre-spawn**: pulls the input files required by the next agent before spawning it.
-- **Post-spawn**: pushes the output files produced by the agent after it completes.
-- **Post co-edit (`mmw:done`)**: triggers an immediate push of the edited draft.
-- **After proof (`mmw:proof`)**: calls `sync_clean` to remove the piece folder from the project, keeping cloud context lean.
-
-Sync tools are available as direct CLI calls for manual use:
-
-```bash
-python scripts/mmw_tools.py sync_system <codename>    # push full project state (System + Runtime + Piece)
-python scripts/mmw_tools.py sync_pull <codename>      # pull active piece + runtime files
-python scripts/mmw_tools.py sync_push <codename>      # push active piece + runtime files
-python scripts/mmw_tools.py sync_clean <codename>     # remove piece from cloud (post-publish)
-python scripts/mmw_tools.py sync_targets <agent_name> # inspect what an agent needs to sync
-```
 
 ---
 

@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
 """
-mmw_init-setup.py — Guided setup for the Mark My Words Claude Project Sync Layer.
+project_init.py — Guided setup for Claude Project Sync.
 
 This script:
   1. Guides the user through sessionKey retrieval.
   2. Verifies the sessionKey and selects a Claude Organization.
   3. Links the local folder to a Claude Project (existing or new).
   4. Saves configuration to .claude/config.json.
+  5. Ensures the local 'project/' directory exists.
 
 Usage:
-    python scripts/mmw_init-setup.py
+    python scripts/claude-project-tools/project_init.py
 """
 
 import json
-import subprocess
+import os
 import sys
 import textwrap
 from pathlib import Path
 
 # Internal sync module
-from mmw_sync import ClaudeClient, save_config, ClaudeSyncError
+from project_sync import ClaudeClient, save_config, ClaudeSyncError
 
 # ---------------------------------------------------------------------------
 # UI Helpers
@@ -63,10 +64,6 @@ def _info(text: str) -> None:
         print(f"  {DIM}{line}{RESET}")
 
 
-def _pause(prompt: str = "Press Enter to continue…") -> None:
-    input(f"\n  {BOLD}{prompt}{RESET}")
-
-
 def _confirm(question: str) -> bool:
     answer = input(f"\n  {BOLD}{question} [y/N]: {RESET}").strip().lower()
     return answer in ("y", "yes")
@@ -81,7 +78,7 @@ def step_session_key_guide(total: int) -> str:
 
     print()
     _info(
-        "Mark My Words authenticates with claude.ai using your browser session cookie. "
+        "Authentication uses your browser session cookie. "
         "You need to copy the `sessionKey` value from your browser's DevTools. "
         "Keep this value private — it grants full access to your Claude account."
     )
@@ -96,7 +93,7 @@ def step_session_key_guide(total: int) -> str:
     4. In the left sidebar, expand {BOLD}Cookies{RESET} → select {BOLD}https://claude.ai{RESET}.
     5. Find the row named {BOLD}sessionKey{RESET}.
     6. Click the row and copy the full {BOLD}Value{RESET} field.
-       (It starts with "sk-ant-…")
+       (It starts with "sk-ant-sid-…")
 
   {CYAN}Firefox:{RESET}
     1. Open https://claude.ai and sign in.
@@ -174,11 +171,10 @@ def step_select_project(total: int, client: ClaudeClient) -> str:
             if 1 <= choice <= len(projects):
                 return projects[choice-1]['uuid']
             if choice == len(projects) + 1:
-                default_name = "mark-my-words"
-                default_desc = "Mark My Words (mmw) is a multi-agent writing system built on Claude Code. It orchestrates a set of specialized agents — researcher, strategist, writer, critic, publisher — through a structured workflow to produce blog posts."
+                default_name = "my-claude-project"
                 
                 name = input(f"\n  Enter name for new project [{default_name}]: ").strip() or default_name
-                desc = input(f"  Enter a brief description [{default_desc[:30]}…]: ").strip() or default_desc
+                desc = input(f"  Enter a brief description: ").strip()
                 
                 new_p = client.create_project(name, desc)
                 _ok(f"Created project: {new_p.get('name')}")
@@ -197,16 +193,16 @@ def summary() -> None:
 
     print(f"""
   ✓ Configuration saved to .claude/config.json.
-  ✓ Build validated.
-  ✓ Claude Project seeded (init context pushed).
+  ✓ Local 'project/' directory initialized.
 
-  {BOLD}Next step — Start writing:{RESET}
+  {BOLD}Next step — Use the Project Agent:{RESET}
 
-    Open a new Claude Code session in this folder and run:
+    You can now sync files using the /project agent commands:
+    
+      {CYAN}/project:push [files...]{RESET}
+      {CYAN}/project:pull [files...]{RESET}
 
-      {CYAN}mmw [your topic]{RESET}
-
-    Sync is handled automatically via the embedded client.
+    All synced files live in the {BOLD}project/{RESET} folder at your root.
     """)
 
 
@@ -215,11 +211,11 @@ def summary() -> None:
 # ---------------------------------------------------------------------------
 
 def main():
-    _header("Mark My Words — Embedded Sync Setup")
+    _header("Claude Project Sync — Setup")
 
     _info(
-        "This script configures the bidirectional sync layer using a built-in "
-        "Python client. No external tools are required."
+        "This script configures the bidirectional sync layer. "
+        "It will link this local folder to a Claude Project."
     )
 
     if not _confirm("Ready to begin setup?"):
@@ -247,7 +243,7 @@ def main():
     
     # Update .gitignore
     gitignore = Path(".gitignore")
-    entries_to_add = [".claude/config.json", ".claudesync/"]
+    entries_to_add = [".claude/config.json"]
     if gitignore.exists():
         content = gitignore.read_text(encoding="utf-8")
         with gitignore.open("a", encoding="utf-8") as f:
@@ -257,29 +253,11 @@ def main():
     else:
         gitignore.write_text("\n".join(entries_to_add) + "\n", encoding="utf-8")
 
+    # Ensure project/ directory exists
+    Path("project").mkdir(exist_ok=True)
+    _ok("Local 'project/' directory ready.")
+
     _ok("Configuration finalized.")
-
-    # Automate Step 1 & 2
-    _step(4, 4, "Finalizing Project State")
-    
-    print("  Validating build…")
-    try:
-        subprocess.run([sys.executable, "scripts/mmw_validate.py"], check=True, capture_output=True)
-        _ok("Build validated.")
-    except subprocess.CalledProcessError as e:
-        _err(f"Validation failed:\n{e.stderr.decode()}")
-        sys.exit(1)
-
-    print("  Seeding Claude Project…")
-    try:
-        # Run sync_push init
-        subprocess.run([sys.executable, "scripts/mmw_tools.py", "sync_push", "init"], check=True, capture_output=True)
-        _ok("Claude Project seeded.")
-    except subprocess.CalledProcessError as e:
-        _err(f"Initial sync failed:\n{e.stderr.decode()}")
-        _info("You may need to run 'python3 scripts/mmw_tools.py sync_push init' manually.")
-        # Don't exit here, the config is still saved.
-
     summary()
 
 
