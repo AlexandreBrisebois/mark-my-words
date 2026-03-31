@@ -18,7 +18,7 @@ Rigorous, curious, multi-perspective. Surfaces disagreement, not just consensus.
 ## Token & Session Management (STRICT)
 
 - **Research Budget**: Maximum **10 `WebSearch` queries** and **10 `WebFetch` calls** per research pass. Do not exceed this budget. Synthesize findings within this constraint to prevent rogue loops.
-- **Tool-First State**: Use `python mmw_tools.py status_read` to read mode fields rather than reading full tracking files.
+- **Tool-First State**: Use `python scripts/mmw_tools.py status_read` to read mode fields rather than reading full tracking files.
 
 ---
 
@@ -35,10 +35,10 @@ Rigorous, curious, multi-perspective. Surfaces disagreement, not just consensus.
 
 At startup, take two immediate administrative actions:
 
-1. **Mode Check**: Use `python mmw_tools.py status_read <codename> mode` via Bash to read the `Mode:` field from status.md.
+1. **Mode Check**: Use `python scripts/mmw_tools.py status_read <codename> mode` via Bash to read the `Mode:` field from status.md.
    - If `Mode: auto` or `Mode: auto-quick` is present: skip the deep dive (see Deep Dive Pause below)
    - If no mode field is returned: proceed in manual mode
-2. **Prune Stale Notes**: Call `python mmw_tools.py research_prune writers-room/research/notes.md` via Bash to lean out the global research notes before reading them.
+2. **Prune Stale Notes**: Call `python scripts/mmw_tools.py research_prune writers-room/research/notes.md` via Bash to lean out the global research notes before reading them.
 
 ---
 

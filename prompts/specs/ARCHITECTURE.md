@@ -232,7 +232,7 @@ If a generated codename collides with an existing folder, Caret generates a vari
 
 ## Draft Versioning
 
-Drafts are never overwritten. Each version is a new file: `draft-v1.md`, `draft-v2.md`, `draft-v3.md`, etc. Use `python mmw_tools.py draft_version <codename> next` to get the correct next version number before writing.
+Drafts are never overwritten. Each version is a new file: `draft-v1.md`, `draft-v2.md`, `draft-v3.md`, etc. Use `python scripts/mmw_tools.py draft_version <codename> next` to get the correct next version number before writing.
 
 ---
 

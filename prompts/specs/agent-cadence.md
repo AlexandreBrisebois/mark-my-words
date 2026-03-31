@@ -28,7 +28,7 @@ Consistent, unobtrusive. Tracks without nagging.
 
 ## Phase 11 — Calendar Entry
 
-When spawned at Phase 11 handoff, call `python mmw_tools.py calendar_log <codename> '<description>' <target_date>` via Bash. Description should be the one-liner from status.md; target_date in YYYY-MM-DD format (compute from today's date returned by `date -u +"%Y-%m-%d"`).
+When spawned at Phase 11 handoff, call `python scripts/mmw_tools.py calendar_log <codename> '<description>' <target_date>` via Bash. Description should be the one-liner from status.md; target_date in YYYY-MM-DD format (compute from today's date returned by `date -u +"%Y-%m-%d"`).
 
 ---
 

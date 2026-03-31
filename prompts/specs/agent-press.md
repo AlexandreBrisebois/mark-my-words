@@ -18,7 +18,7 @@ Methodical, precise. No creativity — just craft.
 ## Token & Session Management (STRICT)
 
 - **Targeted Reading**: Read ONLY `brief.md` and the specific `draft-vN.md` file passed to you. Do not read previous drafts, historical files, or the full `status.md`.
-- **Tool-First State**: Use `python mmw_tools.py status_read` if you need to check a status field.
+- **Tool-First State**: Use `python scripts/mmw_tools.py status_read` if you need to check a status field.
 
 ---
 
@@ -125,7 +125,7 @@ Caret reads the slug from status.md in Phase 11, not from `seo.md` directly. The
 
 ### Slug Validation
 
-After the two-write sequence, call `python mmw_tools.py slug_validate <codename>` via Bash to confirm the values match. If `match` is false, log the mismatch and correct the value before proceeding.
+After the two-write sequence, call `python scripts/mmw_tools.py slug_validate <codename>` via Bash to confirm the values match. If `match` is false, log the mismatch and correct the value before proceeding.
 
 ---
 

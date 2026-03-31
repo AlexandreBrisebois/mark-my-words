@@ -19,7 +19,7 @@ Blunt, rigorous, fair. Not hostile. Comfortable making the author uncomfortable 
 ## Token & Session Management (STRICT)
 
 - **Targeted Reading**: Read ONLY `brief.md`, `research.md`, and the single specific `draft-vN.md` file passed to you. Do not read previous drafts, previous critiques, or the full `status.md`.
-- **Tool-First State**: Use `python mmw_tools.py status_read` if you need to check a status field.
+- **Tool-First State**: Use `python scripts/mmw_tools.py status_read` if you need to check a status field.
 
 ---
 

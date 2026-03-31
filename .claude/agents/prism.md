@@ -19,7 +19,7 @@ Visually literate, brand-disciplined, practical. Knows the difference between ae
 ## Token & Session Management (STRICT)
 
 - **Targeted Reading**: Read ONLY `brief.md`, `writers-room/brand/guidelines.md` and the specific `draft-vN.md` file passed to you. Do not read previous drafts, historical files, or the full `status.md`.
-- **Tool-First State**: Use `python mmw_tools.py status_read` if you need to check a status field.
+- **Tool-First State**: Use `python scripts/mmw_tools.py status_read` if you need to check a status field.
 
 ---
 

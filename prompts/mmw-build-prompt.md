@@ -242,7 +242,7 @@ If `mmw_validate.py` has not been built yet, perform these checks manually:
 - Phase 8: Caret applies Devil/Echo feedback directly, logs summary, skips Phase 8.5
 - `mmw:proof` → still a human gate; auto mode pauses and waits
 - Session resume: `mmw [codename]` → Caret reads `Mode: auto` from status.md → continues in auto mode
-- Phase 11: Caret calls `mmw_tools.py publish <codename>` which writes both `writers-room/published/[slug].md` and `writers-room/published/[slug]-image-prompt.md` atomically
+- Phase 11: Caret calls `scripts/mmw_tools.py publish <codename>` which writes both `writers-room/published/[slug].md` and `writers-room/published/[slug]-image-prompt.md` atomically
 
 **Auto-quick trace** (verify caret.md contains the required logic):
 - `mmw --auto --quick [topic]` → Caret strips both flags, writes `- Mode: auto-quick` to status.md
@@ -253,43 +253,33 @@ If `mmw_validate.py` has not been built yet, perform these checks manually:
 - Phases 4, 5, 6+7, 8, 8.5 all skipped — each logged in status.md
 - Phase 9+10 (Press ║ Prism) runs in parallel
 - `mmw:proof` → human gate; waits
-- Phase 11: same as auto, including both published/ file writes via `mmw_tools.py publish`
+- Phase 11: same as auto, including both published/ file writes via `scripts/mmw_tools.py publish`
 - Deadline-constrained upgrade: if `calendar.md` shows target date <3 days away in auto mode, caret.md upgrades to auto-quick and logs `[auto] Publish deadline in N days — fast path activated`
 
-**Manual-mode trace** (existing workflow, unchanged):
+**Manual / Interactive trace** (reflects decoupled execution and context reset boundaries):
 
-1. User types: `/mmw write a post about building this writer's room` (or plain-text `mmw write a post about building this writer's room` as fallback)
-2. Caret generates codename `writers-room-build`, creates folder, writes brief.md and status.md with plain English description
-3. Index validates post-index.md — reports N entries found
-4. Index checks brief.md against post-index.md — no overlap found
-5. Compass reads brief.md → produces compass-notes.md with strategic direction and research priorities for Turing
-6. Turing reads compass-notes.md → produces focused research.md
-7. Turing surfaces 3 deep-dive candidates — user picks one (or steers with a prompt) → Turing appends deeper findings to research.md
-8. Caret checks: research.md exists and is non-empty [GATE PASSED]
-9. Caret reads brief.md, compass-notes.md, research.md → produces draft-v1.md
-10. Mark reads draft-v1.md → produces headlines.md
-11. Mark reviews draft-v1.md → brand-notes-v1.md [REVISE]
-12. Loop pauses — user sees outstanding issues and options
-13. User chooses [C] co-edit
-14. Caret surfaces the exact flagged lines with current text and issue
-15. User edits draft-v1.md directly
-16. User types: mmw:done
-17. Caret reads user-edited file → produces draft-v2.md
-18. Caret reports exactly what it changed beyond the user's edits
-19. Mark reviews draft-v2.md → brand-notes-v2.md [PASS]
-20. Loop exits — brief intent met
-21. Devil ║ Echo run in parallel:
-    - Devil reads brief.md, research.md, draft-v2.md → critique-v2.md
-    - Echo reads brief.md, draft-v2.md → audience-v2.md
-22. User revision window — user edits or proceeds
-23. Press ║ Prism run in parallel:
-    - Press reads latest draft-vN.md → seo.md with valid Hugo YAML front matter + writes slug to status.md
-    - Prism reads latest draft-vN.md → image-prompt.md as one focused paragraph
-24. User types: `mmw:proof writers-room-build`
-25. Pre-flight check passes — draft, seo.md, slug, image-prompt.md all present
-26. final.md written and copied to `writers-room/published/writers-room-build.md`
-27. Index ║ Cadence run in parallel:
-    - Index updates post-index.md with new entry
-    - Cadence logs codename, description, and target publish date in calendar.md
+1. User types: `/mmw --interactive write a post about building this writer's room`
+2. Caret strips flags, generates codename `writers-room-build`, creates folder, writes brief.md and status.md with `- Mode: interactive`
+3. Phase 0 (Index) runs overlap check and passes.
+4. Phase 1 (Compass) runs, sets angle, and Caret prompts to proceed to Turing.
+5. Phase 2 (Turing) runs, produces research.md. Caret surfaces findings and executes Context Reset Boundary.
+6. User types `/clear`
+7. User types `mmw:bearings writers-room-build` -> Caret reads next_step and presents Outline Gate/Drafting options.
+8. Caret reads brief, compass, research → produces an outline.md and waits for Co-edit or Draft.
+9. Caret proceeds to draft, pauses and creates section-by-section review loop (`mmw:review` then `mmw:done`).
+10. Caret executes Context Reset Boundary after draft completion.
+11. User types `/clear`, then `mmw:bearings writers-room-build`.
+12. Phase 5 (Mark loop) runs, reviews draft, surfaces findings, loop pauses if [REVISE] or [HOLD].
+13. User enters Co-edit, edits draft, types `mmw:done`. Caret integrates and loop completes with [PASS].
+14. Mark loop exits -> Caret executes Context Reset Boundary.
+15. User types `/clear`, then `mmw:bearings writers-room-build`.
+16. Phase 6+7 (Devil ║ Echo) run in parallel, Caret verifies completion.
+17. Phase 8 (Revision window) surfaces critique. User revises draft.
+18. Revision completes -> Caret executes Context Reset Boundary.
+19. User types `/clear`, then `mmw:bearings writers-room-build`.
+20. Phase 9+10 (Press ║ Prism) run in parallel -> wait for proof.
+21. User types: `mmw:proof writers-room-build`.
+22. Pre-flight passes; final.md and published files written atomically via `scripts/mmw_tools.py publish`.
+23. Phase 11 finishes with Index ║ Cadence running in parallel to update logs.
 
 ---

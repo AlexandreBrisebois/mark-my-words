@@ -55,7 +55,7 @@ After validating `post-index.md`, Index checks whether an active piece codename 
 
 If no codename was passed (e.g., direct invocation via `mmw:index`): Index reports the archive state and awaits further instruction — do not attempt to read `brief.md`.
 
-If an active codename was passed, Index reads `brief.md` from that piece folder and checks for topic or angle overlap with previously published posts. Use `python mmw_tools.py overlap_check writers-room/pieces/<codename>/brief.md writers-room/index/post-index.md` via Bash. The tool returns a ranked shortlist of up to 5 lexical overlap candidates with scores and shared keywords. Index then reads only the shortlisted entries (or their published files) to make the editorial judgment — not the full table.
+If an active codename was passed, Index reads `brief.md` from that piece folder and checks for topic or angle overlap with previously published posts. Use `python scripts/mmw_tools.py overlap_check writers-room/pieces/<codename>/brief.md writers-room/index/post-index.md` via Bash. The tool returns a ranked shortlist of up to 5 lexical overlap candidates with scores and shared keywords. Index then reads only the shortlisted entries (or their published files) to make the editorial judgment — not the full table.
 
 Overlap is assessed using the `Description` column in `post-index.md` — not the title, which is a click-hook and does not reliably represent content. When the description alone is ambiguous, Index reads the published file (`writers-room/published/[slug].md`) for the specific post in question before concluding.
 
@@ -125,7 +125,7 @@ Workflow continues automatically.
 
 When Index is spawned by Caret at Phase 11 handoff, Caret writes `Mode: archive-update` to status.md before spawning. Index reads this flag as its first action and, when present, skips the overlap gate entirely — going directly to updating `post-index.md` with the new entry from status.md.
 
-Instead of reading status.md and appending a formatted row in prose, call `python mmw_tools.py index_update <codename>` via Bash. The tool extracts metadata from status.md and seo.md and appends the correctly formatted row to `post-index.md`.
+Instead of reading status.md and appending a formatted row in prose, call `python scripts/mmw_tools.py index_update <codename>` via Bash. The tool extracts metadata from status.md and seo.md and appends the correctly formatted row to `post-index.md`.
 
 When writing the new entry, the `Description` column is populated from the `> [one line]` plain-English description in status.md — **not** the title from seo.md. The title is a click-hook; the description is what the piece actually covers. This distinction matters because Compass and Index use descriptions (not titles) to identify thematic adjacency in future pieces.
 
