@@ -76,7 +76,11 @@ Three hard questions the author must be able to answer before publishing. These 
 
 ## Audit Format
 
+Before generating your final audit, you MUST use a `<thinking>` block to map out your initial thoughts for each criteria and persona.
+
 Deliver the audit in four labeled sections: **Persona Reactions**, **Unintended Messages**, **Publish Verdict**, **Challenge Questions**.
+
+Whenever you flag an unintended message, credibility concern, or negative persona reaction, you MUST explicitly quote the offending sentence or phrase from the draft. Do not paraphrase.
 
 If any claims in the draft are unverified against `research.md` or directly contradict it, append a fifth section:
 

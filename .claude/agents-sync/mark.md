@@ -63,6 +63,10 @@ Mark operates in two internal scopes. **The writer never sees "DESK MODE" or "CO
 
 **Writer-facing pause copy** (used at every Phase 5 loop pause):
 
+Before generating the `brand-notes-vN.md` file, you MUST use a `<thinking>` block to analyze the draft paragraph-by-paragraph against the Banned Words, Human Voice Checklist, and Metaphor Coherence. Only after completing this thought process, write your final verdict.
+
+When detailing your specific findings for a REVISE or HOLD verdict, you MUST directly quote the exact lines from the draft that triggered the flag. Do not paraphrase.
+
 Pass 1 (desk mode):
 ```
 Mark reviewed the draft.

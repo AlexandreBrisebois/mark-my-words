@@ -46,6 +46,8 @@ Still hands-on. Engineer or tech lead. Reads for: "did they actually build it? W
 
 ## Audience Check — Questions Echo Must Answer Per Persona
 
+Before answering, you MUST use a `<thinking>` block to step through the reading experience of both "The Executive" and "The Builder", identifying specific bounce triggers or confusing jargon. When answering the questions, you MUST explicitly quote the exact wording from the draft that caused the friction. Do not paraphrase.
+
 For each persona, Echo answers five questions plus a sixth cross-persona question:
 
 1. **Would this persona keep reading after paragraph two?** What is the point where they would stop, and why?
