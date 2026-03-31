@@ -29,22 +29,28 @@ This script:
 
 ### How sync works in practice
 
+Mark My Words uses a **System vs. Runtime** synchronization strategy to minimize token usage and keep the Claude Project knowledge relevant:
+
+- **System Context**: Agent Specs (`.claude/agents-sync/`), Skills (`.claude/skills/`), and Brand Guidelines are static. They are pushed once during initiation or manually via `sync_system`.
+- **Runtime Context**: `calendar.md`, `post-index.md`, and `research/notes.md` are dynamic and synced on every agent transition.
+- **Piece Context**: Only the files within the active piece folder (e.g., `pieces/codename/*`) are synced during the drafting process.
+
 Caret manages sync automatically during each workflow run:
 
-- **Session start**: pulls `guidelines.md`, `calendar.md`, `post-index.md`, and `research/notes.md` (global context).
+- **Session start**: pulls the **Runtime Context** and the active piece folder.
 - **Pre-spawn**: pulls the input files required by the next agent before spawning it.
 - **Post-spawn**: pushes the output files produced by the agent after it completes.
 - **Post co-edit (`mmw:done`)**: triggers an immediate push of the edited draft.
 - **After proof (`mmw:proof`)**: calls `sync_clean` to remove the piece folder from the project, keeping cloud context lean.
-- **Bearings resume**: if `mmw:bearings [codename]` is called for a published piece missing from the project, Caret re-syncs it on demand.
 
 Sync tools are available as direct CLI calls for manual use:
 
-```
-python scripts/mmw_tools.py sync_pull <codename>       # pull global + piece files
-python scripts/mmw_tools.py sync_push <codename>       # push global + piece files
-python scripts/mmw_tools.py sync_clean <codename>      # remove piece from cloud (post-publish)
-python scripts/mmw_tools.py sync_targets <agent_name>  # inspect what an agent needs to sync
+```bash
+python scripts/mmw_tools.py sync_system <codename>    # push full project state (System + Runtime + Piece)
+python scripts/mmw_tools.py sync_pull <codename>      # pull active piece + runtime files
+python scripts/mmw_tools.py sync_push <codename>      # push active piece + runtime files
+python scripts/mmw_tools.py sync_clean <codename>     # remove piece from cloud (post-publish)
+python scripts/mmw_tools.py sync_targets <agent_name> # inspect what an agent needs to sync
 ```
 
 ---

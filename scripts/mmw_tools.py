@@ -100,29 +100,33 @@ CALENDAR = WRITERS_ROOM / "cadence" / "calendar.md"
 RESEARCH_NOTES = WRITERS_ROOM / "research" / "notes.md"
 GUIDELINES = WRITERS_ROOM / "brand" / "guidelines.md"
 
-# Always synced to/from the Claude Project (seed files + runtime specs).
-def _get_sync_global_files() -> list[str]:
-    # 1. Seed Files (Guidelines, Calendar, etc.)
+# System-level files (Guidelines, Agent Specs, Skills) - only pushed on sync_system.
+def _get_sync_system_files() -> list[str]:
     files = [
         str(WRITERS_ROOM / "brand" / "guidelines.md"),
-        str(WRITERS_ROOM / "cadence" / "calendar.md"),
-        str(WRITERS_ROOM / "index" / "post-index.md"),
-        str(WRITERS_ROOM / "research" / "notes.md"),
     ]
     
-    # 2. Agent Specs (.claude/agents-sync/*.md)
+    # Agent Specs (.claude/agents-sync/*.md)
     agents_sync_dir = Path(".claude") / "agents-sync"
     if agents_sync_dir.exists():
         for f in agents_sync_dir.glob("*.md"):
             files.append(str(f))
             
-    # 3. Skills (.claude/skills/*/SKILL.md)
+    # Skills (.claude/skills/*/SKILL.md)
     skills_dir = Path(".claude") / "skills"
     if skills_dir.exists():
         for f in skills_dir.glob("**/SKILL.md"):
             files.append(str(f))
-            
-    # Deduplicate while preserving order if needed
+    return list(dict.fromkeys(files))
+
+
+# Dynamic runtime files (Calendar, Index, Research Notes) - synced on every push/pull.
+def _get_sync_runtime_files() -> list[str]:
+    files = [
+        str(WRITERS_ROOM / "cadence" / "calendar.md"),
+        str(WRITERS_ROOM / "index" / "post-index.md"),
+        str(WRITERS_ROOM / "research" / "notes.md"),
+    ]
     return list(dict.fromkeys(files))
 
 # Per-agent input/output file mapping (relative to the piece folder root).
@@ -778,7 +782,7 @@ def sync_pull(codename: str, *extra_files: str) -> None:
         project_id=config.get("project_id")
     )
 
-    targets: list[str] = _get_sync_global_files()
+    targets: list[str] = _get_sync_runtime_files()
     piece_files = _resolve_piece_files(codename)
     targets.extend(piece_files)
     if extra_files:
@@ -822,7 +826,7 @@ def sync_push(codename: str, *extra_files: str) -> None:
         project_id=config.get("project_id")
     )
 
-    targets: list[str] = _get_sync_global_files()
+    targets: list[str] = _get_sync_runtime_files()
     piece_files = _resolve_piece_files(codename)
     targets.extend(piece_files)
     if extra_files:
@@ -841,6 +845,50 @@ def sync_push(codename: str, *extra_files: str) -> None:
         _ok({"pushed": True, "files": uploaded})
     except ClaudeSyncError as e:
         _fail(f"sync_push: {str(e)}")
+
+
+# ---------------------------------------------------------------------------
+# Tool: sync_system
+# ---------------------------------------------------------------------------
+
+
+def sync_system(codename: str, *extra_files: str) -> None:
+    """
+    Perform a full sync including both System Specs and Runtime Files.
+    Use this on first run or after modifying agent specs/skills.
+    """
+    config = load_config()
+    session_key = config.get("session_key")
+    if not session_key:
+        _fail("sync_system: No session_key found. Run setup first.")
+
+    client = ClaudeClient(
+        session_key=session_key,
+        org_id=config.get("org_id"),
+        project_id=config.get("project_id")
+    )
+
+    # Combine System + Runtime + Piece Files
+    targets: list[str] = _get_sync_system_files()
+    targets.extend(_get_sync_runtime_files())
+    targets.extend(_resolve_piece_files(codename))
+    
+    if extra_files:
+        targets.extend(extra_files)
+    
+    # Deduplicate while preserving order
+    seen: set[str] = set()
+    unique: list[str] = []
+    for f in targets:
+        if f not in seen:
+            seen.add(f)
+            unique.append(f)
+
+    try:
+        uploaded = client.push_files(unique)
+        _ok({"synced_system": True, "files": uploaded})
+    except ClaudeSyncError as e:
+        _fail(f"sync_system: {str(e)}")
 
 
 # ---------------------------------------------------------------------------
@@ -943,6 +991,7 @@ _TOOLS = {
     "sync_targets": (sync_targets, ["agent_name"]),
     "sync_pull": (sync_pull, ["codename"]),
     "sync_push": (sync_push, ["codename"]),
+    "sync_system": (sync_system, ["codename"]),
     "sync_clean": (sync_clean, ["codename"]),
 }
 
@@ -973,11 +1022,16 @@ def main() -> None:
                 _fail(f"research_prune: max_age_days must be an integer, got '{args[1]}'")
         return
 
-    # Special case: sync_pull and sync_push accept optional extra file args
-    if tool_name in ("sync_pull", "sync_push"):
+    # Special case: sync_pull, sync_push, sync_system accept optional extra file args
+    if tool_name in ("sync_pull", "sync_push", "sync_system"):
         if len(args) == 0:
             _fail(f"{tool_name} requires at least <codename>")
-        fn = sync_pull if tool_name == "sync_pull" else sync_push
+        if tool_name == "sync_pull":
+            fn = sync_pull
+        elif tool_name == "sync_push":
+            fn = sync_push
+        else:
+            fn = sync_system
         fn(args[0], *args[1:])
         return
 
