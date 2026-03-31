@@ -6,7 +6,7 @@ Mark My Words (mmw) is a multi-agent writing system built on Claude Code. It orc
 
 Mark My Words uses a **Claude Project** as its canonical state store. Local files are the editor surface; the Project is the source of truth.
 
-### 1. Configure Sync Layer
+### 1. Initialize Project
 
 To ensure **Claude Code** and its agents have immediate access to the necessary tools, we install dependencies globally. 
 
@@ -14,30 +14,18 @@ To ensure **Claude Code** and its agents have immediate access to the necessary 
 # Install required dependencies globally
 pip install --break-system-packages -r requirements.txt
 
-# Run the guided setup script
+# Run the guided setup script (Automates Validation & Seeding)
 python3 scripts/mmw_init-setup.py
 ```
 
+This script:
+1. Guides you through the **claude.ai sessionKey** retrieval.
+2. Links your local folder to a **Claude Project**.
+3. **Validates the build** (agent stubs, sync masters, skills, seed files).
+4. **Seeds the project** with everything in `.claude/agents-sync/` and critical global context files (`guidelines.md`, `calendar.md`, etc.).
+
 > [!CAUTION]
 > **Keep your `sessionKey` private.** It grants full access to your Claude account. The `.claude/config.json` file is automatically added to `.gitignore` by the setup script.
-
-### 2. Validate the Build
-
-Confirm that all agent stubs, sync masters, skills, and seed files are present and correctly formed:
-
-```bash
-python scripts/mmw_validate.py
-```
-
-### 3. Seed the Claude Project
-
-Push the full agent sync masters and global context files to your Claude Project Knowledge:
-
-```bash
-python scripts/mmw_tools.py sync_push init
-```
-
-This seeds the project with everything in `.claude/agents-sync/` plus the four global context files (`guidelines.md`, `calendar.md`, `post-index.md`, and `research/notes.md`). Agent instructions are now ambient context.
 
 ### How sync works in practice
 

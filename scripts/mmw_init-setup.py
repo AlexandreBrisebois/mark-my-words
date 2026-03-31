@@ -13,6 +13,7 @@ Usage:
 """
 
 import json
+import subprocess
 import sys
 import textwrap
 from pathlib import Path
@@ -191,26 +192,11 @@ def summary() -> None:
     _header("Setup Complete")
 
     print(f"""
-  {GREEN}✓{RESET} Configuration saved to {BOLD}.claude/config.json{RESET}.
-  {GREEN}✓{RESET} {BOLD}claudesync{RESET} dependency removed.
+  ✓ Configuration saved to .claude/config.json.
+  ✓ Build validated.
+  ✓ Claude Project seeded (init context pushed).
 
-  {BOLD}Next steps — run these in order:{RESET}
-
-  {BOLD}Step 1 — Validate the build{RESET}
-
-    Confirm all agent stubs, sync masters, skills, and seed files
-    are present and correctly formed:
-
-      {CYAN}python scripts/mmw_validate.py{RESET}
-
-  {BOLD}Step 2 — Seed the Claude Project{RESET}
-
-    Push full agent instructions (sync masters) and global context
-    files to your Claude Project Knowledge:
-
-      {CYAN}python scripts/mmw_tools.py sync_push init{RESET}
-
-  {BOLD}Step 3 — Start writing{RESET}
+  {BOLD}Next step — Start writing:{RESET}
 
     Open a new Claude Code session in this folder and run:
 
@@ -268,6 +254,28 @@ def main():
         gitignore.write_text("\n".join(entries_to_add) + "\n", encoding="utf-8")
 
     _ok("Configuration finalized.")
+
+    # Automate Step 1 & 2
+    _step(4, 4, "Finalizing Project State")
+    
+    print("  Validating build…")
+    try:
+        subprocess.run([sys.executable, "scripts/mmw_validate.py"], check=True, capture_output=True)
+        _ok("Build validated.")
+    except subprocess.CalledProcessError as e:
+        _err(f"Validation failed:\n{e.stderr.decode()}")
+        sys.exit(1)
+
+    print("  Seeding Claude Project…")
+    try:
+        # Run sync_push init
+        subprocess.run([sys.executable, "scripts/mmw_tools.py", "sync_push", "init"], check=True, capture_output=True)
+        _ok("Claude Project seeded.")
+    except subprocess.CalledProcessError as e:
+        _err(f"Initial sync failed:\n{e.stderr.decode()}")
+        _info("You may need to run 'python3 scripts/mmw_tools.py sync_push init' manually.")
+        # Don't exit here, the config is still saved.
+
     summary()
 
 
