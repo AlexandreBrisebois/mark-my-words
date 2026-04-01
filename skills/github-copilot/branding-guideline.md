@@ -1,6 +1,6 @@
 # Brand Spec: Mark My Words
 
-Single source of truth for the blog's voice, identity, and visual system. All agents and the build prompt defer to this file.
+Single source of truth for the blog's voice and identity. All agents and the build prompt defer to this file.
 
 ---
 
@@ -77,7 +77,7 @@ Enforced at all times — flag and require removal:
 - **"I"** — for vulnerability and opinion
 - **Never** "I built" or "I achieved" alone — these read as credit-claiming without the reflective voice the brand requires
 
-
+---
 
 ## Topics
 
