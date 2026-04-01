@@ -1,66 +1,58 @@
 # Mark My Words (mmw)
 
-Mark My Words is a "Writers' Room" — a suite of specialized **GitHub Copilot Skills** designed to help you produce high-impact, long-form content while keeping your human voice at the center of the narrative.
+Mark My Words is a "Writers' Room" editorial suite designed to help you produce high-impact, long-form content while keeping your human voice at the center of the narrative.
 
-Designed for the modern technical blog, this system turns your Copilot chat into a strategic partnership with a team of editorial experts who maintain **Persistent Context** across your writing sessions.
+The project offers two distinct ways to interact with your editorial team. **Choose the model that best fits your workflow.**
 
 ---
 
-## Modular Specialists
+## Choose Your Interaction Model
 
-The Writers' Room is organized into specialized roles. Use **Flags** to unlock specific workflows and **Teacher Mode** (`--teach`) to learn the craft as you write.
+You can deploy Mark My Words as either a **Guided Agent Suite** or a **Modular Toolkit**.
 
-| Phase | Skill | Role | Key Flags |
+> [!IMPORTANT]
+> **Total Isolation:** These two options are completely independent entities. Changes to one (e.g., personalizing your profile) do not impact the other. We recommend selecting **one** model and deleting the other to maintain a clean environment.
+
+### Option A: Custom Agent Suite (Recommended)
+**Best for: Guided deep work and persona-driven editorial sessions.**
+- **Location**: `copilot/agents/`
+- **Summon**: Use standalone names like `@turing`, `@caret`, or the orchestrator `@mmw`.
+- **Experience**: The "Writing Room Director" (`@mmw`) manages the session flow, providing specialist handoffs and strategic guidance.
+
+### Option B: Modular Skills & Slash Commands
+**Best for: High-speed, manual command-style edits.**
+- **Location**: `copilot/skills/`
+- **Summon**: Use slash commands under the master skill, e.g., `@mmw /turing`, `@mmw /caret`.
+- **Experience**: A versatile toolkit where you manually invoke specific specialists for targeted tasks.
+
+---
+
+## Comparison Matrix
+
+| Feature | Option A: Custom Agents | Option B: Modular Skills |
+| :--- | :--- | :--- |
+| **Summon** | Standalone (@caret) | Slash Command (@mmw /caret) |
+| **Philosophy** | Writing Room (Persona-led) | Toolkit (Manual-led) |
+| **Isolation** | High (Self-contained) | High (Self-contained) |
+| **Token Usage** | Ultra-lean (Isolated Prompting) | Moderate (Shared Skill Buffer) |
+| **Discovery** | High (Appears in `@` list) | Moderate (Slash command autocomplete) |
+
+---
+
+## The Specialist Roster
+
+Regardless of the model you choose, your "Writing Room" consists of these specialized roles:
+
+| Phase | Specialist | Role | Key Capabilities |
 | :--- | :--- | :--- | :--- |
-| **Strategy** | `@mmw /compass` | Strategy Director | (Default) |
-| **Research** | `@mmw /turing` | Research & Grounding | `--audit`, `--fact-check` |
-| **Drafting** | `@mmw /caret` | Copy Editor & Voice | `--prfaq`, `--brief`, `--linkedIn`, `--teach` |
-| **Auditing** | `@mmw /mark` | Brand Guardian | `--teach` |
-| **Auditing** | `@mmw /devil` | Adversarial Auditor | `--damage`, `--lens [persona]`, `--teach` |
-| **Auditing** | `@mmw /echo` | Reader Persona Sim | `--lens executive`, `--lens builder`, `--teach` |
-| **Visuals** | `@mmw /prism` | Visual Brand | (Default) |
-| **Production** | `@mmw /press` | Production Editor | `--audit`, `--portfolio`, `--proof`, `--teach` |
-
----
-
-## The Writer's Workflow (End-to-End)
-
-Mark My Words is designed for a collaborative, iterative workflow. You lead the narrative; the skills provide the guardrails.
-
-### 1. Strategic Anchor — `@mmw /compass`
-Before writing, define your editorial strategy. **Compass** identifies the "Editorial Angle" and the **"Empty Chair"** (your specific reader persona).
-*   **Result**: A strategic snapshot that ensures your piece delivers value, not filler.
-
-### 2. Grounded Research — `@mmw /turing`
-Avoid the "hallucination trap." Use **Turing** to perform multi-perspective searches and surface reputable citations.
-*   **Flags**: Use `--audit` to fact-check an existing draft against the web.
-*   **Context**: Use `-compass` to align research with your strategic goals.
-
-### 3. Narrative Drafting — `@mmw /caret`
-Transform research into a high-impact story. **Caret** follows a strict **Story Arc**: Hook → Exploration → Insight → Deeper Dive → Reflection.
-*   **Context**: Mention other skills (e.g., `-compass -turing`) to pull in their persistent context.
-
-### 4. Brand & Persona Audits — `@mmw /mark`, `@mmw /echo`, `@mmw /devil`
-Subject your draft to rigorous critique before it hits the web:
-*   **Mark**: The Passive Brand Guardian. Flags "banned words" (like *furthermore* or *utilize*) and enforces the "Truth over Hype" principle.
-*   **Echo**: Reader simulation. Use `--lens executive` or `--lens builder` to find "bounce points" where readers lose interest.
-*   **Devil**: Adversarial auditing. Identifies unintended messages or reputation risks. Use `--damage` for a high-intensity audit.
-
-### 5. Final Production — `@mmw /prism` & `@mmw /press`
-The final polish for the technical web.
-*   **Prism**: Translates your draft into a focused visual prompt for **Gemini Image Pro**.
-*   **Press**: The Production Editor. Generates the final Hugo-ready `{slug}.md` file. It automatically integrates the visual snapshot from Prism.
-
----
-
-## Try This: Workflow Combinations
-
-Unlock the full power of the Writers' Room with these command patterns:
-
-*   **Strategic Start**: `@mmw /compass` → `@mmw /turing -compass`
-*   **Educational Draft**: `@mmw /caret --teach -compass -turing`
-*   **Audience Stress-Test**: `@mmw /echo --lens executive` → `@mmw /devil --damage`
-*   **The Final Mile**: `@mmw /prism` → `@mmw /press --proof`
+| **Strategy** | `compass` | Strategy Director | Sets editorial angle & "Empty Chair" persona. |
+| **Research** | `turing` | Research & Grounding | Multi-perspective search & fact-checking. |
+| **Drafting** | `caret` | Copy Editor & Voice | Narrative flow, high-impact drafting, hooks. |
+| **Auditing** | `mark` | Brand Guardian | Passive audit for tone, cadence, and banned words. |
+| **Auditing** | `devil` | Adversarial Auditor | Identifies credibility gaps & reputation risk. |
+| **Auditing** | `echo` | Audience Evaluator | Reader simulation (Executive vs. Builder). |
+| **Visuals** | `prism` | Visual Translator | Generates Gemini Image Pro visual prompts. |
+| **Production** | `press` | Production Editor | Hugo frontmatter, SEO, and final proofing. |
 
 ---
 
@@ -68,27 +60,18 @@ Unlock the full power of the Writers' Room with these command patterns:
 
 *   **Voice First**: AI is the assistant; the writer is the editor.
 *   **Calm Signal**: Minimalist, editorial, and warm content over hype and clickbait.
-*   **No Infrastructure**: No complex file hierarchies. Just you, your draft, and your skills.
+*   **Persistent Context**: Each specialist maintains its own "memory" in a companion file (e.g., `00_compass.md`), allowing for state preservation across sessions.
 
 ---
 
-## Cumulative Insights (The 00-Series)
+## Setup & Selection
 
-Each skill maintains its own "memory" in a companion file (e.g., `00_compass.md`). This allows for **Persistent Context** across chat sessions.
-
-1.  **State Loading**: Skills read their `00_` file at the start of every session.
-2.  **Cross-Skill Context**: Include context from any skill by using its name with a `-` prefix (e.g., `-mark`, `-devil`).
-3.  **Human Visibility**: You can always read these files to see the "why" behind the editorial guidance.
-
----
-
-## Setup
-
-1.  Open your project in VS Code with the GitHub Copilot extension.
-2.  Ensure the skills are located in `skills/github-copilot/`.
-3.  **Personalize Your Profile**: Edit `skills/github-copilot/profile.md` with your own name, website, and mission. MMW will automatically adopt this identity.
-4.  (Optional) **Adjust Your Style**: Modify `skills/github-copilot/brand-style.md` if you want to override the default "Calm Signal" principles.
-5.  Start a conversation in Copilot Chat by referencing the relevant skill (e.g., `@mmw /compass`).
+1.  **Choose Your Model**: Navigate to `copilot/agents/` (Option A) or `copilot/skills/` (Option B).
+2.  **Personalize Your Identity**:
+    -   If using **Agents**: Edit `copilot/agents/profile.md` and `copilot/agents/brand-style.md`.
+    -   If using **Skills**: Edit `copilot/skills/profile.md` and `copilot/skills/brand-style.md`.
+3.  **Clean Your Workspace**: Delete the directory (agents or skills) that you do not intend to use.
+4.  **Start Writing**: Open Copilot Chat and summon your chosen entity (e.g., `@mmw` for Agents or `@mmw /compass` for Skills).
 
 > [!NOTE]
 > Mark My Words is designed for long-form, "build-in-public" retrospectives and technical deep dives where expertise and vulnerability are the primary assets.
