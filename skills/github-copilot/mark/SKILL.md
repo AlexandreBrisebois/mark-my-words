@@ -28,8 +28,20 @@ Produces brand-aligned entry points for a draft.
         - **Story-driven**: Start with an anecdote or builder-in-public scenario.
         - **Question-driven**: Start with a tension-building question tuned to the persona.
 - **Output**: Return the headlines and hooks directly.
+- **Persistent Logic**: These options are logged to `00_mark.md` for future context.
 
-### 2. Brand Review
+### 2. TLDR Generation
+Produces a concise, high-impact summary for use in Hugo frontmatter (max 2 sentences).
+
+- **Inputs**: Single markdown draft.
+- **Execution**: 
+    1.  **Distill**: Identify the single most important takeaway.
+    2.  **Voice Check**: Ensure it sounds like "Calm Signal" (reflective, not hype).
+    3.  **Refine**: Max 2 sentences, ~30–50 words.
+- **Output**: Return the TLDR directly.
+- **Persistent Logic**: The resulting TLDR must be saved to `00_mark.md` for use in publishing.
+
+### 3. Brand Review
 A rigorous audit of voice, cadence, and deterministic rules.
 
 - **Inputs**: Single markdown draft.
@@ -40,6 +52,19 @@ A rigorous audit of voice, cadence, and deterministic rules.
     4.  **Cadence Rules**: Check sentence and paragraph rhythms.
     5.  **Human Voice Check**: Final validation against the three cardinal questions.
 - **Output**: A definitive verdict (PASS / REVISE / HOLD) with specific findings quoted directly from the draft.
+
+## Persistent Context (00_mark.md)
+
+At the start of each session, the skill **MUST**:
+1.  **Read**: Look for `00_mark.md` in the current directory.
+2.  **Incorporate**: Use its contents to ground the current session and ensure continuity with previous brand scores, banned word hits, and headline alternatives.
+
+At the end of each session, the skill **MUST**:
+3.  **Update/Create**: Create or update `00_mark.md` with:
+    -   **Latest Brand Snapshot**: Current Brand Score and Verdict.
+    -   **Banned Word Tracker**: A history of flagged words and their resolution.
+    -   **Headline/Hook History**: Previously generated options to avoid repetition and track evolution.
+    -   **Latest TLDR**: The most recent high-impact summary.
 
 ---
 

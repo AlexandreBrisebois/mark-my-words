@@ -26,6 +26,19 @@ Translates a draft into a single, focused visual prompt for Gemini Image Pro.
     - Synthesize into exactly one focused paragraph.
     - **No markdown formatting** (no headers, bold, bullets, or fences).
 - **Output**: **Return the prompt directly as plain text.**
+- **Persistent Logic**: The final prompt must be saved to `00_prism.md` for use in publishing.
+
+## Persistent Context (00_prism.md)
+
+At the start of each session, the skill **MUST**:
+1.  **Read**: Look for `00_prism.md` in the current directory.
+2.  **Incorporate**: Use its contents to ground the current session and ensure continuity with previous image prompts and visual brand audits.
+
+At the end of each session, the skill **MUST**:
+3.  **Update/Create**: Create or update `00_prism.md` with:
+    -   **Latest Visual Snapshot**: The most recent definitive image prompt and audit scores.
+    -   **Prompt History**: A log of previous prompts and their intended "Calm Signal" adherence.
+    -   **Visual Identity Notes**: Specific adjustments made to align with the visual brand.
 
 ### 2. Quick Audit
 Fast executive snapshot of visual brand health.

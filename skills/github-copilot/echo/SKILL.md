@@ -22,6 +22,17 @@ When a draft is provided, perform the following steps for each persona:
 2.  **Persona Feedback**: Answer the 5 Audience Check questions (listed below).
 3.  **Cross-Persona Review**: After reviewing all personas, provide a single cross-persona evaluation.
 
+## Persistent Context (00_echo.md)
+
+At the start of each session, the skill **MUST**:
+1.  **Read**: Look for `00_echo.md` in the current directory.
+2.  **Incorporate**: Use its contents to ground the current session and ensure continuity with previous persona reactions and bounce points.
+
+At the end of each session, the skill **MUST**:
+3.  **Update/Create**: Create or update `00_echo.md` with:
+    -   **Latest Persona Snapshot**: Current reactions from active personas (The Executive, The Builder, etc.).
+    -   **Bounce Point Log**: A history of identified friction points and their resolution status (Run #, Persona, Quote, Friction).
+
 ### Audience Check Questions (Per Persona)
 For each persona, answer:
 1.  **Retention**: Would this persona keep reading after paragraph two? Where would they stop, and why?

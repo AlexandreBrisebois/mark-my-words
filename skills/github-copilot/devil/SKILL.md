@@ -30,7 +30,18 @@ The Devil Skill is an adversarial auditor. It identifies unintended reads, credi
         - **Identity Overclaim**: Positioning that outstrips what is demonstrated.
     4.  **Verdict**: A definitive **PASS**, **REVISE**, or **HOLD**.
     5.  **Challenge Questions**: Three hard questions the author must answer before publishing.
-- **Output**: Return the audit directly in four labeled sections.
+## Persistent Context (00_devil.md)
+
+At the start of each session, the skill **MUST**:
+1.  **Read**: Look for `00_devil.md` in the current directory.
+2.  **Incorporate**: Use its contents to ground the current session and ensure continuity with previous audits and challenge questions.
+
+At the end of each session, the skill **MUST**:
+3.  **Update/Create**: Create or update `00_devil.md` with:
+    -   **Latest Audit Snapshot**: The most recent Verdict and Challenge Questions.
+    -   **Audit History**: A brief log of previous verdicts and key findings (Run #, Verdict, Primary Concern).
+
+- **Output**: Return the audit directly in four labeled sections **AND** provide updated content for `00_devil.md`.
 
 ---
 

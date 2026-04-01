@@ -29,6 +29,11 @@ When provided with a draft and feedback (or questions), provide targeted edits f
 When the `--full` flag is present, produce a complete, integrated version of the entire document.
 - **Execution**: Apply all Writing Rules and the Story Arc across the whole piece.
 
+### 3. Context Inclusion (Triggered by `-skill_name`)
+When a skill name with a `-` prefix is present in the prompt, read the corresponding persistent context file to ground the draft.
+- **Flags**: `-compass`, `-devil`, `-echo`, `-mark`, `-turing`.
+- **Action**: Locate and read `00_[skill_name].md` in the current directory.
+
 ---
 
 ## Caret Writing Framework
@@ -68,3 +73,18 @@ Every piece must follow this narrative progression:
 - **Citation Formatting**: Use inline numbering brackets (e.g., `[1]`) for facts sourced from research.
 - **Brand Consistency**: Ensure alignment with the **Calm Signal** aesthetic (minimalist, editorial, warm).
 - **Direct Output**: Provide the suggested edits or draft directly to the user/Copilot chat.
+
+## Persistent Context (00_caret.md)
+
+At the start of each session, the skill **MUST**:
+1.  **Read**: Look for `00_caret.md` in the current directory.
+2.  **Incorporate**: Use its contents to ground the current session and ensure continuity with the narrative arc and previous drafting progress.
+3.  **Include Extra Context**: If any of the flags (`-compass`, `-devil`, `-echo`, `-mark`, `-turing`) are specified:
+    -   **Read**: The corresponding `00_[skill].md` file.
+    -   **Synthesize**: Incorporate the external skill's latest snapshots or findings into the current drafting session.
+
+At the end of each session, the skill **MUST**:
+3.  **Update/Create**: Create or update `00_caret.md` with:
+    -   **Drafting Progress**: Which sections of the Story Arc are complete (Hook, Exploration, Insight, etc.).
+    -   **Meta-Drafting Log**: Notes on tone/voice adjustments and key transitions confirmed.
+    -   **Maturity Log**: A brief history of significant revisions (Run #, Key Focus).

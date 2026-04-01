@@ -22,6 +22,17 @@ The Compass Skill is an editorial strategist. It sets the direction for a piece 
     3.  **Research Roadmap**: Explicitly state what to focus on and what to avoid (for the Research phase).
     4.  **Strategic Context**: Define the PR/FAQ (Who, What, Why) and Cadence Context (if data is provided).
 
+## Persistent Context (00_compass.md)
+
+At the start of each session, the skill **MUST**:
+1.  **Read**: Look for `00_compass.md` in the current directory.
+2.  **Incorporate**: Use its contents to ground the current session and ensure continuity with previous strategic decisions.
+
+At the end of each session, the skill **MUST**:
+3.  **Update/Create**: Create or update `00_compass.md` with:
+    -   **Latest Snapshot**: The most recent Editorial Angle, Piece Type, and Strategic Snapshot.
+    -   **Maturity Log**: A brief history of changes (Run #, Key Pivots/Insights).
+
 ## Output Format (DIRECT)
 
 Return the following six sections directly:
@@ -43,4 +54,4 @@ Return the following six sections directly:
 -   **Builder Context**: Always maintain the perspective of someone building in public.
 -   **Decisive Verdicts**: Do not hedge. If an angle is weak, pivot it or say so.
 -   **Conciseness**: Output must be information-dense and actionable.
--   **No File Writing**: Provide output directly to the user/Copilot chat.
+-   **Persistence**: Always update `00_compass.md` with the latest strategic decisions.

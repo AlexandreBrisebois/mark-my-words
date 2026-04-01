@@ -10,6 +10,7 @@ The Turing Skill is specialized in **optimized, unopinionated search**. It surfa
 ## Parameters
 - `num_searches` (default: 3): Maximum number of search queries.
 - `num_fetches` (default: 5): Maximum number of web pages to fetch.
+- `-compass`: If present, read `00_compass.md` to ground the research in the editorial strategy.
 
 ## Core Philosophy
 - **Rigor & Curiosity**: Deeply explore the structure of a topic.
@@ -35,6 +36,19 @@ Targeted search for missing citations.
 - When an MD file is provided, identify "Ungrounded" claims.
 - Perform focused searches to find credible citations for those claims.
 - Update the document or provide the citations as an extension.
+
+## Persistent Context (00_turing.md)
+
+At the start of each session, the skill **MUST**:
+1.  **Read**: Look for `00_turing.md` in the current directory.
+2.  **Incorporate**: Use its contents to ground the current session and ensure continuity with previous research findings, citations, and fact-checks.
+3.  **Cross-Skill Context**: If the `-compass` flag is present, read `00_compass.md` to align research priorities with the Editorial Angle and Strategic Snapshot.
+
+At the end of each session, the skill **MUST**:
+3.  **Update/Create**: Create or update `00_turing.md` with:
+    -   **Research Findings Snapshot**: Current summary of findings.
+    -   **Citations List**: All sourced citations in canonical format.
+    -   **Fact-check Logs**: Results of previous fact-checks (Run #, Claim, Status, Source).
 
 ## Execution Rules
 - **No Fabrications**: Never fabricate citations; if no source is found, report it as ungrounded.
