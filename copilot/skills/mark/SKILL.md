@@ -29,5 +29,5 @@ The `mark` skill is the **Passive Brand Guardian**. It issues verdicts based on 
 - **Human Voice Check**: Ask the three brand-anchor questions before issuing PASS.
 
 ## Persistent Context
-- **Read at Start**: [00_mark.md](./00_mark.md) to track brand consistency.
-- **Update at End**: [00_mark.md](./00_mark.md) with latest audit history.
+- **Read at Start**: Look for `00_mark.md` in the same directory as the target document to track brand consistency.
+- **Update at End**: Create or update `00_mark.md` in the same directory as the target document with latest audit history.

@@ -37,5 +37,5 @@ Fast executive snapshot of visual brand health.
 All visual logic must adhere to the constraints in [Visual Brand Guidelines](../visual-brand.md).
 
 ## Persistent Context
-- **Read at Start**: [00_prism.md](./00_prism.md) to ground the session.
-- **Update at End**: [00_prism.md](./00_prism.md) with latest visual snapshot.
+- **Read at Start**: Look for `00_prism.md` in the same directory as the target document to ground the session.
+- **Update at End**: Create or update `00_prism.md` in the same directory as the target document with latest visual snapshot.

@@ -54,5 +54,5 @@ End with three non-binary questions. Surface the assumption or risk most worth e
 - **Wait for Draft**: Do not audit without content.
 
 ## Persistent Context
-- **Read at Start**: [00_devil.md](./00_devil.md) to ground the session.
-- **Update at End**: [00_devil.md](./00_devil.md) with latest verdict and challenges.
+- **Read at Start**: Look for `00_devil.md` in the same directory as the target document to ground the session.
+- **Update at End**: Create or update `00_devil.md` in the same directory as the target document with latest verdict and challenges.

@@ -26,8 +26,8 @@ The `press` skill is the **Production Editor**. It finalizes drafts for Hugo and
 
 ## Contextual Integration
 - **TLDR**: Integrate the final `tldr` from the draft's YAML block.
-- **Prism Snaps**: Reference [Prism Context](../prism/00_prism.md) for final snapshots during `--proof`.
+- **Prism Snaps**: Reference `00_prism.md` from the same directory as the target document for final snapshots during `--proof`.
 
 ## Persistent Context
-- **Read at Start**: [00_press.md](./00_press.md) to track audit history.
-- **Update at End**: [00_press.md](./00_press.md) with latest entity trends and slugs.
+- **Read at Start**: Look for `00_press.md` in the same directory as the target document to track audit history.
+- **Update at End**: Create or update `00_press.md` in the same directory as the target document with latest entity trends and slugs.

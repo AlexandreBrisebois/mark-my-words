@@ -25,13 +25,13 @@ The `caret` skill is the author's voice on the page. It transforms research into
    - `--teach`: Writing Insights. Read [Teach](./templates/teach.md).
 
 ## Cross-Skill Context Handling
-When context is provided via a `-` prefix, read the corresponding `00_` file:
-- `-compass`: [Compass Context](../compass/00_compass.md) for strategic anchoring.
-- `-turing`: [Turing Context](../turing/00_turing.md) for research findings.
-- `-mark`: [Mark Context](../mark/00_mark.md) to avoid brand violations.
-- `-echo`: [Echo Context](../echo/00_echo.md) for reader bounce points.
-- `-devil`: [Devil Context](../devil/00_devil.md) for reputation risks.
+When context is provided via a `-` prefix, read the corresponding `00_` file from the same directory as the target document:
+- `-compass`: `00_compass.md` for strategic anchoring.
+- `-turing`: `00_turing.md` for research findings.
+- `-mark`: `00_mark.md` to avoid brand violations.
+- `-echo`: `00_echo.md` for reader bounce points.
+- `-devil`: `00_devil.md` for reputation risks.
 
 ## Persistent Context
-- **Read at Start**: [00_caret.md](./00_caret.md) to ground the narrative.
-- **Update at End**: [00_caret.md](./00_caret.md) with latest drafting progress.
+- **Read at Start**: Look for `00_caret.md` in the same directory as the target document to ground the narrative.
+- **Update at End**: Create or update `00_caret.md` in the same directory as the target document with latest drafting progress.

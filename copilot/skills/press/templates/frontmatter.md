@@ -19,4 +19,4 @@ Generate the following fields:
 ## Output Generation (--proof)
 - Create `{slug}.md` in the current directory.
 - Merge the YAML block with the finalized draft content.
-- **Image Prompt**: Read `00_prism.md` for the final visual snapshot and generate `{slug}-image-prompt.md` formatted for DALL-E/Midjourney.
+- **Image Prompt**: Read `00_prism.md` from the same directory as the target document for the final visual snapshot and generate `{slug}-image-prompt.md` formatted for DALL-E/Midjourney.

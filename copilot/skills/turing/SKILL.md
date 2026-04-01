@@ -34,6 +34,6 @@ Universal logic is defined below. Specific payloads are loaded based on flags:
 ---
 
 ## Persistent Context
-- **Read at Start**: [00_turing.md](./00_turing.md).
-- **Strategic Alignment**: If `-compass` is present, read [Compass Context](../compass/00_compass.md) for target audience (Empty Chair).
-- **Update at End**: [00_turing.md](./00_turing.md) with latest findings and citations.
+- **Read at Start**: Look for `00_turing.md` in the same directory as the target document to ground the session.
+- **Strategic Alignment**: If `-compass` is present, read `00_compass.md` from the same directory as the target document for target audience (Empty Chair).
+- **Update at End**: Create or update `00_turing.md` in the same directory as the target document with latest findings and citations.

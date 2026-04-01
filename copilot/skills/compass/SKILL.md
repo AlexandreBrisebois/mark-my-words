@@ -37,5 +37,5 @@ The `compass` skill is the editorial strategist. It sets the direction for conte
 4. **Strategic Snapshot**: Who, What, Why.
 
 ## Persistent Context
-- **Read at Start**: [00_compass.md](./00_compass.md) to ground the session.
-- **Update at End**: [00_compass.md](./00_compass.md) with latest snapshots.
+- **Read at Start**: Look for `00_compass.md` in the same directory as the target document to ground the session.
+- **Update at End**: Create or update `00_compass.md` in the same directory as the target document with latest snapshots.

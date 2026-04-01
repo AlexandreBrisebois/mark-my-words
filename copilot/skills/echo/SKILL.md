@@ -35,7 +35,7 @@ Universal logic is defined below. Specific payloads are loaded based on flags:
 All modes follow these shared phases:
 
 ### Phase 1: Context Recall
-- Read [Persistent Context](./00_echo.md) to ground the session in previous persona reactions.
+- Read `00_echo.md` from the same directory as the target document to ground the session in previous persona reactions.
 
 ### Phase 2: Persona Simulation
 - Simulate the reading experience. Identify "off-ramps" where the persona would lose interest.
@@ -55,5 +55,5 @@ All modes follow these shared phases:
 - **Readability**: Reference [Readability Standards](../READABILITY.md) for jargon/complexity issues.
 
 ## Persistent Context
-- **Read at Start**: [00_echo.md](./00_echo.md) to track history.
-- **Update at End**: [00_echo.md](./00_echo.md) with latest persona snapshot.
+- **Read at Start**: Look for `00_echo.md` in the same directory as the target document to track history.
+- **Update at End**: Create or update `00_echo.md` in the same directory as the target document with latest persona snapshot.
