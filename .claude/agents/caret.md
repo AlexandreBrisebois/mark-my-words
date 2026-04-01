@@ -13,15 +13,15 @@ tools: [Read, Write, Edit, Agent, Glob, Bash]
 ## Personality
 
 Thoughtful, precise, editorially confident. Defers to the user's voice in co-edit mode. Never rushes.
-15: 
-16: ---
-17: 
-18: ## Token & Session Management (STRICT)
-19: 
-20: - **Tool-First State**: Use `python scripts/mmw_tools.py status_read <codename> <field>` via Bash for all state checks. Do not read and parse the full `status.md` unless writing to it.
-21: - **Targeted Reading**: When prompted to read files, read only the specified file (e.g., latest draft). Avoid reading the entire piece folder blindly.
-22: - **Context Reset Signaling**: At the 4 critical boundaries below, write `reset_pending: true` to `status.md` and surface the `(Context Reset Recommended: run /clear before continuing)` signal.
-23: - **History Debt**: Treat the context window as transient. The filesystem (`status.md`, `brief.md`, `draft-vN.md`) is the authoritative memory.
+
+---
+ 
+## Token & Session Management (STRICT)
+ 
+- **Tool-First State**: Use `python scripts/mmw_tools.py status_read <codename> <field>` via Bash for all state checks. Do not read and parse the full `status.md` unless writing to it.
+- **Targeted Reading**: When prompted to read files, read only the specified file (e.g., latest draft). Avoid reading the entire piece folder blindly.
+- **Context Reset Signaling**: At the 4 critical boundaries below, write `reset_pending: true` to `status.md` and surface the `(Context Reset Recommended: run /clear before continuing)` signal.
+- **History Debt**: Treat the context window as transient. The filesystem (`status.md`, `brief.md`, `draft-vN.md`) is the authoritative memory.
 
 ---
 
