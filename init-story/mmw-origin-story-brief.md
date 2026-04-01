@@ -1583,3 +1583,213 @@ in their respective layers.
   by model, by context, or by phrasing. Moving them out of the LLM
   layer removes an entire class of non-deterministic failure.
 
+---
+
+## Session 14 — The Hybrid Model: Claude Projects + API (add to the story)
+
+The system was efficient, but it was still expensive. Every time an agent read the codebase to gain context, the meter ran. API tokens are a consumption tax on reasoning. As the project grew, that tax began to scale.
+
+The design question: how do we shift the heavy computational burden — context loading, expansive brainstorming, and long-form generation — away from the metered API?
+
+The answer was an elegant architectural pivot: moving the thin-stub setup to a hybrid model. We shift the thinking to the flat-rate Claude Pro subscription via Claude Projects, while keeping the doing local.
+
+### Why this design achieves the goal
+
+**Token Efficiency and Cost Control**
+
+By keeping the heavy processing in the web UI (Claude Projects), we shield the budget from the runaway API costs that happen when local agents continuously read and re-read a large codebase. API tokens are strictly reserved for necessary system work: executing targeted tasks locally, running automated fixes, and validating code.
+
+We are buying leverage.
+
+**The Bidirectional Sync Loop**
+
+The linchpin is a thin-stub setup in `.claude/agents/`. The agents pull the latest state via `mmw_tools.py sync_pull` before acting and push updates with `sync_push` after completing a task. It prevents drift.
+
+When working in the Claude Project, the Web UI has the absolute latest context. When an agent acts locally, it forces a sync to ensure it doesn't overwrite the web session's progress. It guarantees a single source of truth across environments.
+
+**Separation of Concerns**
+
+The authoritative prompt instructions live in `.claude/agents-sync/`. Because these sync up to Project Knowledge, the web UI Claude and the local CLI agents share the exact same structural rules and persona definitions.
+
+We don't have to train them twice.
+
+### Where we need to be careful
+
+While the design is solid, there are failure points to watch for.
+
+Project Knowledge consumes the available context window even in the web UI. If the `sync_push` script starts throwing entire build directories or compiled assets into the Project, the web sessions will exhaust their limits fast. We must keep the synchronized footprint lean.
+
+Merge collisions are the other risk. If a file is tweaked locally while Claude is simultaneously generating an artifact for that same file in the web UI, the next sync might overwrite work. The logic needs to handle — or at least warn on — version conflicts.
+
+We have built a continuous loop between local execution and remote reasoning.
+
+### Why it matters (for the story)
+
+This iteration transforms the system from a cost center into a sustainable writing partner. It recognizes that reasoning is cheap in a flat-rate UI but expensive at the edge. The system is at its best when it uses the web for the heavy lifting and the local environment for high-fidelity execution.
+
+This is the bridge between the convenience of a web interface and the power of local automation.
+
+### Additional angle for Compass
+
+- **The hybrid model angle**: The difference between using an API for everything and using it for the right things. The constraint of the token meter pushed us to find a better architectural split. We didn't just save money; we built a more resilient sync loop between our thinking space and our building space.
+
+---
+
+## Session 15 — Strategic Context Management: The /clear Protocol (add to the story)
+
+As the multi-agent system matured and the pieces grew more complex, a new constraint surfaced: the "input tax" of the long-running Caret session. Every turn in a long writing project carried the token weight of every previous turn. The more we wrote, the more expensive it became to think.
+
+The design problem: how do we keep the orchestrator's window lean without losing the thread of the project?
+
+The answer was the **Strategic Context Reset Protocol** — a deliberate use of the `/clear` command at high-signal transition points, paired with a robust re-entry path via `mmw:bearings`.
+
+### Why this design achieves the goal
+
+**Token-Efficient Reasoning**
+
+By recommending a `/clear` at four strategic boundaries, we effectively reset the model's "memory bill" to zero. The previous phase's scaffolding — raw research data, iterative line-edits, or complex critique logic — is removed from the active window. This forces the model to focus purely on the next task using the persisted state on disk as its only source of truth.
+
+**The "Stateless" Design Payoff**
+
+MMW was built from the start to be stateless, with everything from piece status to draft history living in the filesystem. This iteration proved the value of that choice. Because the `status.md` and `brief.md` are the canonical memory, the conversation history is disposable. Clearing it doesn't break the logic; it purifies it.
+
+**Strategic Reset Points**
+
+We identified four "Clean Handoff" moments where the previous context becomes technical debt:
+1. **The Research-to-Draft Boundary** (post-Turing): Once research is on disk, the raw search history is noise.
+2. **The Draft-to-Review Boundary** (post-Phase 3): The draft is the new source of truth.
+3. **The Branding-to-Critique Boundary** (post-Mark loop): Critics should see the polished text with fresh eyes, not biased by the history of line-edits.
+4. **The Creative-to-Technical Boundary** (post-Revision): SEO and image prompt generation are deterministic tasks that don't need creative backstory.
+
+**The Re-entry Path: mmw:bearings**
+
+A `/clear` is only safe if you can find your way back. We standardized `mmw:bearings [codename]` as the re-entry command. It reads `status.md`, reports the current state, and restores the next-step prompt. It makes the transition from a "dirty" long session to a "clean" focused session feels like a single continuous motion.
+
+### Why it matters (for the story)
+
+This iteration represents a shift from "agentic persistence" to "agentic focus." We moved from trying to keep a single agent in context for an entire project to treating the context window as a ephemeral workspace.
+
+It proves that in a sophisticated multi-agent system, the file system is the only memory that matters. The context window is not a journal; it's a workbench. When you're done with one toolset, you clear the bench for the next.
+
+### Additional angle for Compass
+
+- **The workbench angle**: The difference between a conversation and a workflow. A conversation needs memory; a workflow needs focus. By using `/clear` strategically, we treat the LLM context not as a historical record of our chat, but as a clean workbench for the task at hand. Token efficiency isn't just about saving money; it's about increasing the signal-to-noise ratio of the reasoning.
+
+---
+
+## Session 16 — The Great Reversion: Local-First for Velocity (add to the story)
+
+The "Hybrid Model" with Claude Projects was a clever optimization but, in practice, it introduced a new class of friction: the sync tax. Every push and pull added seconds to the feedback loop. Every discrepancy between the web UI and the local CLI became a potential source of drift.
+
+The design question: is the token savings worth the cognitive load of a disjointed environment?
+
+The answer was a resounding **no**. We reverted the entire architecture to a pure, local-only CLI model.
+
+### Why this design achieves the goal
+
+**Absolute Source of Truth**
+The local filesystem is now the only reality. We moved away from "Sync Masters" and "Local Stubs." Every agent in `.claude/agents/` is now a full-fidelity specification, perfectly aligned with the "God-Source" prompts in `prompts/specs/`. There is no "syncing" — there is only execution.
+
+**Zero Latency Workflow**
+By removing the `sync_pull` and `sync_push` gates from the `mmw` critical path, we returned to a zero-latency development experience. The system is responsive, predictable, and fully autonomous within the terminal.
+
+**Token Efficiency via Tools, Not Sync**
+We realized that the real token savings didn't come from a shared web UI, but from the deterministic Python tools layer. The local agents are lean because they delegate high-token tasks (like history parsing and file indexing) to local scripts, not because they are offloading reasoning to a Claude Project.
+
+### Why it matters (for the story)
+
+This reversion is a story of "Developer Flow." It recognizes that for a technical writer building at the edge, even a few seconds of sync delay is a flow-breaker. The system is at its best when it is unencumbered by external state.
+
+We didn't just go back to where we were. We returned more disciplined — with cleaner specs, better tools, and a firm commitment to the local-first philosophy.
+
+---
+
+## Session 17 — The Standalone Project Agent: Infrastructure Decoupled (add to the story)
+
+The work done on the sync layer wasn't lost. It was just in the wrong place. We realized that the ability to link a local folder to a Claude Project is a universal utility, not an MMW feature.
+
+The design decision: extract the sync logic, generalize it, and rebirthe it as a standalone **Project Agent**.
+
+### What was built
+
+We moved the sync tools to `scripts/claude-project-tools/` and created a new, dedicated agent: **Project**. It responds to three simple commands:
+- `/project:init` — Links the workspace and creates the session context.
+- `/project:push` — Uploads the contents of a local `project/` directory to the cloud.
+- `/project:pull` — Downloads the cloud state back to the local `project/` directory.
+
+### Why it matters (for the story)
+
+This is a story of "Separation of Concerns." By moving the sync infrastructure into its own agent and its own folder, we decoupled the "Writing Room" (MMW) from the "Sync Layer" (Project Agent). 
+
+MMW stays clean, focused purely on the craft of writing. The Project Agent stays focused on the mechanics of workspace synchronization. If the sync logic ever needs to change — or if we want to use it for a different project entirely — we can do so without touching a single line of MMW logic.
+
+It proves that the best systems aren't monolithic; they are a collection of specialized tools that know how to stay out of each other's way.
+
+---
+
+## Session 18 — Governance: Hard Limits and Lean Gates (add to the story)
+
+The system was running locally, but "local" doesn't mean "infinite." We realized that even without API sync lag, we were still paying a tax — the tax of bloated context and rogue agent loops. An agent that searches the web twenty times or reads ten historical drafts is an agent that has lost its way.
+
+The design problem: how do we enforce discipline on a system that is designed to be autonomous?
+
+The answer was **Token Governance** — a set of hard architectural limits and "soft gates" that force the system to stay lean.
+
+### What was built
+
+**The 10/10 Research Budget**
+Turing, the researcher, was given a hard cap: 10 `WebSearch` queries and 10 `WebFetch` calls per pass. No exceptions. If it can't find the signal in twenty moves, more moves won't help. It forces the model to prioritize high-signal sources over high-volume data.
+
+**Targeted Reading Boundaries**
+We moved from "agents read the folder" to "agents read the slice." Mark, Devil, Echo, and Press were explicitly restricted to reading only the `brief.md` and the *current* `draft-vN.md`. They no longer see historical critiques or previous versions. They work only with the context they need to perform their specific role.
+
+**The reset_pending Handshake**
+We formalized the `/clear` recommendation into a protocol. Caret now writes `reset_pending: true` into `status.md` at four critical workflow boundaries. When the user resumes via `mmw:bearings`, the system checks for that flag. If a reset hasn't happened, it issues a warning. If it has, it clears the flag and confirms: `✓ Context reset verified (lean session active).`
+
+### Why it matters (for the story)
+
+This is a story of "Constraints as a Feature." We stopped treating the context window as a bottomless resource and started treating it as a transient, high-value workspace. 
+
+The budget isn't just about saving money; it's about forcing better reasoning. An agent that has to work within a 10/10 budget is an agent that thinks harder about its queries. An agent that only sees the current draft is an agent that isn't biased by the ghosts of previous feedback.
+
+We moved from building a system that *can* write to building a system that is *disciplined* about how it writes.
+
+### Additional angle for Compass
+
+- **The governance angle**: The difference between a system that works and a system that is governed. Governance isn't about stopping work; it's about setting the boundaries that make the work better. In a multi-agent system, the strongest tool you have is the ability to say "no more." 
+
+- **The ghost-free drafting angle**: By enforcing targeted reading, we ensure that each agent evaluates the work as it exists *now*, not as it existed in the previous turn. We removed the "historical bias" from the review loop, ensuring that Devil and Echo are always reacting to the latest signal, never the old noise.
+
+---
+
+## Session 19 — The Great Simplification: From Agents to Skills (add to the story)
+
+The multi-agent system was a masterclass in automation, but it carried a hidden cost: **orchestration bloat**. As the system grew, so did the context windows, the token usage, and the latency. We had built a high-fidelity editorial office, but to use it, the writer had to manage a complex flow and navigate a rigid file-based memory (`writers-room/`).
+
+The design question: how do we keep the specialized personas (Compass, Mark, Devil) without the "infrastructure tax"?
+
+The answer was a definitive pivot to **GitHub Copilot Skills**. We moved away from automated orchestration and returned to a conversation-centric, flexible model.
+
+### Why this design achieves the goal
+
+**Human-in-the-Loop Orchestration**
+Instead of a "Caret" agent deciding who runs next, the writer is the orchestrator. You call the skill you need, when you need it: `@mmw /compass` for strategy, `@mmw /mark` for brand guidance. This eliminates the "orchestrator overhead" and gives the writer absolute control over the creative sequence.
+
+**The "No Infrastructure" Philosophy**
+We deleted the `writers-room/` directory and all its nested complexity. MMW is no longer a "system you manage"—it is a suite of tools that follow you. You work in your current directory, and the skills anchor themselves to your draft.
+
+**Cumulative Insights (The 00-Series)**
+The shared file-based memory was replaced by **Persistent Context**. Each skill now maintains its own `00_<skill>.md` file in the working directory. These files act as "skill-specific memory," ensuring that Compass remembers your strategy and Mark remembers your voice without requiring a massive unified status file.
+
+### Why it matters (for the story)
+
+This transition is a story of "Aesthetic & Cognitive Minimalist." It recognizes that AI is at its best when it enhances the human writer, not when it attempts to replace the editorial flow with an automated pipeline. 
+
+We didn't lose the "Writers' Room." We just turned it into a high-performance toolkit. The personas are as sharp as ever, but they are now unencumbered by the machinery that was originally designed to support them.
+
+### Additional angle for Compass
+
+- **The simplification angle**: The difference between a "system" and a "toolkit." A system requires maintenance; a toolkit requires mastery. By moving to Skills, we reduced the "infrastructure to value" ratio to the absolute minimum.
+
+- **The piece-centric angle**: By moving from `writers-room/` to a single-piece-per-directory focus, we anchored the AI to the writer's actual context, not a project management schema. The "working directory" is the only context that matters.
+

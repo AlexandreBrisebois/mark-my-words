@@ -1,196 +1,83 @@
-# mark-my-words
+# Mark My Words (mmw)
 
-Mark My Words (mmw) is a multi-agent writing system built on Claude Code. It orchestrates a set of specialized agents — researcher, strategist, writer, critic, publisher — through a structured workflow to produce blog posts for [srvrlss.dev](srvrlss.dev).
+Mark My Words is a "Writers' Room" — a suite of specialized **GitHub Copilot Skills** designed to help you produce high-impact, long-form content while keeping your human voice at the center of the narrative.
 
-## How to use
+Built for [srvrlss.dev](https://srvrlss.dev), this system turns your Copilot chat into a strategic partnership with a team of editorial experts who maintain **Persistent Context** across your writing sessions.
 
-### Start a new piece
+---
 
-Trigger Caret with a topic string, a file path, or bullet brainstorm items:
+## The Writer's Journey
 
-```
-mmw write a post about building this writer's room
-mmw path/to/my-notes.md
-mmw - First observation about the topic / Second angle / Key constraint
-```
+You call each skill individually to iterate on your draft.
 
-Caret generates a codename, creates a piece folder, and writes `brief.md` from your intent. From there it runs the full workflow — Index checks your archive first, then Compass sets strategy, Turing researches, Caret drafts, and Mark reviews voice and headlines.
+### 1. Setting the North Star — `@mmw /compass`
+Before you write a word, use the **Compass** skill to define your editorial strategy.
+*   **What it does**: Identifies the "Editorial Angle" and the "Empty Chair" (the specific reader persona).
+*   **Persistent Insight**: Creates `00_compass.md` to anchor all future research and drafting decisions.
+*   **Context Sharing**: Use `-compass` as a flag in other skills (e.g., `@turing -compass`) to include this strategy.
+*   **Result**: A strategic snapshot that ensures your piece isn't just "filler" content.
 
-### Modes
+### 2. Grounding in Reality — `@mmw /turing`
+Avoid the "hallucination trap" by grounding your work in real research.
+*   **What it does**: Performs deep, multi-perspective searches and surfaces reputable citations.
+*   **Persistent Insight**: Maintains `00_turing.md` to track research findings and citable evidence across runs.
+*   **Result**: A grounding document (or inline notes) that provides the factual floor for your draft.
 
-**Manual (default)** — full control. Caret pauses at every decision point.
+### 3. Drafting with the Narrative Arc — `@mmw /caret`
+When it's time to put words on the page, the **Caret** skill follows a strict "Story Arc."
+*   **What it does**: Builds the narrative: **Hook → Exploration → Insight → Deeper Dive → Reflection**.
+*   **Persistent Insight**: Updates `00_caret.md` to track narrative progress and tone adjustments.
+*   **Result**: A draft built on "Calm Signal" aesthetics—minimalist, editorial, and warm.
 
-**Auto** — unattended. Caret runs the full pipeline and stops only at the human proof gate:
+### 4. Guarding the Brand — `@mmw /mark`
+Ensure every piece sounds like a human wrote it, not an AI.
+*   **What it does**: Flags "banned words," generates **TLDRs**, and scores the draft against the "Truth over Hype" principle.
+*   **Persistent Insight**: Logs brand scores and banned word hits in `00_mark.md` to ensure voice consistency.
+*   **Result**: PASS/REVISE verdicts, 3 Headline/Hook alternatives, and a brand-aligned TLDR.
 
-```
-mmw --auto write a post about observability in multi-agent systems
-```
+### 5. The Adversarial Audit — `@mmw /devil` & `@mmw /echo`
+Before you publish, subject your draft to rigorous critique.
+*   **Devil**: Acts as an "Accusation Auditor," identifying unintended reads or "humblebragging."
+*   **Echo**: Simulates reader personas (**The Executive**, **The Builder**) to find "bounce points."
+*   **Persistent Insight**: Both skills maintain history (`00_devil.md`, `00_echo.md`) to track recurring friction.
 
-**Auto-quick** — fast path for short posts or cheap first drafts. Skips Compass, Mark, Devil, and the revision window. Echo runs a lightweight audience check after the draft — if it flags a structural fit issue, you'll get one revise/skip choice before Press and Prism run. Produces a complete draft at low cost:
+### 6. Technical Polish — `@mmw /press` & `@mmw /prism`
+The final steps to get your piece ready for the web.
+*   **Press**: Generates Hugo YAML front matter (using `mark`'s TLDR) and runs a multi-persona SEO audit. Use the `--proof` flag to automate the creation of your final `{slug}.md` publication file.
+*   **Prism**: Translates your draft into a focused image prompt for **Gemini Image Pro**. The final prompt is persisted for use by the `press --proof` command.
+*   **Persistent Insight**: Maintains `00_press.md` and `00_prism.md` to track technical and visual versions.
+*   **Result**: A well-formed Hugo post (`{slug}.md`) and a dedicated image prompt file (`{slug}-image-prompt.md`).
 
-```
-mmw --auto --quick write a post about observability in multi-agent systems
-```
+---
 
-Use auto-quick when you need something concrete to react to before committing to a full pipeline run. After it completes, run `mmw [codename]` to continue in manual mode — the full pipeline picks up from the existing draft.
+## Core Philosophy
 
-**Deadline-constrained auto**: If a piece has a target publish date in `calendar.md` and it is fewer than 3 days away, auto mode activates the quick path automatically. Caret logs the reason in status.md.
+*   **Voice First**: AI is the assistant; the writer is the editor.
+*   **Calm Signal**: We prioritize minimalist, editorial, and warm content over hype and clickbait.
+*   **Persistent Insights**: Every skill learns from your draft, building a cumulative record of strategic and editorial decisions.
+*   **No Infrastructure**: No complex file hierarchies or CLI agents. Just you, your draft, and your skills.
 
-### Before the first draft
+---
 
-Before anything else, Index checks your archive for overlapping topics and produces a short report. You'll see four options:
+## Cumulative Insights (The 00-Series)
 
-- **[U] Update** — improve an existing post instead of writing a new one
-- **[D] Differentiate** — continue but sharpen the angle so it doesn't duplicate
-- **[P] Proceed** — no meaningful overlap, carry on
-- **[A] Abandon** — discard this piece (you'll be asked to type the codename to confirm)
+Each skill automatically creates and maintains a companion file in your current directory (e.g., `00_compass.md`). These files serve as the "memory" of your editorial room:
 
-### After Compass (manual only)
+1.  **State Loading**: When you call a skill, it first reads its `00_` file to understand previous context.
+2.  **State Saving**: At the end of every interaction, the skill updates its state, ensuring continuity across chat sessions.
+3.  **Cross-Skill Context**: You can include context from other skills by mentioning their names with a `-` prefix. 
+    *   **Example**: `@caret -compass -mark` will read your editorial strategy and brand guidelines before drafting.
+    *   **Available to Caret**: `-compass`, `-devil`, `-echo`, `-mark`, `-turing`.
+    *   **Available to Turing**: `-compass`.
+4.  **Human Visibility**: You can read these files to see the "why" behind the editorial guidance.
 
-After Compass sets direction, Caret surfaces a one-line notice and immediately starts Turing:
+---
 
-```
-Compass has set the direction: [one-sentence angle]
-Starting Turing — [S] to skip research.
-```
+## Setup
 
-On [S]: Turing is skipped and Caret drafts from the brief and compass-notes alone. To adjust the angle after Compass has run, use `mmw:compass [codename]` directly.
+1.  Open your project in VS Code with the GitHub Copilot extension.
+2.  Ensure the skills are located in `skills/github-copilot/`.
+3.  Start a conversation in Copilot Chat by referencing the relevant skill (e.g., `@mmw /compass`).
 
-### The Mark loop
-
-After the first draft, Mark reviews voice and brand alignment. The first pass is a **voice check** ("is this piece distinctly yours?"). Subsequent passes are **polish passes** (banned words, rhythm, pronouns). After each pass:
-
-- **[C] Co-edit** — Caret surfaces the exact lines that need attention, you edit the draft file directly, then type `mmw:done` to hand it back
-- **[R] Revise** — Caret revises based on Mark's notes without your direct edits
-- **[M] Move to critique** — exit the loop and send the current draft to Devil and Echo
-
-Your voice always takes precedence. If you edited a line, Caret won't silently rewrite it. There is no iteration cap — you decide when to move on.
-
-If Mark flags a structural issue, you'll see a **HOLD** instead. The loop exits immediately:
-
-- **[B] Revisit brief** — re-examine the premise (the angle is the problem, not the lines)
-- **[C] Co-edit** — take manual control of the draft
-- **[M] Move to critique** — proceed to Devil and Echo with the draft as-is
-
-In auto mode, HOLD also surfaces to you — it's the one interruption auto mode will make during the Mark pass. You can co-edit or skip it and continue.
-
-### Critique and the revision window
-
-After the draft clears the Mark loop, Devil and Echo run in parallel — Devil audits for unsupported claims, Echo checks audience fit through two named reader personas: **The Executive** (strategic CTO, reads for credibility signal) and **The Builder** (hands-on engineer, reads for "did they actually build it?").
-
-Caret surfaces the feedback files directly and waits:
-
-```
-Feedback files:
-  critique-vN.md (Devil)
-  audience-vN.md (Echo)
-
-  [C] Co-edit
-  [R] Revise
-  [T] Re-research
-  [F] Fact-check  ← only shown if Devil flagged credibility concerns
-  [P] Proceed to Press and Prism
-  [X] Prioritize — Caret synthesizes Must / Worth / Already Working Well
-```
-
-Read the files first. Use **[X] Prioritize** if you want Caret to synthesize the feedback into a structured triage before choosing an action.
-
-**[F] Fact-check**: Turing checks every draft claim against research.md and produces `fact-check-vN.md` with three sections — Confirmed, Ungrounded, Inaccurate. If a claim is ungrounded, you can run `mmw:turing [codename] --find-citation "[claim]"` to search for a supporting source. Caret reads the fact-check alongside Devil and Echo feedback in the combined revision pass.
-
-**Single-persona mode**: Steer Echo to focus on one persona — `mmw:echo [codename] --persona "The Executive"` — when your brief specifies the primary audience.
-
-After revising, you can run a brand re-alignment check on the updated draft before moving to publish prep — select **[B] Brand check** from the post-revision menu. Outcomes:
-
-- **PASS** → `[L] Back to draft` or `[P] Proceed to Press and Prism`
-- **REVISE** → `[C] Co-edit` / `[R] Revise` / `[P] Proceed` — then same [L]/[P] choice
-- **HOLD** → `[B] Revisit brief` / `[C] Co-edit` / `[P] Proceed`
-
-### Publish prep
-
-Press and Prism run in parallel: Press writes the Hugo front matter and SEO notes, Prism produces the image prompt.
-
-### Declare it done
-
-When you're happy with the draft:
-
-```
-mmw:proof [codename]
-```
-
-Caret runs a pre-flight check (draft, SEO, slug, image prompt all present), writes `final.md`, copies it to `writers-room/published/[slug].md`, copies `image-prompt.md` to `writers-room/published/[slug]-image-prompt.md`, and archives the piece.
-
-### Resume anytime
-
-Sessions can be interrupted and resumed. Pick up where you left off:
-
-```
-mmw:bearings [codename]
-```
-
-Caret reads `status.md`, reports what's done, what's outstanding, and proposes the next step — but never advances automatically. You give the instruction.
-
-## Sub-agent shortcuts
-
-Each shortcut bypasses Caret and goes directly to the named agent:
-
-| Shortcut | Agent | What it does |
-|---|---|---|
-| `mmw:turing [codename]` | Turing | Research pass on the active piece |
-| `mmw:turing [codename] --fact-check` | Turing | Fact-check draft claims against research.md |
-| `mmw:turing [codename] --find-citation "[claim]"` | Turing | Search for a citation, append to fact-check-vN.md |
-| `mmw:devil [codename]` | Devil | Accusation audit on the latest draft |
-| `mmw:echo [codename]` | Echo | Audience check (both personas) on the latest draft |
-| `mmw:echo [codename] --persona "The Executive"` | Echo | Audience check — The Executive only |
-| `mmw:echo [codename] --persona "The Builder"` | Echo | Audience check — The Builder only |
-| `mmw:press [codename]` | Press | SEO audit + Hugo front matter for the latest draft |
-| `mmw:prism [codename]` | Prism | Image prompt for the latest draft |
-| `mmw:compass [codename]` | Compass | Strategic direction (or next post ideas if no codename) |
-| `mmw:mark [codename]` | Mark | Brand review on the latest draft |
-| `mmw:cadence` | Cadence | Editorial calendar state and cadence suggestions |
-| `mmw:index [codename]` | Index | Overlap check (or portfolio SEO audit if no codename) |
-| `mmw:bearings [codename]` | Caret inline | Session orientation — handled inline by Caret |
-
-## How to run the build
-
-Point Claude Code at the build prompt:
-
-```
-prompts/mmw-build-prompt.md
-```
-
-This builds the full project scaffold, all agent files, and supporting docs from the specs in `prompts/specs/`.
-
-## Spec structure
-
-All build specs live in `prompts/specs/`. Each file is independently editable.
-
-| File | Covers |
-|---|---|
-| `specs/flow.md` | Workflow, phases, protocols, file schema, constraints |
-| `specs/agent-caret.md` | Caret — orchestrator + writer |
-| `specs/agent-mark.md` | Mark — brand + voice |
-| `specs/agent-compass.md` | Compass — strategist |
-| `specs/agent-devil.md` | Devil — critique |
-| `specs/agent-turing.md` | Turing — research + fact-check |
-| `specs/agent-echo.md` | Echo — audience (The Executive, The Builder) |
-| `specs/agent-press.md` | Press — publisher |
-| `specs/agent-prism.md` | Prism — visual brand |
-| `specs/agent-index.md` | Index — archivist |
-| `specs/agent-cadence.md` | Cadence — scheduler |
-
-## Making changes
-
-- **Add a new agent**: create `specs/agent-newname.md`, add it to the tool scoping table in `mmw-build-prompt.md`, rebuild that agent.
-- **Change a phase or protocol**: edit `specs/flow.md` only. Agent specs reference it but don't own it.
-- **Change an agent's behavior**: edit `specs/agent-X.md` only, then rebuild that one agent from its spec.
-- **Rebuild a single agent**: tell Claude Code to read `specs/agent-X.md` and regenerate `.claude/agents/X.md`.
-
-## Repo layout
-
-```
-prompts/
-├── mmw-build-prompt.md     ← build orchestrator
-└── specs/                  ← one spec per agent + flow spec
-.claude/agents/             ← generated agent files (Claude Code subagents)
-writers-room/               ← generated content, brand files, piece folders
-```
+> [!NOTE]
+> Mark My Words is designed for long-form, "build-in-public" retrospectives and technical deep dives where expertise and vulnerability are the primary assets.

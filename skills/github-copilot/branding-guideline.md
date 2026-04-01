@@ -1,6 +1,6 @@
 # Brand Spec: Mark My Words
 
-Single source of truth for the blog's voice, identity, and visual system. All agents and the build prompt defer to this file.
+Single source of truth for the blog's voice and identity. All agents and the build prompt defer to this file.
 
 ---
 
@@ -76,21 +76,6 @@ Enforced at all times — flag and require removal:
 - **"We"** — for capability and success (shared achievement)
 - **"I"** — for vulnerability and opinion
 - **Never** "I built" or "I achieved" alone — these read as credit-claiming without the reflective voice the brand requires
-
----
-
-## Visual Brand
-
-**Aesthetic name**: Calm Signal — minimalist, editorial, warm.
-
-**Color palette**:
-| Role | Hex |
-|---|---|
-| Background | `#F7F5F0` (warm off-white) |
-| Accent | `#2D6A4F` (calm green) |
-| Text | `#1A1A18` (near-black ink) |
-
-**Image style**: Abstract and architectural imagery. No stock-photo humans, no literal illustrations. One focused plain-paragraph prompt per piece — zero markdown formatting in image-prompt.md.
 
 ---
 
