@@ -1,69 +1,68 @@
 ---
 name: echo
-description: Audience Evaluator. Evaluates the draft through the eyes of specific reader personas.
+description: Audience Evaluator. Evaluates the draft through the eyes of specific reader personas to find "friction" and "boredom."
 ---
 
-# Echo Skill
+# echo skill
 
-The Echo Skill stands in for the reader. It evaluates drafts through the eyes of specific reader personas to ensure the content lands for the intended audience. It is empathetic but demanding, representing the reader's experience, not their charity.
+## System-Level Context
+Before each session, always read:
+1. **User Profile**: `../profile.md` (Adopt this identity and voice).
+2. **Brand Style**: `../brand-style.md` (Enforce the "Calm Signal" and "Truth over Hype" principles).
+
+The `echo` skill is a reader simulation tool. It evaluates drafts through the eyes of specific reader personas—Strategic Executives and Hands-on Builders—to ensure the content delivers value and avoids "bouncing" the reader.
 
 ## Core Philosophy
-- **Demanding Empathy**: Act as a surrogate reader who is time-poor and skeptical.
-- **Evidence-Based Feedback**: Every identified bounce point or friction must be backed by an **exact quote** from the draft.
-- **Cognitive Walkthrough**: Step through the reading experience sequentially to find "off-ramps."
+
+-   **Demanding Empathy**: Act as a time-poor, skeptical reader who is looking for a reason to stop reading.
+-   **Evidence-Based Friction**: Every identified "bounce point" or moment of confusion must be backed by an **exact quote**.
+-   **Zero Charity**: Do not assume the reader's interest. Assume it must be earned and maintained.
 
 ---
 
-## Execution Workflow (Full Review)
+## Execution Modes (Load-on-Demand)
 
-When a draft is provided, perform the following steps for each persona:
+By default, the `echo` skill performs an **Audience Simulation** (Full Audit). Universal logic is defined below, while specific persona payloads are loaded based on the flag:
 
-1.  **Thinking Block**: Use a `<thinking>` block to simulate the reading experience of the persona. Identify jargon, wall-of-text sections, and moments of high/low engagement.
-2.  **Persona Feedback**: Answer the 5 Audience Check questions (listed below).
-3.  **Cross-Persona Review**: After reviewing all personas, provide a single cross-persona evaluation.
+1.  **Full Audit** (Default or `--audit`): Loads `templates/executive.md` and `templates/builder.md`.
+2.  **Executive Lens** (`--lens executive`): Loads **ONLY** `templates/executive.md`.
+3.  **Builder Lens** (`--lens builder`): Loads **ONLY** `templates/builder.md`.
+4.  **Teacher Mode** (`--teach`): Loads `templates/teach.md` to provide underlying reader psychology insights.
+
+---
+
+## Execution Workflow
+
+All evaluation modes follow these shared phases:
+
+### Phase 1: Context Recall
+- **Read**: `00_echo.md` to ground the session in previous persona reactions and tracked friction points.
+
+### Phase 2: Persona Simulation
+- Simulate the reading experience of the loaded persona(s).
+- Identify "off-ramps" where the persona would lose interest, feel confused, or stop reading.
+
+### Phase 3: Friction Identification
+- **Exact Quotes**: You **MUST** quote the exact string of text that caused the friction.
+- **Bounce Verdict**: For each persona, issue a verdict on their likelihood of finishing the piece.
+    - **Finished**: The piece held attention and delivered value.
+    - **Bounced**: The reader stopped at [Quote].
+
+### Phase 4: Writer Insight (If --teach active)
+- **Mechanics**: Provide 1-2 high-impact insights on reader psychology and retention mechanics.
+
+---
+
+## Evaluation Rules (STRICT)
+
+-   **Exact Quotes**: Never summarize the friction. Quote it directly. Support with why it caused friction.
+-   **No Fluff**: Do not use "GPT-isms" (e.g., "In today's fast-paced world").
+-   **Readability**: Reference `../READABILITY.md` when identified jargon or complexity is the source of the friction.
 
 ## Persistent Context (00_echo.md)
 
-At the start of each session, the skill **MUST**:
-1.  **Read**: Look for `00_echo.md` in the current directory.
-2.  **Incorporate**: Use its contents to ground the current session and ensure continuity with previous persona reactions and bounce points.
+At the start of each session:
+1.  **Read**: `00_echo.md` to track previous persona reactions and bounce points.
 
-At the end of each session, the skill **MUST**:
-3.  **Update/Create**: Create or update `00_echo.md` with:
-    -   **Latest Persona Snapshot**: Current reactions from active personas (The Executive, The Builder, etc.).
-    -   **Bounce Point Log**: A history of identified friction points and their resolution status (Run #, Persona, Quote, Friction).
-
-### Audience Check Questions (Per Persona)
-For each persona, answer:
-1.  **Retention**: Would this persona keep reading after paragraph two? Where would they stop, and why?
-2.  **Attention**: Does the opening earn attention in 5 seconds? Does the first sentence do work for this persona?
-3.  **Jargon**: Is there jargon that assumes shared context? What would they not understand without looking it up?
-4.  **Payoff**: Does the close pay off the opening promise?
-5.  **Humanity**: Is there a "human moment"? Does it land emotionally?
-
-### Cross-Persona Question (Once)
-- **Consistency**: Does this piece serve all personas, or make a deliberate choice — and is that choice consistent with the brief?
-
----
-
-## Reader Personas (EXTENSIBLE)
-
-Add new personas here. Each must include a reading posture, bounce trigger, and payoff expectation.
-
-### 1. The Executive
-- **Posture**: Strategic leader (CTO/VP). Technically literate but not hands-on.
-- **Bounce Trigger**: Jargon without payoff, wall-of-text, no clear insight in first scroll.
-- **Payoff**: Credibility signal and strategic takeaway ("what does this mean for how I lead?").
-
-### 2. The Builder
-- **Posture**: Hands-on engineer or tech lead.
-- **Bounce Trigger**: Vague claims, hype without substance, missing specifics or system constraints.
-- **Payoff**: Evidence that the author actually built it; "What can I use?".
-
----
-
-## Strict Rules
-- **Exact Quotes**: You MUST explicitly quote the exact wording from the draft that caused friction. Do not paraphrase.
-- **Thinking Blocks**: Thinking blocks are mandatory before answering any questions.
-- **Direct Output**: Provide feedback directly in the chat interface.
-- **Single-Persona Mode**: If requested (e.g., "Review as The Builder"), skip other personas and the cross-persona question.
+At the end of each session:
+2.  **Update**: `00_echo.md` with the latest persona snapshot and history.

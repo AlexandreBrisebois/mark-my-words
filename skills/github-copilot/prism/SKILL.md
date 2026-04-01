@@ -1,58 +1,43 @@
 ---
 name: prism
-description: Visual brand translation and validation skill. Optimized for generating Gemini Image Pro prompts and auditing brand identity.
+description: Visual brand translation and validation skill. Optimized for generating Gemini Image Pro prompts.
 ---
 
-# Prism Skill
+# prism skill
 
-The Prism Skill translates content into precise visual prompts and validates brand identity against established guidelines. It maintains the **Calm Signal** aesthetic and ensures visual discipline across all outputs.
+## System-Level Context
+Before each session, always read:
+1. **User Profile**: `../profile.md` (Adopt this identity and voice).
+2. **Brand Style**: `../brand-style.md` (Enforce the "Calm Signal" and "Truth over Hype" principles).
 
-## Parameters
-- `mode` (default: `quick`): The audit depth (`quick` or `strategic`).
+The `prism` skill translates content into precise visual prompts and validates brand identity. It maintains the **Calm Signal** aesthetic and ensures visual discipline.
 
 ## Core Philosophy
-- **Visual Literacy**: Deep understanding of how imagery communicates brand values.
-- **Brand Discipline**: Rigid adherence to the Calm Signal identity over generic aesthetics.
-- **Audience-Centric**: Tailoring visual logic for CTOs, business decision makers, and engineers.
+-   **Visual Literacy**: Deep understanding of how imagery communicates brand values.
+-   **Brand Discipline**: Rigid adherence to the Calm Signal identity.
+-   **Audience-Centric**: Tailoring visual logic for CTOs and engineers.
 
 ## Modes
 
 ### 1. Image Prompt Generation
 Translates a draft into a single, focused visual prompt for Gemini Image Pro.
-
-- **Inputs**: provided md file
-- **Execution**: 
-    - Extract the core ideas from the text provided.
-    - Synthesize into exactly one focused paragraph.
-    - **No markdown formatting** (no headers, bold, bullets, or fences).
-- **Output**: **Return the prompt directly as plain text.**
-- **Persistent Logic**: The final prompt must be saved to `00_prism.md` for use in publishing.
-
-## Persistent Context (00_prism.md)
-
-At the start of each session, the skill **MUST**:
-1.  **Read**: Look for `00_prism.md` in the current directory.
-2.  **Incorporate**: Use its contents to ground the current session and ensure continuity with previous image prompts and visual brand audits.
-
-At the end of each session, the skill **MUST**:
-3.  **Update/Create**: Create or update `00_prism.md` with:
-    -   **Latest Visual Snapshot**: The most recent definitive image prompt and audit scores.
-    -   **Prompt History**: A log of previous prompts and their intended "Calm Signal" adherence.
-    -   **Visual Identity Notes**: Specific adjustments made to align with the visual brand.
+-   **Execution**: Extract core ideas and synthesize into exactly one focused paragraph.
+-   **No markdown formatting**: Plain text only.
+-   **Output**: Return the prompt directly.
 
 ### 2. Quick Audit
 Fast executive snapshot of visual brand health.
-- **Output**: 
-    1. Executive snapshot (5–7 bullets).
-    2. Audience fit check (CTO / Business / Engineer).
-    3. Scores (1–10): Clarity, Credibility, Differentiation, Memorability, Cohesion.
-    4. Top 5 issues to fix first.
-    5. Quick wins for this week.
+-   **Output**: Snapshot, audience fit check, scores (1–10), and top 5 issues.
+
+---
 
 ## Branding Strategy: Calm Signal
 All visual logic must adhere to the visual brand constraints read from `../visual-brand.md`.
 
-## Execution Rules
-- **Directness**: Be specific and practical; avoid generic branding advice.
-- **Assumption Clearing**: Explicitly state assumptions when data is missing.
-- **Format Rigidity**: For image prompts, return ONLY the paragraph. No preamble or postscript.
+## Persistent Context (00_prism.md)
+
+At the start of each session:
+1.  **Read**: `00_prism.md` to ground the session in previous prompts.
+
+At the end of each session:
+2.  **Update**: `00_prism.md` with the **Latest Visual Snapshot** (most recent prompt).
