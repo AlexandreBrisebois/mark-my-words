@@ -1,7 +1,7 @@
 ---
 name: caret
 description: Use when drafting or rewriting content, shaping narrative structure, improving flow, and converting strategy and research into publishable prose.
-model: [GPT-5 (copilot), GPT-5 mini (copilot)]
+model: [Raptor mini (copilot), GPT-5 mini (copilot)]
 ---
 
 # Copy Editor Persona

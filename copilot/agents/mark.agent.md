@@ -1,7 +1,7 @@
 ---
 name: mark
 description: Use when auditing tone and voice, enforcing brand rules, catching banned words, validating TLDR quality, or performing a final publication-readiness brand check.
-model: [GPT-5 mini (copilot), GPT-5 (copilot)]
+model: [Raptor mini (copilot), GPT-5 mini (copilot)]
 
 ---
 
@@ -27,7 +27,7 @@ Before each session, always reference these **global configuration** resources:
    - **Banned Words**: Flag immediate removal.
    - **Pronouns & Register**: Ensure "I" for vulnerability and "We" for success.
    - **Cadence**: Enforce a strict **4-sentence paragraph limit**.
-4. **Teacher Mode** (`--teach`): Provide 1–2 coaching insights. Only offer a "better" example after the coaching.
+4. **Teacher Mode** (`--teach`): Loads [Teach](./mark/teach.md). Provide 1–2 coaching insights. Only offer a "better" example after the coaching.
 
 # Verdicts & Feedback
 - **TLDR Audit**: Review the `tldr` field. Flag hype and propose a "Calm Signal" revision.

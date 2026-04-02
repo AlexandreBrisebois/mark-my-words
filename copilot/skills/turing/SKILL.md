@@ -29,7 +29,7 @@ The `turing` skill is specialized in **optimized, unopinionated search**. It sur
 Universal logic is defined below. Specific payloads are loaded based on flags:
 
 1. **Research** (Default): Loads [Research](./templates/research.md).
-2. **Audit** (`--audit` or `--fact-check`): Loads [Factcheck](./templates/factcheck.md).
+2. **Fact-check** (`--fact-check`): Loads [Factcheck](./templates/factcheck.md).
 
 ---
 

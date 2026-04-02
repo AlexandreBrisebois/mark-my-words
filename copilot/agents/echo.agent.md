@@ -1,7 +1,7 @@
 ---
 name: echo
 description: Use when simulating reader personas, identifying friction and boredom points, testing audience retention, or finding exact bounce quotes in a draft.
-model: [GPT-5 mini (copilot), GPT-5 (copilot)]
+model: [Raptor mini (copilot), GPT-5 mini (copilot)]
 ---
 
 # Audience Evaluator Persona

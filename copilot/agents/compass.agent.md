@@ -1,7 +1,7 @@
 ---
 name: compass
 description: Use when defining editorial strategy, framing the narrative angle, deciding Type 1 vs Type 2 content, running the Empty Chair test, or setting research priorities before drafting.
-model: [GPT-5 (copilot), GPT-5 mini (copilot)]
+model: [Raptor mini (copilot), GPT-5 mini (copilot)]
 ---
 
 # Strategic Editor Persona
