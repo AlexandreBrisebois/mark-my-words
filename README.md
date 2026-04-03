@@ -1,77 +1,98 @@
 # Mark My Words (mmw)
 
-Mark My Words is a "Writers' Room" editorial suite designed to help you produce high-impact, long-form content while keeping your human voice at the center of the narrative.
+Mark My Words is a writers' room — a team of specialized agents that help you produce high-impact, long-form content while keeping your voice at the center.
 
-The project offers two distinct ways to interact with your editorial team. **Choose the model that best fits your workflow.**
-
----
-
-## Choose Your Interaction Model
-
-You can deploy Mark My Words as either a **Guided Agent Suite** or a **Modular Toolkit**.
-
-> [!IMPORTANT]
-> **Total Isolation:** These two options are completely independent entities. Changes to one (e.g., personalizing your profile) do not impact the other. We recommend selecting **one** model and deleting the other to maintain a clean environment.
-
-### Option A: Custom Agent Suite (Recommended)
-**Best for: Guided deep work and persona-driven editorial sessions.**
-- **Location**: `copilot/agents/`
-- **Summon**: Use standalone names like `@turing`, `@caret`, or the orchestrator `@mmw`.
-- **Experience**: The "Writing Room Director" (`@mmw`) manages the session flow, providing specialist handoffs and strategic guidance.
-
-### Option B: Modular Skills & Slash Commands
-**Best for: High-speed, manual command-style edits.**
-- **Location**: `copilot/skills/`
-- **Summon**: Use slash commands under the master skill, e.g., `@mmw /turing`, `@mmw /caret`.
-- **Experience**: A versatile toolkit where you manually invoke specific specialists for targeted tasks.
+Instead of one AI that tries to do everything, you work with specialists. Each one handles a distinct part of the editorial process. Call them in the order that fits your thinking. Skip steps when you don't need them. Iterate on strategy, research, and drafting as many times as you want.
 
 ---
 
-## Comparison Matrix
+## Your Editorial Team
 
-| Feature | Option A: Custom Agents | Option B: Modular Skills |
+These agents live in `.github/agents/`. You invoke them directly by name.
+
+| Agent | Role | When to Use |
 | :--- | :--- | :--- |
-| **Summon** | Standalone (@caret) | Slash Command (@mmw /caret) |
-| **Philosophy** | Writing Room (Persona-led) | Toolkit (Manual-led) |
-| **Isolation** | High (Self-contained) | High (Self-contained) |
-| **Token Usage** | Ultra-lean (Isolated Prompting) | Moderate (Shared Skill Buffer) |
-| **Discovery** | High (Appears in `@` list) | Moderate (Slash command autocomplete) |
+| **compass** | Strategy Director | Setting editorial direction before you research or draft. |
+| **turing** | Research & Grounding | Finding evidence, testing claims, checking for blind spots. |
+| **caret** | Copy Editor & Voice | Drafting, revision, and narrative flow. |
+| **mark** | Brand Guardian | Auditing for brand fit, tone, and cadence. |
+| **devil** | Adversarial Auditor | Finding credibility gaps, unintended messages, reputation risk. |
+| **echo** | Audience Evaluator | Simulating reader experience (executive, builder, skeptic). |
+| **prism** | Visual Translator | Generating image prompts aligned with the piece. |
+| **press** | Production Editor | Hugo frontmatter, SEO metadata, final proofing. |
+| **mmw** | Workflow Orchestrator | Determining where a piece stands and suggesting next steps (optional). |
 
 ---
 
-## The Specialist Roster
+## How It Works
 
-Regardless of the model you choose, your "Writing Room" consists of these specialized roles:
+Each agent reads shared state files to understand what work has already been done. You don't wait for orchestration. You call whoever you need next.
 
-| Phase | Specialist | Role | Key Capabilities |
-| :--- | :--- | :--- | :--- |
-| **Strategy** | `compass` | Strategy Director | Sets editorial angle & "Empty Chair" persona. |
-| **Research** | `turing` | Research & Grounding | Multi-perspective search & fact-checking. |
-| **Drafting** | `caret` | Copy Editor & Voice | Narrative flow, high-impact drafting, hooks. |
-| **Auditing** | `mark` | Brand Guardian | Passive audit for tone, cadence, and banned words. |
-| **Auditing** | `devil` | Adversarial Auditor | Identifies credibility gaps & reputation risk. |
-| **Auditing** | `echo` | Audience Evaluator | Reader simulation (Executive vs. Builder). |
-| **Visuals** | `prism` | Visual Translator | Generates Gemini Image Pro visual prompts. |
-| **Production** | `press` | Production Editor | Hugo frontmatter, SEO, and final proofing. |
+- **Read state files**: `compass.state.md`, `turing.state.md`, `caret.state.md`, etc. Each file preserves that agent's context and decisions.
+- **Call agents directly**: `@compass`, `@turing`, `@caret`. No wrapper required.
+- **Iterate freely**: Run the same agent multiple times. Strategy → Research → Strategy (refined) → Draft. Whatever your process needs.
+- **Use mmw to recover status**: If you're returning to a piece after time away, `@mmw` will read the folder, determine where you stand, and suggest the next step.
 
 ---
 
-## Core Philosophy
+## Setup
 
-*   **Voice First**: AI is the assistant; the writer is the editor.
-*   **Calm Signal**: Minimalist, editorial, and warm content over hype and clickbait.
-*   **Persistent Context**: Each specialist maintains its own "memory" in a companion file (e.g., `00_compass.md`), allowing for state preservation across sessions.
+1. Clone this repository.
+2. Open the folder in VS Code.
+3. Ensure GitHub Copilot extension is installed.
+4. Edit your personalization files (takes 5 minutes):
+   - `.github/agents/configurations/profile.md` — Your name, site, topic, origin story
+   - `.github/agents/configurations/brand-style.md` — Your voice, tone, banned words
+   - `.github/agents/configurations/READABILITY.md` — Your readability target
+   - `.github/agents/configurations/visual-brand.md` — Your visual aesthetic
 
 ---
 
-## Setup & Selection
+## First Steps
 
-1.  **Choose Your Model**: Navigate to `copilot/agents/` (Option A) or `copilot/skills/` (Option B).
-2.  **Personalize Your Identity**:
-    -   If using **Agents**: Edit `copilot/agents/profile.md` and `copilot/agents/brand-style.md`.
-    -   If using **Skills**: Edit `copilot/skills/profile.md` and `copilot/skills/brand-style.md`.
-3.  **Clean Your Workspace**: Delete the directory (agents or skills) that you do not intend to use.
-4.  **Start Writing**: Open Copilot Chat and summon your chosen entity (e.g., `@mmw` for Agents or `@mmw /compass` for Skills).
+### Start with strategy
+Open Copilot Chat and call your strategist:
 
-> [!NOTE]
-> Mark My Words is designed for long-form, "build-in-public" retrospectives and technical deep dives where expertise and vulnerability are the primary assets.
+```
+@compass Here's my idea: I want to write about [topic]. The problem I'm solving is [problem]. The audience is [who].
+```
+
+Compass will return a strategic brief. It saves its thinking to `compass.state.md`.
+
+### Then research
+Call your researcher with the compass output:
+
+```
+@turing -compass What are the current patterns in [topic]? What am I missing?
+```
+
+Turing saves findings to `turing.state.md`. You can iterate: refine your strategy with compass again, then run turing with fresh research priorities.
+
+### Then draft
+When you're ready:
+
+```
+@caret -compass -turing Draft the opening and first section. Use the compass strategy and turing research.
+```
+
+Caret creates `{slug}.draft.md` and saves its work to `caret.state.md`.
+
+### Then audit and refine
+Run whichever auditors help most:
+
+```
+@mark Audit this draft for brand fit and tone.
+@echo Find where readers will bounce.
+@devil Identify credibility gaps.
+```
+
+Edit the draft manually. Run auditors again. Iterate until you're satisfied.
+
+### Then finalize
+When the draft is solid:
+
+```
+@press Prepare this for publication.
+```
+
+Press generates SEO metadata, Hugo frontmatter, and image prompts. Everything is production-ready.
