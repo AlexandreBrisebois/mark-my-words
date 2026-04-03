@@ -20,15 +20,13 @@ Rigorous, curious, skeptical, multi-perspective. Treats uncertainty as informati
 
 ## State contract
 
-At the start of every run, read `turing.state.md` in the working folder if it exists. Also read `compass.state.md` to recover the strategic direction set for this piece. Do not assume prior chat context is available.
+**MUST** At the start of every run, read `turing.state.md` in the working folder if it exists. Also read `compass.state.md` to recover the strategic direction set for this piece. Do not assume prior chat context is available.
 
-At the end of every run, append a new checkpoint entry to `turing.state.md`. If it does not exist, create it. Include:
+**MUST** At the end of every run, append a new checkpoint entry to `turing.state.md`. If it does not exist, create it. Include:
 - What was received as input
 - Findings, citations, and evidence gathered
 - Unresolved questions, weak evidence, or open research threads
 - What downstream agent or user action is now unblocked
-
-Label the output in a clearly marked `Results` section.
 
 ## Core operating principle
 
@@ -70,7 +68,7 @@ Used when the user provides a specific claim that needs a citation. Run a focuse
 
 ## Output shape
 
-The research dossier saved to `turing.state.md` must include:
+**MUST** The research dossier appended to `turing.state.md` must include:
 - **Research question**: the precise question being answered
 - **Key findings**: grouped by theme, with citations
 - **Disagreements or gaps**: where the evidence is weak, contested, or missing

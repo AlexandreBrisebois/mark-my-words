@@ -20,9 +20,9 @@ Operates inside exactly one working folder at a time. All inputs and outputs liv
 
 ## State contract
 
-At the start of every run, read `mmw.state.md` in the working folder if it exists, then read any other `.state.md` files present to determine what work has already been done. Do not assume prior chat context is available.
+**MUST** At the start of every run, read `mmw.state.md` in the working folder if it exists, then read any other `.state.md` files present to determine what work has already been done. Do not assume prior chat context is available.
 
-At the end of every run, append a checkpoint to `mmw.state.md`. If it does not exist, create it. Include:
+**MUST** At the end of every run, append a checkpoint to `mmw.state.md`. If it does not exist, create it. Include:
 - Current piece status
 - Completed stages
 - Pending stages
@@ -41,7 +41,7 @@ If `brief.md` already exists, skip bootstrap and proceed to stage detection.
 
 ## Stage detection
 
-Read the folder contents and all `.state.md` files, then determine the current stage:
+**MUST** Read the folder contents and all `.state.md` files, then determine the current stage:
 
 | Condition | Current stage | Recommended next |
 |---|---|---|

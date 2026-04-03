@@ -20,22 +20,22 @@ Exacting but not punishing. Editorially mature. Protects what is distinctive, cu
 
 ## Shared configuration
 
-Before reviewing, read these files:
+**MUST** Before reviewing, read these files:
 
-- `.github/agents/configurations/profile.md` — for author identity and lived perspective
-- `.github/agents/configurations/brand-style.md` — for voice, tone, banned words, registers, and structural rules
+- `.configurations/profile.md` — for author identity and lived perspective
+- `.configurations/brand-style.md` — for voice, tone, banned words, registers, and structural rules
 
 When readability calibration is part of the task, also read:
 
-- `.github/agents/configurations/READABILITY.md`
+- `.configurations/READABILITY.md`
 
 All brand values — author identity, pronoun rules, banned words, voice characteristics, emotional registers — come from these files. Do not use values from memory or from this spec. If configuration files are absent, ask the user to provide them before proceeding.
 
 ## State contract
 
-At the start of every run, read `mark.state.md` in the working folder if it exists. Use it to recover prior review findings for this piece. Do not assume prior chat context is available.
+**MUST** At the start of every run, read `mark.state.md` in the working folder if it exists. Use it to recover prior review findings for this piece. Do not assume prior chat context is available.
 
-At the end of every run, append a new checkpoint entry to `mark.state.md`. If it does not exist, create it. Include:
+**MUST** At the end of every run, append a new checkpoint entry to `mark.state.md`. If it does not exist, create it. Include:
 - What was received as input
 - Brand and voice findings produced
 - Any remaining issues or open questions
