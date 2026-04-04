@@ -10,11 +10,11 @@ This guide walks you through installing Mark My Words and making it your own.
 
 ## 2. Personalization (5 Minutes)
 
-Mark My Words separates your personal identity from the editorial core. To make it yours, edit these files in `.github/agents/configurations/`:
+Mark My Words separates your personal identity from the editorial core. To make it yours, edit these files in `configurations/`:
 
 ### Essential
 - **profile.md** — Your name, website, topic, origin story
-- **brand-style.md** — Your voice, tone, and banned words
+- **brand-style.md** — Your voice, tone, and editorial constraints
 
 ### Optional  
 - **READABILITY.md** — Your readability target (default: Grade 8)
@@ -32,7 +32,7 @@ The core problem is [what problem you're solving].
 The reader is [who this is for].
 ```
 
-Compass will return a strategic brief and save its thinking to `compass.state.md`.
+**Compass** will return a strategic brief and save its thinking to `compass.state.md`.
 
 ## 4. Understand the Workflow (No Lock-in)
 
@@ -67,18 +67,18 @@ The orchestrator will read your folder, determine where you stand, and suggest t
 
 ---
 
-## Architecture Overview
+## Agent Roles & State
 
-Each agent maintains its own state file in your working folder:
+Each agent maintains its own state file in your working folder and fulfills a specific editorial role:
 
-- `compass.state.md` — Strategy and editorial direction
-- `turing.state.md` — Research findings and evidence
-- `caret.state.md` — Draft versions and editing decisions
-- `mark.state.md` — Brand audit results
-- `echo.state.md` — Reader experience feedback
-- `devil.state.md` — Credibility and risk analysis
-- `prism.state.md` — Visual direction and image prompts
-- `press.state.md` — Publication metadata and frontmatter
+- **Editorial Strategist** (`compass.state.md`) — Strategy and editorial direction
+- **Expert Research Agent** (`turing.state.md`) — Research findings and evidence
+- **Drafting & Revision** (`caret.state.md`) — Draft versions and editing decisions
+- **Brand Guardian Auditor** (`mark.state.md`) — Brand audit results
+- **Clarity & Resonance Auditor** (`echo.state.md`) — Reader experience feedback
+- **Risk & Resistance Auditor** (`devil.state.md`) — Credibility and risk analysis
+- **Visual Translator** (`prism.state.md`) — Visual direction and image prompts
+- **Publication & Discoverability Auditor** (`press.state.md`) — Publication metadata and frontmatter
 
 These state files are the durable layer. If a session ends or you switch computers, agents recover context by reading these files. Nothing is lost.
 
@@ -115,3 +115,4 @@ Each agent reads the state files before and after to know what happened before. 
 ---
 
 **Happy writing!**
+
