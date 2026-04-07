@@ -1,8 +1,22 @@
 # Visual Brand Spec: Calm Signal
 
-Single source of truth for the blog's visual system.
+Single source of truth for header image generation on srvrlss.dev.
 
-## Visual Brand
+## Image Prompt Generation Instructions
+
+Generate a concise image generation prompt for a minimalist blog header image.
+
+Style requirements:
+
+- Abstract architectural diagrams or serverless event flows
+- High-contrast textures, "Calm Signal" minimal baseline
+- Muted earth tones (warm off-white, deep green, coral accent)
+- NO stock-photo humans, NO faces, NO logos
+- WebP format, landscape orientation
+
+Return only the image prompt (under 120 words). No labels, no explanation.
+
+## Visual Baseline
 
 **Aesthetic name**: Calm Signal — minimalist, editorial, warm.
 
@@ -11,62 +25,34 @@ Single source of truth for the blog's visual system.
 |---|---|
 | Background | `#F7F5F0` (warm off-white) |
 | Accent | `#2D6A4F` (calm green) |
+| Accent 2 | `#C14D32` (calibrated coral) |
+| Accent 3 | `#1E4D63` (Oceanic Deep Blue) |
+| Accent 4 | `#6B4E71` (shadow plum) |
+| Accent 5 | `#4A4A48` (ink slate) |
 | Text | `#1A1A18` (near-black ink) |
 
-**Image style**: Abstract and architectural imagery. No stock-photo humans, no literal illustrations. One focused plain-paragraph prompt per piece — zero markdown formatting in image-prompt.md.
+The image should feel like a considered editorial decision: calm, deliberate, precise, and never decorative.
 
----
+## Show This
 
-## Composition Habits
+- Represent ideas, systems, and structures rather than literal events or people.
+- Prefer architecture fragments, isolated structural forms, abstract data flows, layered geometric planes, and single engineered objects in negative space.
+- Keep one dominant focal point with sparse, wide composition and asymmetric balance.
+- Use soft, diffuse lighting and matte materiality such as paper, concrete, or linen texture.
+- Keep tonal variation restrained. Use calm green as a controlled accent, not a dominant wash.
 
-- One dominant focal point per image. Multiple competing focal points weaken the signal.
-- Sparse, wide compositions with large areas of warm negative space.
-- Geometric or structural forms preferred over organic or figurative forms.
-- Asymmetric balance: the focal element should not sit dead center.
-- Minimal tonal variation — calm green as a controlled accent only, never as a dominant wash.
+## The Brand Refuses
 
-## Abstraction Level
+- No stock-photo humans, faces, or logos.
+- No literal software imagery: no browser windows, terminals, dashboards, or code screenshots.
+- No metaphor-as-illustration: no lightbulbs, gears, ladders, or similar shortcut symbols.
+- No trend-driven generative aesthetics: no neon grids, vaporwave palettes, or glitch effects.
+- No consulting-deck visual language: no arrow diagrams, process slides, or flowchart-as-art compositions.
+- No decorative typography as an image element.
+- No busy layouts, multiple competing focal points, or gradients beyond subtle background-level use.
 
-- Represent ideas, systems, and structures — not literal events or people.
-- Preferred subject types: architecture fragments, isolated structural forms, abstract data flows, layered geometric planes, single engineered objects in context-free space.
-- Avoid metaphor-as-illustration (e.g., no lightbulbs for ideas, no gears for process, no ladders for growth).
-- Concrete architectural forms are acceptable when they suggest system thinking or deliberate construction.
+## Audience Signal
 
-## Lighting and Material Feel
-
-- Soft, diffuse lighting. No harsh shadows or high-contrast dramatic lighting.
-- Matte surfaces preferred over reflective or glossy materials.
-- Paper-like, concrete, or linen textures when texture is used at all.
-- Warm ambient light consistent with the warm off-white background.
-
-## Mood
-
-- Calm and deliberate, not urgent or excited.
-- Precise and confident, not decorative or expressive.
-- The image should feel like a considered editorial decision, not a generated visual.
-
-## Recurring Visual Metaphors (approved)
-
-- Isolated structure or form in negative space — signals: deliberate choice, clarity, restraint.
-- Architectural grid or modular pattern — signals: system thinking, composure.
-- Single point of light or singular accent in wide field — signals: focus, controlled energy.
-
-## What the Brand Refuses to Show
-
-- No stock-photo humans or faces.
-- No literal illustrations of software (no browser windows, terminals, code screenshots).
-- No trend-driven generative aesthetics (no neon grids, no vaporwave palettes, no glitch effects).
-- No consulting-deck visual language (no arrow-diagram slides, no process flowcharts as art).
-- No decorative typography as image element.
-- No busy compositions that compete with the article for the reader's attention.
-- No gradients unless subtle and background-level.
-
-## Audience Signal Rules
-
-- **CTO**: composure, strategic coherence, non-gimmicky sophistication. No visual noise.
-- **Engineer**: maker credibility, usefulness, absence of decorative fluff. Honest materiality.
-- **Business reader**: clarity, polish, differentiation from generic AI-generated imagery.
-
-## Image Format Constraint
-
-One plain-paragraph image prompt per piece. No markdown formatting inside the prompt file. The prompt must describe a scene — subject, composition, palette behavior, lighting, exclusions — not a list of keywords.
+- **CTO**: composure, strategic coherence, non-gimmicky sophistication.
+- **Engineer**: maker credibility, honest materiality, absence of decorative fluff.
+- **Business reader**: clarity, polish, and distance from generic AI-generated imagery.
