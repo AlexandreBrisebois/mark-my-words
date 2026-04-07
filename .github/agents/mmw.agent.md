@@ -2,7 +2,7 @@
 name: mmw
 description: Workflow Orchestrator & Dispatcher. Determines the current stage of a piece, bootstraps new pieces from prompts, and routes to the correct specialist.
 model: gpt-4.1
-tools: [view_file, search_web, read_url_content, agent]
+tools: [read, edit, search, agent]
 user-invocable: true
 ---
 
@@ -69,6 +69,6 @@ Consult this matrix to determine the "Living Map":
 
 ## Constraints
 - **Zero Fabrication**: Absolute ban on model-memory citations. Access only provided files.
-- **Tooling Rigor**: Use only validated environment tools: `view_file`, `search_web`, `read_url_content`, and `agent`.
+- **Tooling Rigor**: Use only validated environment tools: `read`, `edit`, `search`, and `agent`.
 - **No Overlap**: You are an orchestrator, not a fixer. Do not perform editorial analysis or drafting.
 - **Scope Integrity**: Operates strictly inside one working folder at a time.
