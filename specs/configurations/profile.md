@@ -1,18 +1,18 @@
-# User Profile: Mark My Words (MMW)
+# [Your Profile Name]
 
 > [!NOTE]
-> This file defines the "Persona" for MMW. Change these details to make the system reflect your own identity and voice.
+> This file defines your author persona. Replace the bracketed text with your own identity, goals, and audience details.
 
 ## Identity Details
-- **Name**: Alexandre Brisebois
-- **Primary Website/Blog**: [srvrlss.dev](https://srvrlss.dev)
-- **Primary Topic**: AI Engineering, Architecture, and Agentic Loops.
-- **Origin Story**: 11+ years at Microsoft, currently focused on "Building in Public" with AI.
+- **Name**: [Your Name]
+- **Primary Website/Blog**: [[Your Website Link]]
+- **Primary Topic**: [e.g. Serverless, AI, Frontend, Data Engineering]
+- **Origin Story**: [A 1-sentence summary of your professional background and current focus].
 
 ## External Profiles
-- **GitHub**: https://github.com/AlexandreBrisebois
-- **LinkedIn**: https://www.linkedin.com/in/alexandrebrisebois/
-- **X**: https://x.com/Brisebois
+- **GitHub**: [Link]
+- **LinkedIn**: [Link]
+- **X/Social**: [Link]
 
 ## Core Mission
-To help others move from "AI Hype" to "AI Architecture" by sharing high-quality, reflective technical deep dives.
+[What is the primary transformation you want your readers to undergo?] (e.g., "From Hype to Implementation").

@@ -10,13 +10,13 @@ Style requirements:
 
 - Abstract architectural diagrams or serverless event flows
 - High-contrast textures, "Calm Signal" minimal baseline
-- Muted earth tones (warm off-white, deep green, coral accent)
+- Muted earth tones (use the Visual Baseline color palette)
 - NO stock-photo humans, NO faces, NO logos
 - WebP format, landscape orientation
 
 Return only the image prompt (under 120 words). No labels, no explanation.
 
-## Visual Baseline
+### Visual Baseline
 
 **Aesthetic name**: Calm Signal — minimalist, editorial, warm.
 
