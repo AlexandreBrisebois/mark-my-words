@@ -19,7 +19,12 @@
 - Bold one key phrase per section. `>` blockquotes for insights. 
 - Lead sections with conclusions (inverted pyramid).
 
-## 2. Voice and Tone
+## 2. Human Voice Check
+1. Could only this author have written it?
+2. Is every claim anchored in a specific observation?
+3. Any sentence that sounds like filler?
+
+## 3. Voice and Tone
 
 - **Reflective**: Exploratory, contemplative, and warm. Curiosity is our compass, not a map.
 - **Expert-Vulnerable**: Admitting unknowns while standing by experience-backed claims. Share where you are currently "stuck" or "lost on purpose."
@@ -28,17 +33,18 @@
 - **Emotional Blend**: Reflective-vulnerable with quietly urgent curiosity.
 - **Confidence**: Comes from specificity and technical "maker-honesty," not from tone.
 
-## 3. Precision Narrative Architecture
+## 4. Precision Narrative Architecture
 
 - **Narrative-First**: **NO BULLET POINTS** in the main body of drafts. Use full, narratively-written sentences to force logical cohesion and eliminate fragmented thinking.
 - **Bottom Line On Top (BLOT)**: Front-load the conclusion. Ensure the reader understands the core insight immediately.
 - **Active Voice**: Subjects must perform actions. If the prose sounds like a corporate press release or AI-generic, rewrite it.
-- **Brevity & Rhythm**: Target sentences < 20 words. Use short, common words for complex subjects. Vary rhythm to maintain human engagement.
+- **Brevity & Rhythm**: Target sentences < 20 words. Use short, common words for complex subjects. Never use the dash (—) or hyphen (-) to join independent clauses. Force punctuation to define the rhythm. Vary rhythm to maintain human engagement.
 - **Target Clarity**: Smart Grade 8. (Ref: `configurations/READABILITY.md` for metrics).
 - **Zero-Tolerance Words**: Eliminate *utilize, leverage, game-changing, synergy, very, extremely, robust, furthermore, moreover, additionally, significant, nearly, probably*.
+- **Additive Connectors**: Swap "but" for "and" to maintain momentum and build consensus. Strike out "minimizers" and "filler prefaces" like *just, sorry, to be honest,* or *actually*. These words signal hesitation; removing them converts a suggestion into a leadership conviction.
 - **Density**: Max 4 sentences per paragraph. One central idea per paragraph. Use "I" for lived experience and "we" for shared technical capability.
 
-## 4. Emotional Registers
+## 6. Emotional Registers
 
 | Register | When to Use | Sounds Like |
 |---|---|---|
@@ -50,7 +56,7 @@
 
 Default: reflective-vulnerable with urgent curiosity. Never fake a register.
 
-## 5. Voice Characteristics
+## 7. Voice Characteristics
 
 | Trait | This | Not That |
 |---|---|---|
@@ -61,12 +67,7 @@ Default: reflective-vulnerable with urgent curiosity. Never fake a register.
 | **Scenario-driven** | "Imagine for a moment you are tasked with..." | Abstract generalities |
 | **Maker-honest** | A brief aside about a real experiment, used sparingly for texture | Self-congratulatory project narration or forced metaphor |
 
-## 6. Human Voice Check
-1. Could only this author have written it?
-2. Is every claim anchored in a specific observation?
-3. Any sentence that sounds like filler?
-
-## 7. Channel Defaults
+## 8. Channel Defaults
 
 | Channel | Tone | Pronoun | Length | Key Rule |
 |---|---|---|---|---|
