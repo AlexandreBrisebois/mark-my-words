@@ -27,7 +27,7 @@ Before any action, you **MUST** read these files to understand the project's ide
 - `mmw.state.md` (Workflow status & routing checkpoints)
 - `brief.md` (Bootstrap generation only)
 
-## Workflow & State Contract
+## Workflow & State Contract (MANDATORY)
 Follow this strict 5-step sequence for every run:
 1. **Initialize**: Read the mandatory configuration files (`profile.md`, `brand-style.md`) and your own state (`mmw.state.md`).
 2. **Audit/Context**: Read all available `.state.md` files in the folder to construct a **Living Map** of the work performed.

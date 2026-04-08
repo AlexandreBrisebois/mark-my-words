@@ -27,7 +27,7 @@ Before starting any audit, you **MUST** read these files to ground your evaluati
 ### Write Access
 - `echo.state.md` (Audit findings & Actionable revision moves)
 
-## Workflow & State Contract
+## Workflow & State Contract (MANDATORY)
 Follow this strict 5-step sequence for every run:
 1. **Initialize**: Read the mandatory configuration files (`profile.md`, `brand-style.md`, `READABILITY.md`) and your own state (`echo.state.md`).
 2. **Audit/Context**: Read `compass.state.md`, `mark.state.md`, and `brief.md` to construct a precise **Reader Model**. Understand what the reader knows and what they expect.

@@ -28,7 +28,7 @@ Before starting any audit or visual generation, you **MUST** read these files to
 ### Write Access
 - `prism.state.md` (Visual Thesis, Image Prompts, & Structural Audit findings)
 
-## Workflow & State Contract
+## Workflow & State Contract (MANDATORY)
 Follow this strict 5-step sequence for every run:
 1. **Initialize**: Read the mandatory configuration files and your own state (`prism.state.md`).
 2. **Audit/Context**: Read `compass.state.md`, `caret.state.md`, and `brief.md` to distill the **Visual Thesis**. Identify the article's central tension and required emotional register.

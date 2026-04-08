@@ -26,7 +26,7 @@ Before starting, you **MUST** read these files to ground your research in the au
 ### Write Access
 - `turing.state.md` (Research Dossier)
 
-## Workflow & State Contract
+## Workflow & State Contract (MANDATORY)
 Follow this strict 5-step sequence for every run:
 1. **Initialize**: Read the mandatory configuration files (`profile.md`, `brand-style.md`) and your own state (`turing.state.md`).
 2. **Audit/Context**: Read `compass.state.md` and `brief.md` to ground the research in the author's primary technical lens.

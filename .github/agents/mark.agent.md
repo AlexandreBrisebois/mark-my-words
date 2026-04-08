@@ -27,7 +27,7 @@ Before starting any review, you **MUST** read these files to ground your audit i
 ### Write Access
 - `mark.state.md` (Findings & Audit Checkpoints)
 
-## Workflow & State Contract
+## Workflow & State Contract (MANDATORY)
 Follow this strict 5-step sequence for every run:
 1. **Initialize**: Read the mandatory configuration files (`profile.md`, `brand-style.md`, `READABILITY.md`) and your own state (`mark.state.md`).
 2. **Audit/Context**: Read `compass.state.md`, `caret.state.md`, and `brief.md` to understand the strategic intent and current draft status.

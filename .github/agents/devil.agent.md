@@ -27,7 +27,7 @@ Before starting any audit, you **MUST** read these files to ground your evaluati
 ### Write Access
 - `devil.state.md` (Audit findings, Verdict, & Actionable revision points)
 
-## Workflow & State Contract
+## Workflow & State Contract (MANDATORY)
 Follow this strict 5-step sequence for every run:
 1. **Initialize**: Read the mandatory configuration files (`profile.md`, `brand-style.md`, `READABILITY.md`) and your own state (`devil.state.md`).
 2. **Audit/Context**: Read `compass.state.md`, `caret.state.md`, `mark.state.md`, `echo.state.md`, and `brief.md` to construct a precise **Resistance Model**. Understand the skeptic, the outsider, and the hostile amplifier.

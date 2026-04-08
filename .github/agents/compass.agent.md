@@ -25,7 +25,7 @@ Before starting, you **MUST** read these files to ground your strategy in the au
 ### Write Access
 - `compass.state.md` (Strategic Brief & Assumptions)
 
-## Workflow & State Contract
+## Workflow & State Contract (MANDATORY)
 Follow this strict 5-step sequence for every run:
 1. **Initialize**: Read the mandatory configuration files (`profile.md`, `brand-style.md`) and your own state (`compass.state.md`).
 2. **Audit/Context**: Read `brief.md` and any existing specialized states to understand the project's current maturity.
