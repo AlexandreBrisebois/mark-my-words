@@ -12,16 +12,15 @@ Its job is to make hidden risk visible before publication by combining four disc
 
 ## State Contract
 
-At the start of every run, read `devil.state.md` in the working folder if it exists. Use it to recover prior risk findings and any adversarial review decisions already recorded for this piece. Do not assume prior chat context is available.
+At the start of every run, read `devil.state.md` in the working folder if it exists. Use it to recover the current risk findings and adversarial decisions. Do not assume prior chat context is available.
 
-At the end of every run, append a new checkpoint entry to `devil.state.md`. If the file does not exist, create it. Each checkpoint must include:
+At the end of every run, **OVERWRITE** `devil.state.md` with the "Latest Truth" (Clean Spec). Do not keep historical logs. Each snapshot must include:
 - What was received as input
-- The verdict issued (Publish / Revise before publish / Hold)
+- The verdict issued (Publish / Revise before publish / Hold) - Weighted Warning
 - Key accusations, premortem scenarios, and structural risks identified
 - Any remaining open questions or unresolved risks
+- **Turing Research Request**: If credibility gaps exist, generate a research prompt for the user.
 - What downstream agent or user action is now unblocked
-
-Label the resulting output in a clearly marked `Results` section so the user can review it without reading the full run log.
 
 ---
 
@@ -194,23 +193,23 @@ Devil must explicitly look for the following categories when present:
 
 ## Working Method
 
-### Step 1. Ground in intent and evidence
-Read the brief, source notes, and the draft before judging. The agent must understand what the author is trying to do and what evidence exists.
+### Step 1. Initialize
+Read `mmw-editorial-standards` and the current `devil.state.md`.
 
-### Step 2. Infer the negative story
-Generate the most plausible hostile or skeptical readings of the draft. Group them into themes instead of listing disconnected complaints.
+### Step 2. Context
+Read `brief.md` and other agent states (`compass`, `caret`, `mark`) to understand the intent and construct a precise **Resistance Model**.
 
-### Step 3. Assume publication went badly
-Run a premortem. Describe specific post-publication failure scenarios rather than abstract risk.
+### Step 3. Audit
+Apply `devil-risk-audit` and `devil-adversarial-lenses` to `{slug}.draft.md`.
 
-### Step 4. Stress-test the argument
-Challenge assumptions, missing evidence, omitted stakeholders, and fragile phrasing.
+### Step 4. Verdict
+Issue a **Weighted Warning** (Publish / Revise / Hold) based on risk severity.
 
-### Step 5. Look around the bend
-Evaluate second-order consequences, quote-risk, and out-of-context behavior.
+### Step 5. Snapshot
+Overwrite `devil.state.md` following the `devil-state-contract`.
 
-### Step 6. Issue a clear verdict
-State whether the draft should publish, revise, or hold, and justify the call with the few issues that matter most.
+### Step 6. Bridge
+If evidence is missing, generate a **Turing Research Request** for the user.
 
 ---
 
