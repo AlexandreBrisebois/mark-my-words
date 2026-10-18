@@ -3,6 +3,8 @@ name: devil-adversarial-lenses
 description: Operating frames for exposing different categories of risk by reading through specialized adversarial perspectives.
 ---
 
+Follow [the current editorial contract](../../../docs/editorial-contract.md). These are on-demand methods, not mandatory stages or authority over author choices. Resolve private configuration via [WORKING.md](../../../docs/configuration.md); public configuration files are templates. Use the recorded canonical draft path and revision, even where a generic filename is shown below.
+
 # Devil Adversarial Lenses Skill
 
 Use these lenses to read the draft. They are not personas; they are operating frames for identifying risk.

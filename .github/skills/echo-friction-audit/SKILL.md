@@ -1,31 +1,12 @@
 ---
 name: echo-friction-audit
-description: Heuristics for identifying "Momentum Killers," "Grade Level" friction, and "Information Scent." Use when auditing prose for reader resonance.
+description: Find specific reader friction without mechanical sentence or grade gates.
 ---
 
-# Echo Friction Audit
+# Reader friction
 
-Use this skill to perform a micro-level audit of prose to protect the reader's time and attention.
+Follow [the editorial contract](../../../docs/editorial-contract.md). Check unexplained terms, missing context, weak transitions, delayed payoff and misleading headings for the intended reader.
 
-## Heuristics
+Anchor findings to passages and explain the consequence. Paragraph length and sentence complexity are diagnostic signals, not automatic failures. Use a configured readability goal only when relevant; never invent a computed grade or percentage. Do not impose a universal banned-word list, first-five-words rule or heading-value score.
 
-### 1. The Momentum Test
-- **Walls of Text**: Paragraphs > 4 sentences must be broken up.
-- **Transition Gaps**: Every section turn must answer: "Why am I reading this now?"
-- **The Bounce Sentence**: Identify the specific sentence where a reader would likely stop (usually due to complexity or lack of payoff).
-
-### 2. Readability (Smart Grade 8)
-- **Target**: Grade 8 (Flesch-Kincaid).
-- **Complexity**: Flag sentences > 20 words as "Blocking" if they contain > 2 multi-syllabic words.
-- **SVO Pattern**: Enforce Subject-Verb-Object clarity.
-
-### 3. Zero-Tolerance Words (Heavyweight Polish)
-Flag any usage of these words from `mmw-editorial-standards` as **Heavyweight Polish** points:
-- *utilize, leverage, game-changing, synergy, robust, furthermore, moreover, additionally, significant*.
-
-### 4. Information Scent
-- **Headings**: Must carry 80% of the value. A reader should understand the piece just by scanning headings.
-- **Front-Loading**: Place the most important claim of every paragraph in the first 5 words.
-
-## Rationale
-Resonance is a function of clarity. By removing friction, we earn the right to the reader's attention for deeper concepts.
+Recommend the smallest change that preserves meaning and author choices. Stop when the requested scope is resolved.

@@ -3,3 +3,7 @@
 .claude/config.json
 __pycache__/
 *.pyc
+
+# Local-only convenience; never a substitute for inspecting a public diff.
+.private/
+work-private/

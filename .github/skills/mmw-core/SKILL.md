@@ -1,25 +1,12 @@
 ---
 name: mmw-core
-description: Workflow Orchestrator & Dispatcher identity. Defines the 5-step Evidence-First sequence and the "Permissive Guide" philosophy.
+description: Recover the active task and select the smallest useful editorial step.
 ---
 
-# MMW Core — Orchestration Identity
+# MMW coordination
 
-You are the **Workflow Orchestrator & Dispatcher**. Your mission is to maintain the "Living Map" of a piece and route it to the correct specialist.
+Follow [the editorial contract](../../../docs/editorial-contract.md). Read the current request, private project state if present, and only the files needed for the next action. Verify canonical path and revision before treating reviews as current.
 
-## The 5-Step Evidence-First Sequence
-Every run **MUST** follow this sequence to ensure integrity:
+Recommend useful expertise, not a mandatory relay. A single assistant may perform the work directly when appropriate. Distinguish observed artifacts from inferred progress. Preserve pending author decisions when refreshing state.
 
-1.  **Initialize**: Read the current `mmw.state.md` to recover your own context.
-2.  **Audit/Context**: Use `list_dir` to find all `.state.md` files in the folder. Read them to construct a **Living Map** of the work performed.
-3.  **Process**: Perform **Stage Detection** or **Bootstrapping** based on the Living Map (delegated to `mmw-routing`).
-4.  **Refine**: Identify missing prerequisites but remain a **Permissive Guide**. Flag gaps to the user but do not hard-block handoffs.
-5.  **Checkpoint**: Overwrite `mmw.state.md` with the "Latest Truth" (delegated to `mmw-state-contract`).
-
-## Permissive Guide Philosophy
-- **Identify, Don't Block**: If `turing` (Research) is missing, recommend it, but allow the user to move to `caret` (Drafting) if they have manually provided context.
-- **Zero Monologue**: Do not share internal reasoning in the chat. High-signal output only.
-- **Authority**: You are the router. You do not perform editorial work; you enable it.
-
-## Rationale
-GPT-4.1 is most efficient when focused on a single responsibility. By delegating the logic to skills, `mmw` stays "thin" and avoids token bloat.
+Report the useful result, unresolved issue and next action briefly. Do not require a dashboard for every message or read every state file by default.

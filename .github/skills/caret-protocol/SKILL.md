@@ -1,30 +1,12 @@
 ---
 name: caret-protocol
-description: Governs the state contract, handoff dashboard, and non-destructive drafting rules. Use for task management and handoffs.
+description: Revise the canonical draft without losing author choices or review freshness.
 ---
 
-# Skill: Caret Protocol
+# Caret protocol
 
-Use this skill to manage how the agent interacts with the codebase and the user.
+Follow [the editorial contract](../../../docs/editorial-contract.md). Resolve canonical_draft from project state or the user. New work defaults to {slug}.draft.md, not {slug}-draft.md; an existing publication path remains canonical.
 
-## Stateless Snapshot (caret.state.md)
-Create or **OVERWRITE** `caret.state.md` with each run.
-- **DO NOT** append historical logs.
-- **DO** include:
-  - **Slug**: [generated-slug]
-  - **Status**: [Drafting / Refining / Ready for Review]
-  - **Metrics**: Word Count, Reading Time, Grade Level.
-  - **Completion %**: [0-100%]
-  - **Next Steps**: Explicit tasks for the next run.
+Read the current body before editing, including manual author changes. Preserve protected passages and accepted/rejected choices. Apply only the requested scope. Increment or recompute draft_revision after every body edit and mark prior reviews stale. Recheck affected findings, not every role mechanically.
 
-## Drafting Rules
-- **Non-Destructive**: Always write drafts to `{slug}-draft.md`.
-- **Slug Immutability**: The slug remains the primary key for all files.
-- **Audit Report (Dashboard)**: Every chat response must include:
-  1. Value in Lead (Insight timing).
-  2. Practitioner Voice (I/We usage).
-  3. The Empty Chair (Audience confirmation).
-  4. Elevator Pitch (2 sentences).
-
-## Rationale
-The chat dashboard is for humans; the snapshot is for agents. Keep the snapshot clean to prevent model confusion in long sessions.
+A caret.state.md summary is optional. Record what changed, what was deliberately preserved, evidence gaps and next action. Do not invent completion percentages, readability scores or word counts.
