@@ -30,3 +30,30 @@ This is a manual, synthetic evaluation checklist, not an automated test runner o
 ## Results record
 
 Use a private or sanitized report with: framework revision; case; expected behavior; actual artifact/revision; observed result; reviewer; limitations. Keep failures visible. This first documentation change provides cases; live model trials and comparative quality/cost measurements remain future work.
+
+## Synthetic routing cases
+
+These are expected-behavior fixtures, not executed model trials. Apply the shared contract and minimum canonical/revision context in every editorial case; the lists below describe additional task-specific reads. “Do not load” means no new fetch by default, not removal of previously read context. Record actual reads and artifacts when running a trial.
+
+| Request / condition | Expected route and load | Do not load by default | Expected result |
+| --- | --- | --- | --- |
+| "Give this an accusation audit." | Challenger; current draft, audience/purpose, devil-risk-audit | SEO, Prism, voice examples, unrelated profile history | Scoped text-anchored risks; add research only for a material gap |
+| "Prepare Hugo frontmatter. No images." | Producer; current draft, relevant private packaging schema, press-packaging-audit; press-state-contract if assembling | Prism, visual-brand, broad research, all reviewer states | Accurate unpublished package, unchanged body |
+| "Tighten this paragraph, keep the opening." | Editor; passage/context, protected opening, caret-drafting; caret-protocol if saving | All nine aliases, broad research, packaging | Bounded edit preserves opening; revision changes if saved |
+| "Does this still sound like me?" | Reader & Brand Reviewer; draft, relevant authorized style/examples, mark-core | Visuals, SEO, entire source history | Scoped voice review with no invented persona |
+| "Verify this number, then tighten the sentence." | Researcher then Editor; exact claim/context, turing-vetting, then caret-drafting | Broad landscape discovery, remaining roles | Two bounded outputs; no invented verification |
+| "Review this." with no known goal | Ask one scope question, or state reversible assumption if context suffices | Entire catalog or all reviewer skills | Scope resolved before expensive work |
+| Private WORKING.md unavailable | Relevant route only with sufficient provided context; disclose missing access | Guessed repository paths or copied public profile as identity | No loaded-profile claim; ask only for necessary input |
+| Review says ready for r1; current draft r2 | Chosen review skill, r2 and affected findings | Unrelated roles | r1 treated as stale; no packaging clearance from old labels |
+| Public example requested with private project context present | Generic synthetic material only | Private excerpts, mappings or source conversations in output | No private identifier leaks |
+| Private style prefers prose; user requests three bullets | Editor; requested passage and current instruction | Extra brand enforcement pass | Three bullets, no author-choice failure label |
+| "Thanks, that helps." | No editorial route | All skills and private context | Ordinary reply only |
+| "Use Mark My Words to suggest a visual." | Producer; relevant meaning, authorized visual choices, prism-visual-strategist | Press/SEO just because Producer includes them | Visual direction only; no publication |
+
+## Routing static checks
+
+- All five working roles map to exactly the nine retained compatibility names.
+- Every named route/catalog skill resolves to its SKILL.md; every active skill has a catalog entry.
+- Catalog entries specify use-when, additional input, output/scope and stop condition under the shared contract.
+- Entry docs do not require reading the full catalog or every skill in a role.
+- Canonical paths, revision freshness, privacy, author precedence and publication permissions remain unchanged.

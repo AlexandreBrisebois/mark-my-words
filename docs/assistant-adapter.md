@@ -2,27 +2,19 @@
 
 This is a prompt/documentation contract, not a runnable orchestration library. A host may read the files directly, or explicitly install supported skills using its own documented process. Tools, models, access and persistence come from the host; this repository creates none of them.
 
-## Minimal invocation
+## Natural invocation and just-in-time context
 
-Ask your assistant: "Read AGENTS.md and the editorial contract. Use my authorized private WORKING.md if accessible. Help with this draft's argument and preserve my chosen wording. Select only the expertise needed; do not publish."
+Use [AGENTS.md](../AGENTS.md) and [the compact routing index](routing.md). A request such as “Give this an accusation audit” is enough once the framework is available to the assistant. “Use Mark My Words” is an optional explicit cue, not a magic command or installation step.
 
-For an existing article, provide its canonical path. For new work, use `{slug}.draft.md`. Keep project state in the private project, not this public framework.
+The five working roles are Editor (mmw, compass, caret), Researcher (turing), Reader & Brand Reviewer (echo, mark), Challenger (devil), and Producer (press, prism). They organize expertise; they are not five required agent processes.
 
-## On-demand expertise
+Read the editorial contract once per verified framework revision in the active context, then fetch only the chosen skill and necessary private/source context. Reread when the framework revision changes or the contract is no longer available. Consult only selected entries of [the skill catalog](skill-catalog.md); its shared rules plus each row define use-when, inputs, outputs, scope and stopping conditions.
 
-| Task | Roles | Read only when needed |
-| --- | --- | --- |
-| Editorial brief | compass | compass-coaching, compass-strategy |
-| Positioning discovery | compass, echo | positioning-discovery |
-| Claim research | turing | turing-discovery, turing-vetting, turing-synthesis |
-| Draft and revision | caret | caret-voice, caret-drafting, caret-protocol |
-| Voice and reader review | mark, echo | mark-core, mmw-human-voice-check, echo-friction-audit |
-| Accusation audit | devil | devil-risk-audit, devil-adversarial-lenses |
-| Visual direction | prism | prism-visual-strategist, prism-structural-audit |
-| Publication packaging | press | press-packaging-audit, press-state-contract |
-| Resume and route | mmw | mmw-core, mmw-routing, mmw-state-contract |
+For an accusation audit, start with the current draft, audience/purpose and devil-risk-audit, not SEO, visuals or every reviewer. For Hugo packaging without images, load packaging guidance and Press skills only as needed, not Prism. More [loading recipes](routing.md) cover revision, voice and fact checks.
 
-Skill files live in `.github/skills/<name>/SKILL.md`. All follow the current editorial contract. No task requires all nine roles or every skill in a role.
+A connector-backed assistant performs these reads explicitly. There is no automatic dispatcher, host skill installation or private-repository access. Loading fewer files does not unload previously read context. A separate focused reviewer can provide useful independence when supported and warranted; give it only the current artifact, scope and minimum authorized context, not the full drafting conversation by default.
+
+For an existing article, keep its canonical path. Store real project state privately. Mixed intent gets bounded outputs and only their necessary skills; no nine-role pipeline.
 
 ## Copilot compatibility
 

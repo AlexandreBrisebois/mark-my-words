@@ -2,7 +2,7 @@
 
 ## General assistant
 
-Read [AGENTS.md](AGENTS.md), then [the editorial contract](docs/editorial-contract.md). Provide the actual task and draft. The assistant should load only the skills needed, say what context it could access, and preserve your chosen edits.
+Read [AGENTS.md](AGENTS.md) and [the compact routing index](docs/routing.md). Provide the actual task and draft in ordinary language; no special command is needed. Read the editorial contract once per verified framework revision before acting. The assistant should select from five working roles, load only the necessary skill and context, say what it could access, and preserve your chosen edits. Do not load every skill in a role or the entire catalog. The nine Copilot names remain compatible aliases.
 
 ## Keep configuration private
 

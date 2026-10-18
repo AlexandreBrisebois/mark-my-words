@@ -10,9 +10,9 @@ This contract supersedes conflicting instructions throughout `.github/agents/` a
 
 ## Start small
 
-Read current intent, the brief if present, the canonical draft if relevant, and only the private configuration sections needed. State the task's audience, intended outcome, evidence needs, and stopping condition briefly. Do not interview an author indefinitely: ask the single question that materially changes the work; otherwise state a reversible assumption. An author can bring a complete brief or draft and skip strategy or research.
+Read current intent, the brief if present, the canonical draft if relevant, and only the private configuration sections needed. Read this contract once per verified framework revision while it remains available in the active context; route through the small index before loading task-specific skills. Ordinary conversation requires no editorial route. State the task's audience, intended outcome, evidence needs, and stopping condition briefly. Do not interview an author indefinitely: ask the single question that materially changes the work; otherwise state a reversible assumption. An author can bring a complete brief or draft and skip strategy or research.
 
-Use the nine named roles as on-demand expertise: mmw coordinates; compass frames; turing researches; caret drafts; mark protects voice; echo tests reader clarity; devil audits accusations and credibility; prism handles visuals; press packages. Reviews can be parallel but only caret or the designated editor changes the canonical draft. Auditors propose changes in review artifacts, not hidden draft comments.
+Use five working roles via [the compact routing index](routing.md): Editor (mmw, compass, caret), Researcher (turing), Reader & Brand Reviewer (echo, mark), Challenger (devil), and Producer (press, prism). The nine legacy names remain on-demand compatibility expertise, not required calls. Select individual skills by task, not every skill grouped under a role. Reviews can be parallel but only caret or the designated editor changes the canonical draft. Auditors propose changes in review artifacts, not hidden draft comments.
 
 ## Private context boundary
 

@@ -4,7 +4,7 @@ An open-source editorial framework for an author and an assistant working togeth
 
 ## Start here
 
-1. Ask your assistant to read [AGENTS.md](AGENTS.md) and [the editorial contract](docs/editorial-contract.md).
+1. Ask naturally for editorial help. [AGENTS.md](AGENTS.md) starts with [a compact routing index](docs/routing.md); “Use Mark My Words” is optional.
 2. Provide your task and canonical draft path, if one exists.
 3. If authorized and accessible, point it privately to CONFIG_REPO/WORKING.md. [Configuration loading](docs/configuration.md) explains the boundary; nothing is automatically installed or loaded.
 4. Select a useful outcome: a brief, claim check, targeted revision, accusation audit, visual direction, or publication package.
@@ -12,21 +12,19 @@ An open-source editorial framework for an author and an assistant working togeth
 
 New drafts use `{slug}.draft.md`; existing publication files stay canonical without forced renaming. Reviews reference the exact draft revision so old clearance cannot silently survive an edit.
 
-## The editorial team
+## Five working roles
 
-| Role | Expertise |
-| --- | --- |
-| compass | Audience, angle, stakes and scope |
-| turing | Evidence, uncertainty and research |
-| caret | Drafting and author-led revision |
-| mark | Voice and editorial consistency |
-| echo | Reader clarity and payoff |
-| devil | Accusations, credibility and risk |
-| prism | Visual meaning and structure |
-| press | Metadata and publication packaging |
-| mmw | Context recovery and next-step routing |
+| Role | What it helps with | Existing compatibility names |
+| --- | --- | --- |
+| Editor | Ideas, drafts, revision and next steps | mmw, compass, caret |
+| Researcher | Claims, evidence and uncertainty | turing |
+| Reader & Brand Reviewer | Clarity, payoff and author voice | echo, mark |
+| Challenger | Accusations, objections and credibility | devil |
+| Producer | Metadata, publication packages and visuals | press, prism |
 
-These are on-demand lenses, not nine mandatory calls. One assistant can use several. [The adapter and skill map](docs/assistant-adapter.md) covers general assistants and the existing Copilot entry points in `.github/agents/`.
+Ask “Tighten this paragraph,” “Give this an accusation audit,” or “Prepare Hugo frontmatter.” The assistant selects the necessary skill, not all skills in a role. Mixed requests can use a bounded combination; ordinary conversation needs no editorial workflow.
+
+[Routing recipes](docs/routing.md) show what to load and skip. The [skill catalog](docs/skill-catalog.md) is a lookup, not mandatory reading. [Adapter guidance](docs/assistant-adapter.md) explains prompt-guided retrieval and the unchanged nine Copilot entry points.
 
 ## Private by design
 
