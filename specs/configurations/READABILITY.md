@@ -1,1 +1,0 @@
-place holder, add your own readability guidelines here, such as font size, line spacing, paragraph structure, etc.

@@ -1,1 +1,0 @@
-- **Constraint**: Avoid "Internal Cannibalization". Every new piece must either bridge a gap in the existing body of work or offer a significantly sharper reframing of a prior topic.
