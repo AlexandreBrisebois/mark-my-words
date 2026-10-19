@@ -18,5 +18,3 @@ The assistant returns the requested result, evidence gaps, and the smallest next
 - [Editorial contract](docs/editorial-contract.md): one draft, versioned reviews, author authority.
 - [Project](templates/project.state.md) and [review](templates/review.state.md) templates: use privately when durable state helps.
 - [Evaluation](docs/evaluation.md): small manual checks for changes to this framework.
-
-Earlier designs remain recoverable in Git history, not in the current workflow.
