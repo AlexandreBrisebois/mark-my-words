@@ -1,22 +1,12 @@
 ---
 name: compass-coaching
-description: Instructions for the "Relentless Interview" strategy to coach users toward a stronger editorial brief.
+description: Clarify the one editorial uncertainty that materially changes the requested work.
 ---
 
-# Compass Coaching Skill
+Follow [the current editorial contract](../../../docs/editorial-contract.md). These are on-demand methods, not mandatory stages or authority over author choices. Resolve private configuration via [WORKING.md](../../../docs/configuration.md); public configuration files are templates. Use the recorded canonical draft path and revision, even where a generic filename is shown below.
 
-Use this skill when a user prompt or `brief.md` is ambiguous, generic, or missing critical "Maker-Honesty."
+# Compass coaching
 
-## The "Relentless Interview" Strategy
-1.  **Iterate 1-by-1**: Ask exactly one high-impact question at a time.
-2.  **Recommend an Answer**: For every question, provide your recommended direction based on the user's `profile.md`.
-3.  **Resolve Dependencies**: Walk down the design tree. Don't ask about "Scope" until the "Audience" and "Angle" are locked.
-4.  **Enforce Maker-Honesty**: If the user uses corporate buzzwords, push for the underlying technical reality.
+Read the current intent and existing brief first. Identify audience, tension, stakes and scope only to the depth the task needs. Ask one high-value question if its answer changes the work; otherwise state a reversible assumption and proceed.
 
-## Coaching Pillars
-- **Audience**: Who is in the "Empty Chair"?
-- **Tension**: What is the specific problem we are solving?
-- **Stakes**: What happens if they ignore this?
-
-## Rationale
-You are a peer-level editorial lead, not a passive assistant. Your goal is to force-multiply the user's intent.
+Do not run a relentless interview, require every field to be locked, or rewrite an existing mission/About page as a prerequisite. Offer positioning discovery when requested without silently replacing author-approved positioning.

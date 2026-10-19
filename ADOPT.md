@@ -1,118 +1,25 @@
 # Adopting Mark My Words
 
-This guide walks you through installing Mark My Words and making it your own.
+## General assistant
 
-## 1. Installation
+Read [AGENTS.md](AGENTS.md) and [the compact routing index](docs/routing.md). Provide the actual task and draft in ordinary language; no special command is needed. Read the editorial contract once per verified framework revision before acting. The assistant should select from five working roles, load only the necessary skill and context, say what it could access, and preserve your chosen edits. Do not load every skill in a role or the entire catalog. The nine Copilot names remain compatible aliases.
 
-1. Clone this repository.
-2. Open the folder in VS Code.
-3. Confirm the GitHub Copilot extension is installed and active.
+## Keep configuration private
 
-## 2. Personalization (5 Minutes)
+Maintain `WORKING.md` and the five configuration files at the paths your private entry point designates in your own authorized private workspace. Use the public [configuration templates](configurations/) as blank starting points, not as a real person's voice. Follow [configuration loading](docs/configuration.md). No credentials or private repository mapping belongs in this public repository.
 
-Mark My Words separates your personal identity from the editorial core. To make it yours, edit these files in `configurations/`:
+## Existing Copilot workflow
 
-### Essential
-- **profile.md** — Your name, website, topic, origin story
-- **brand-style.md** — Your voice, tone, and editorial constraints
+Open a checkout with your supported Copilot setup. The nine agent definitions remain in `.github/agents/`; the host must actually support and discover them. Select your host model. Invoke a role such as `@compass`, `@caret` or `@devil` where supported. Handoff buttons remain human-triggered. The current contract replaces obsolete mandatory stages and stale label-based gates.
 
-### Optional  
-- **READABILITY.md** — Your readability target (default: Grade 8)
-- **visual-brand.md** — Your visual aesthetic guidelines
+Do not move private files into a public checkout merely to satisfy legacy paths. Resolve them explicitly from the private entry point. If the host cannot read them, provide the minimum authorized context or use clearly labeled generic defaults.
 
-These files are loaded at every agent run. Changes apply instantly.
+## First piece
 
-## 3. Make Your First Agent Call
+"Review this draft for reader clarity. Keep the opening I chose. Research only factual claims that need verification. Return a scoped review tied to this revision; do not publish."
 
-Open Copilot Chat and try this:
+For a new piece, choose `{slug}.draft.md`. For an existing article, keep its actual path canonical. Store a private project snapshot and selected review artifacts using [these templates](templates/). A file's existence is not proof of completed work. If persistence is unavailable, retain explicit revision labels in the conversation and say what was not saved.
 
-```
-@compass I want to write about [your topic]. 
-The core problem is [what problem you're solving].
-The reader is [who this is for].
-```
+## Check the setup
 
-**Compass** will return a strategic brief and save its thinking to `compass.state.md`.
-
-## 4. Understand the Workflow (No Lock-in)
-
-The default sequence is:
-
-```
-compass (strategy)
-  → turing (research)
-    → caret (draft)
-      → mark, echo, devil (audit in any order)
-        → prism (visual)
-          → press (publish)
-```
-
-**But you don't have to follow it.** You can:
-- Skip steps you don't need
-- Call agents in any order
-- Run the same agent multiple times
-- Iterate: compass → turing → compass (refined) → turing → caret
-
-All agents read each other's state files to recover context. You never need to repeat information.
-
-## 5. Restore Workflow Status
-
-If you return to a piece after time away:
-
-```
-@mmw What's the current status of this piece?
-```
-
-The orchestrator will read your folder, determine where you stand, and suggest the next step.
-
----
-
-## Agent Roles & State
-
-Each agent maintains its own state file in your working folder and fulfills a specific editorial role:
-
-- **Editorial Strategist** (`compass.state.md`) — Strategy and editorial direction
-- **Expert Research Agent** (`turing.state.md`) — Research findings and evidence
-- **Drafting & Revision** (`caret.state.md`) — Draft versions and editing decisions
-- **Brand Guardian Auditor** (`mark.state.md`) — Brand audit results
-- **Clarity & Resonance Auditor** (`echo.state.md`) — Reader experience feedback
-- **Risk & Resistance Auditor** (`devil.state.md`) — Credibility and risk analysis
-- **Visual Translator** (`prism.state.md`) — Visual direction and image prompts
-- **Publication & Discoverability Auditor** (`press.state.md`) — Publication metadata and frontmatter
-
-These state files are the durable layer. If a session ends or you switch computers, agents recover context by reading these files. Nothing is lost.
-
----
-
-## Example Workflow
-
-This shows one real iteration cycle:
-
-```
-Step 1: Strategy
-@compass Here's my idea about AI agents in production. I want to help CTOs understand the cost model.
-
-Step 2: Research
-@turing -compass What do recent benchmarks show about latency and token costs in multi-agent loops?
-
-Step 3: Refine Strategy
-@compass -turing Based on the research, should I narrow the angle or broaden the scope?
-
-Step 4: Draft
-@caret -compass -turing Now draft the opening section and the main cost model analysis.
-
-Step 5: Audit
-@mark Audit this draft for brand alignment.
-@echo Where will engineering leaders bounce?
-@devil What credibility gaps exist?
-
-Step 6: Finalize
-@press Prepare for publication.
-```
-
-Each agent reads the state files before and after to know what happened before. You stay in control throughout.
-
----
-
-**Happy writing!**
-
+Use the synthetic cases in [evaluation](docs/evaluation.md). Confirm private data stays private, an edit invalidates old reviews, and a packaging request does not trigger publication. Record observed results without claiming unmeasured quality or cost improvements.

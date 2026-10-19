@@ -3,6 +3,8 @@ name: devil-risk-audit
 description: Core adversarial audit logic for stress-testing drafts through Accusation Audits, Publication Premortems, and Red-Team Challenges.
 ---
 
+Follow [the current editorial contract](../../../docs/editorial-contract.md). These are on-demand methods, not mandatory stages or authority over author choices. Resolve private configuration via [WORKING.md](../../../docs/configuration.md); public configuration files are templates. Use the recorded canonical draft path and revision, even where a generic filename is shown below.
+
 # Devil Risk Audit Skill
 
 Use this skill when you need to identify the hidden price of a claim or strategy.

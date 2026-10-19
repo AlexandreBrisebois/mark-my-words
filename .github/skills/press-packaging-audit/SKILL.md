@@ -3,6 +3,8 @@ name: press-packaging-audit
 description: Technical heuristics and audit logic for evaluating discoverability, SEO, and AI retrieval readiness.
 ---
 
+Follow [the current editorial contract](../../../docs/editorial-contract.md). These are on-demand methods, not mandatory stages or authority over author choices. Resolve private configuration via [WORKING.md](../../../docs/configuration.md); public configuration files are templates. Use the recorded canonical draft path and revision, even where a generic filename is shown below.
+
 # Press Packaging Audit Skill
 
 Use this skill to perform a technical evaluation of article packaging (Title, Description, Slug, Tags) against MMW standards.

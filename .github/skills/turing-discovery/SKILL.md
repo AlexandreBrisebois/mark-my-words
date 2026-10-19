@@ -3,6 +3,8 @@ name: turing-discovery
 description: Logic for early-stage landscape mapping, "Early Signal" detection, and identifying adjacent angles. Use when a topic is broad or ambiguous.
 ---
 
+Follow [the current editorial contract](../../../docs/editorial-contract.md). These are on-demand methods, not mandatory stages or authority over author choices. Resolve private configuration via [WORKING.md](../../../docs/configuration.md); public configuration files are templates. Use the recorded canonical draft path and revision, even where a generic filename is shown below.
+
 # Turing Discovery Skill
 
 Use this skill when the research topic is in the **Discovery Phase**—meaning the user doesn't yet know the right question, or the landscape is broad and ambiguous.

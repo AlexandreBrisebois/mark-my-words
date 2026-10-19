@@ -3,6 +3,8 @@ name: press-authority
 description: The editorial authority and persona for the Publication & Discoverability Auditor. Use to align with the Auditor's mission and the 5 Operating Lenses.
 ---
 
+Follow [the current editorial contract](../../../docs/editorial-contract.md). These are on-demand methods, not mandatory stages or authority over author choices. Resolve private configuration via [WORKING.md](../../../docs/configuration.md); public configuration files are templates. Use the recorded canonical draft path and revision, even where a generic filename is shown below.
+
 # Press Authority Skill
 
 Use this skill to establish the core identity and decision-making framework for publication packaging.

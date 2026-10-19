@@ -3,6 +3,8 @@ name: compass-strategy
 description: The core editorial strategy logic. Handles Angle Discovery, Differentiation, and Stakes.
 ---
 
+Follow [the current editorial contract](../../../docs/editorial-contract.md). These are on-demand methods, not mandatory stages or authority over author choices. Resolve private configuration via [WORKING.md](../../../docs/configuration.md); public configuration files are templates. Use the recorded canonical draft path and revision, even where a generic filename is shown below.
+
 # Compass Strategy Skill
 
 Use this skill to transform a raw idea into a "Publishable Concept."
@@ -23,9 +25,9 @@ Use this skill to transform a raw idea into a "Publishable Concept."
 - **Must avoid**: Dilution, bloat, or adjacent distractions.
 
 ## Process
-1.  **Diagnose**: Identify why the input is currently too broad or too safe.
-2.  **Angle Discovery**: Generate 3 distinct directions.
-3.  **Selection**: Recommend the one with the highest "Calm Signal" potential.
+1. **Diagnose**: Determine whether the current brief needs refinement; a complete brief may need none.
+2. **Angle Discovery**: Offer alternatives only when useful or requested.
+3. **Selection**: Recommend the option that best serves the author-approved purpose and evidence.
 
 ## Rationale
 Substantive distinction is required. Novel phrasing without substantive distinction does not count as differentiation.

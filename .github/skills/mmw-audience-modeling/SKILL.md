@@ -1,31 +1,12 @@
 ---
 name: mmw-audience-modeling
-description: Defines the 3 primary leadership personas for Mark My Words. Use when selecting the target reader and stakes.
+description: Identify the actual reader, prior knowledge and intended payoff.
 ---
 
-# MMW Audience Modeling
+Follow [the current editorial contract](../../../docs/editorial-contract.md). These are on-demand methods, not mandatory stages or authority over author choices. Resolve private configuration via [WORKING.md](../../../docs/configuration.md); public configuration files are templates. Use the recorded canonical draft path and revision, even where a generic filename is shown below.
 
-Use this skill to calibrate the complexity, depth, and "Payoff" of a piece based on the target reader.
+# Audience modeling
 
-## The Personas
+Use the brief and authorized private profile, not a fixed three-persona roster. Identify the primary reader, what they already know, why they might care, and the decision or understanding the piece should enable.
 
-### 1. LoB Decision Maker (Line of Business)
-- **Focus**: ROI, business outcomes, solving organizational friction.
-- **Payoff**: A clear "Yes/No" or "Buy/Build" decision framework.
-
-### 2. CTO & CTX Suite
-- **Focus**: Architectural integrity, risk mitigation, technical debt.
-- **Payoff**: High-level structural confidence and long-term vision alignment.
-
-### 3. Senior Technical Reader
-- **Focus**: Implementation trade-offs, "Building in Public" evidence.
-- **Payoff**: Concrete code patterns or architectural "loops" they can use.
-
-## The Empty Chair Check
-Every piece must answer:
-1. **Why should I care now?** (Urgency/Stakes)
-2. **Why are you the right person to tell me?** (Trust/Authority)
-3. **Which of the 3 audiences is this for?** (Explicit targeting)
-
-## Rationale
-Targeting all 3 results in a generic mess. Compass **must** select one primary audience and one secondary audience max.
+Treat simulated reader reactions as hypotheses, not measured behavior. A technical leader, practitioner or general reader may be appropriate; do not presume any of them. Ask a targeted question only when the audience ambiguity materially affects the work.
