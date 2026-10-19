@@ -1,29 +1,28 @@
 ---
-contract_version: 1
+contract_version: 2
 slug: sample-piece
 canonical_draft: sample-piece.draft.md
 draft_revision: r1
-selected_roles: [caret, echo]
+selected_roles: [editor, reader-brand]
 ---
 
-# Project state (synthetic template)
+# Project state (synthetic example; keep real state private)
 
-## Current intent
-Explain one practical trade-off to a specified reader.
+## Intent and stop
+Explain one practical trade-off to a new reader. Stop after a clarity review and one targeted revision.
 
 ## Protected author choices
-- Record exact protected passages or choices privately.
+Record accepted wording and choices here.
 
 ## Evidence needs
-- Identify claims needing external support; distinguish recollections and opinions.
+None selected for this clarity-only task; no external fact check claimed.
 
 ## Reviews
-- role: echo
-  reviewed_revision: r1
-  outcome: revise
-  scope: reader clarity
-  artifact: echo.state.md
+- Role: reader-brand
+- Reviewed revision: r1
+- Scope: reader clarity
+- Outcome: revise
+- Artifact: review.state.md
 
 ## Decisions and next action
-- Preserve accepted/rejected findings when refreshing this snapshot.
-- Stop after the requested clarity review and one targeted revision.
+Finding clarity-1 is pending. Editor may propose a targeted revision; advance the draft revision if changed and mark this review stale. Preserve accepted/rejected findings when refreshing this snapshot.

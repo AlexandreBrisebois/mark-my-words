@@ -1,1 +1,0 @@
-placeholder, add your own visual brand guidelines here, such as color palette, typography, logo usage, etc.
